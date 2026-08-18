@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>sdd1</h1>
+<h1>S-DD1</h1>
 
 <strong>A model of the SNES S-DD1, checked against the reference decoder on noise rather than on artwork.</strong>
 
