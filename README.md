@@ -30,9 +30,11 @@ from sdd1 import decompress
 
 stream = decompress(rom, offset, length)
 
-stream.data        # the expanded bytes
-stream.end         # where the decoder stopped reading
-stream.bitplanes   # how many planes this stream interleaves
+len(stream.data)
+# the expanded bytes, as many as were asked for
+
+stream.bitplanes
+# 2, 4 or 8, whichever this stream interleaves
 ```
 
 ---
