@@ -18,12 +18,13 @@
 <p align="center">
   <a href="#quick-start">Quick start</a> &nbsp;|&nbsp;
   <a href="#how-this-is-proved">How this is proved</a> &nbsp;|&nbsp;
+  <a href="#the-cartridge-shaped-corpus-and-why-it-can-ship">Why the corpus is legal</a> &nbsp;|&nbsp;
   <a href="#how-the-decoder-works">How it works</a> &nbsp;|&nbsp;
   <a href="#regenerating-the-vectors">Regenerating vectors</a> &nbsp;|&nbsp;
   <a href="https://github.com/gufranco/snes-sdd1-python/issues">Issues</a>
 </p>
 
-**4,000** golden vectors, **0** failures · **all 16** combinations of plane and context type · **1,121,947** decoded bytes checked · **58** tests · **100%** statement and branch coverage
+**4,000** synthetic vectors + **2,652** cartridge-shaped cases, **0** failures · **all 16** plane and context combinations · shapes from **11,306** real streams · lengths to **65,536** · **100%** statement and branch coverage
 
 ```python
 from sdd1 import decompress
@@ -142,9 +143,52 @@ Types 1 and 2 both use four planes and differ in how they rotate between them as
 | State machine | Every state's chain verified to settle under both outcomes | Structural, exhaustive |
 | Context masks | Verified disjoint and inside the 32 contexts that exist | Structural, exhaustive |
 | Prefix property | A short read is a prefix of a longer read at the same offset | Behavioural |
+| Real cartridge shapes | 2,652 cases over every header byte and length four cartridges use | Cross-checked, shaped by hardware |
 
 > [!NOTE]
 > The vectors say what this decoder does on inputs no cartridge produces. That is the point, not a limitation: a game exercises the paths its artwork happened to need, and noise exercises the rest. If you want the cartridge check as well, run it locally against a ROM you own; it just cannot ship.
+
+## The cartridge-shaped corpus, and why it can ship
+
+The random vectors above were built for breadth, and they buy it: all sixteen header shapes. What they do not buy is depth. They stay under two kilobytes, and real cartridges run streams out to a full **65,536** byte block, which drives the decoder far deeper into its state machine.
+
+So there is a second corpus, shaped by real cartridges. Building it means separating a stream into the part that can travel and the part that cannot.
+
+| Part of a stream | What it is | Ships? |
+|:-----------------|:-----------|:-------|
+| The compressed body | The game's graphics, encoded | Never |
+| The header byte | How many planes, which context bits. One of sixteen values the chip defines | Yes |
+| The decompressed length | A number | Yes |
+| How many streams share a shape | A measurement | Yes |
+
+The header is the chip's interface asserting itself, not an artist's choice: there are exactly sixteen possibilities and the encoder takes whichever fits, the same way a JPEG carries a sampling factor. Functional elements and facts sit outside what copyright reaches, per [17 U.S.C. 102(b)](https://www.law.cornell.edu/uscode/text/17/102) and `Feist`. [`conformance/extract.py`](conformance/extract.py) records exactly those and never writes a compressed byte.
+
+[`conformance/corpus.json`](conformance/corpus.json) is then built in three steps:
+
+1. **Shapes measured from real hardware.** A census of **11,306** streams across four cartridges: **68** distinct header bytes and the lengths the games ask for, covering **14 of the 16** kinds a real game uses.
+2. **Bodies generated from a seed.** The compressed bytes filling those shapes are arithmetic, not artwork.
+3. **Answers computed by the reference decoder.** Expected outputs come from snes9x's `sdd1emu.cpp`, so agreement is a cross-check rather than a restatement.
+
+```bash
+python3 conformance/corpus.py
+#   2652 cases from conformance/corpus.json, against snes9x 1.63 sdd1emu.cpp
+#   shapes measured from 11306 real streams, 14 of 16 kinds
+#   2652 agreed, 0 did not
+```
+
+> [!IMPORTANT]
+> This is how the repository is built, not legal advice. The rule it follows is simple enough to restate: publish behaviour, never content.
+
+### Measuring a cartridge of your own
+
+```bash
+python3 conformance/extract.py "Street Fighter Alpha 2 (USA).sfc" shapes.json streams.json
+#   2817 streams from Street Fighter Alpha 2 (USA).sfc
+#   47 header shapes, 8 of 16 kinds
+#   written to shapes.json
+```
+
+Some builds carry an eight byte `SDD1` tag ahead of every stream, and those are found by search alone with no table. Otherwise pass a table of offsets and lengths. Either way the profile that comes out holds no compressed byte, and any corpus you build locally with real bodies stays on your machine.
 
 ### Regenerating the vectors
 
@@ -198,7 +242,9 @@ for f in sdd1/*.test.py conformance/*.test.py; do python3 "$f"; done
 | Decoder | [`sdd1/decoder.test.py`](sdd1/decoder.test.py) | Header parsing, every plane and context type, lengths, truncation, the prefix property |
 | Tables | [`sdd1/probability.test.py`](sdd1/probability.test.py) | The run table as a permutation, the state machine settling, mask disjointness |
 | Models | [`sdd1/models.test.py`](sdd1/models.test.py) | The catalogue, alias matching, construction |
-| Vectors | [`conformance/vectors.test.py`](conformance/vectors.test.py) | The whole shipped set, digest integrity, header coverage, reporting |
+| Vectors | [`conformance/vectors.test.py`](conformance/vectors.test.py) | The whole synthetic set, digest integrity, header coverage, reporting |
+| Cartridge corpus | [`conformance/corpus.test.py`](conformance/corpus.test.py) | The whole cartridge-shaped set, image reconstruction, reporting |
+| Extraction | [`conformance/extract.test.py`](conformance/extract.test.py) | Tag scanning, stream tables, the census, and that no stream byte is recorded |
 
 Coverage is enforced at 100% of statements and branches by [`pyproject.toml`](pyproject.toml), so a new branch without a test fails the build rather than quietly lowering the number.
 
@@ -210,7 +256,9 @@ Coverage is enforced at 100% of statements and branches by [`pyproject.toml`](py
 | `ruff check .` | Lint |
 | `python3 -m coverage run -a <file>` | Run one test file under coverage |
 | `python3 -m coverage report` | Coverage, which fails below 100% |
-| `python3 conformance/vectors.py [file]` | Run the golden vectors |
+| `python3 conformance/vectors.py [file]` | Run the synthetic vectors |
+| `python3 conformance/corpus.py [file]` | Run the cartridge-shaped corpus |
+| `python3 conformance/extract.py <rom> <out> [table]` | Measure a cartridge you own |
 
 ## Project conventions
 
