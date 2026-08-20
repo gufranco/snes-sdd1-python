@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: snes-sdd1-python
+message: >-
+  If you use this work, or the vectors it was settled against, please cite it.
+type: software
+authors:
+  - given-names: Gustavo
+    family-names: Franco
+    alias: gufranco
+repository-code: https://github.com/gufranco/snes-sdd1-python
+url: https://github.com/gufranco/snes-sdd1-python
+abstract: >-
+  A model of the S-DD1, the decompressor that sits between the ROM and the
+  console in two Super Nintendo cartridges and expands graphics on the way past.
+  There is no published suite for it, so it is settled against streams of noise
+  compressed by an independent encoder, which exercises every path the arithmetic
+  decoder has without carrying a byte of anybody's artwork.
+keywords:
+  - emulation
+  - super-nintendo
+  - s-dd1
+  - decompression
+  - arithmetic-coding
+  - hardware-model
+  - conformance
+license: MIT
+version: 1.1.0
