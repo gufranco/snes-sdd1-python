@@ -32,9 +32,11 @@ from sdd1 import decompress
 stream = decompress(rom, offset, length)
 
 len(stream.data)
+
 # the expanded bytes, as many as were asked for
 
 stream.bitplanes
+
 # 2, 4 or 8, whichever this stream interleaves
 ```
 
@@ -110,7 +112,9 @@ cd snes-sdd1-python
 
 ```bash
 python3 conformance/vectors.py
+
 #   4000 cases from conformance/vectors.json, against snes9x 1.63
+
 #   4000 agreed, 0 did not
 ```
 
@@ -171,8 +175,11 @@ The header is the chip's interface asserting itself, not an artist's choice: the
 
 ```bash
 python3 conformance/corpus.py
+
 #   2652 cases from conformance/corpus.json, against snes9x 1.63 sdd1emu.cpp
+
 #   shapes measured from 11306 real streams, 14 of 16 kinds
+
 #   2652 agreed, 0 did not
 ```
 
@@ -183,8 +190,11 @@ python3 conformance/corpus.py
 
 ```bash
 python3 conformance/extract.py "Street Fighter Alpha 2 (USA).sfc" shapes.json streams.json
+
 #   2817 streams from Street Fighter Alpha 2 (USA).sfc
+
 #   47 header shapes, 8 of 16 kinds
+
 #   written to shapes.json
 ```
 
@@ -202,6 +212,7 @@ Regenerating needs a build of the reference decoder, which is not a dependency o
 from sdd1 import Sdd1, describe
 
 describe("s-dd1").planes
+
 # 8
 
 chip = Sdd1(model="sdd1")
