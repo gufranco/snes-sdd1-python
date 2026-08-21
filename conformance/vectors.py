@@ -22,7 +22,9 @@ implementation, so agreement is a real cross-check rather than a restatement.
 import hashlib
 import json
 import sys
+from collections.abc import Mapping, Sequence
 from pathlib import Path
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -33,13 +35,14 @@ EXAMPLE_LIMIT = 5
 DEFAULT_VECTORS = Path(__file__).resolve().parent / "vectors.json"
 
 
-def load(path=None):
+def load(path: Path | str | None = None) -> dict[str, Any]:
     """The vector set, from where it was asked for or from the one that ships."""
     with Path(path or DEFAULT_VECTORS).open() as handle:
-        return json.load(handle)
+        loaded: dict[str, Any] = json.load(handle)
+    return loaded
 
 
-def check(blob, case):
+def check(blob: bytes, case: Mapping[str, Any]) -> str | None:
     """What went wrong with one case, or nothing when it agreed."""
     try:
         produced = decompress(blob, case["offset"], case["length"]).data
@@ -55,11 +58,11 @@ def check(blob, case):
     )
 
 
-def run(found):
+def run(found: Mapping[str, Any]) -> tuple[int, int, list[str]]:
     """How many cases agreed, how many did not, and a few that did not."""
     blob = bytes.fromhex(found["input"])
     passed = failed = 0
-    examples = []
+    examples: list[str] = []
     for case in found["cases"]:
         wrong = check(blob, case)
         if wrong is None:
@@ -71,7 +74,7 @@ def run(found):
     return passed, failed, examples
 
 
-def main(argv):
+def main(argv: Sequence[str]) -> int:
     path = Path(argv[0]) if argv else DEFAULT_VECTORS
     if not path.is_file():
         print(f"  no vectors at {path}")

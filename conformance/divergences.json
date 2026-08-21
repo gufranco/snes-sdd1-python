@@ -1,0 +1,55 @@
+{
+  "comment": "Every place a source is weaker than it looks. This package's top rung is empty: no manufacturer document for the S-DD1 is known to exist, so the entries here are about what stands in for one and how far it goes.",
+  "sources": {
+    "document": "None.",
+    "reference": "The S-DD1 decoder in snes9x 1.63, which produced every expected output in vectors.json and corpus.json.",
+    "cartridges": "Builds carrying tagged streams, which are not retail dumps. See the entry below."
+  },
+  "divergences": [
+    {
+      "id": "the-shape-census-is-not-from-retail-cartridges",
+      "parts": ["s-dd1"],
+      "severity": "high",
+      "status": "open",
+      "documentSays": "Nothing.",
+      "referenceDoes": "conformance/corpus.json describes its census as measured from real S-DD1 cartridges and records no provenance: no file names, no digests, no dates.",
+      "packageFollows": "reference",
+      "reasoning": "conformance/extract.py finds a stream by searching for a four byte SDD1 tag. Measured on 2026-08-21 across a library of 7,578 images: the four retail cartridges that carry this chip, Star Ocean (Japan), Street Fighter Alpha 2 (USA) and (Europe), and Street Fighter Zero 2 (Japan), contain that tag zero times. The only builds that carry it are two modified Virtual Console re-releases, and they yield 5,630 streams spread evenly across all sixteen shapes, where the shipped census records 11,306 with 2,815 of them in a single shape. Neither the count nor the distribution can be reproduced from anything in that library, and a run of 2,815 streams all sharing one shape is what coincidental byte matches look like rather than what a game's data looks like. So the census cannot have been measured the way its own comment says, and part of it is probably not measuring streams at all.",
+      "wouldSettleIt": "A stream table for a retail cartridge: the offset and length of each stream, found by following the game's own code rather than by searching for a tag. extract.py already accepts one. Failing that, regenerating the census from a named source with its digest recorded, and saying outright that the source is not a retail dump.",
+      "doesItAffectTheDecoder": "Not directly. The census describes which shapes real data uses; it does not decide what the decoder does with one. Every shape is exercised by the random vectors regardless. What it does affect is the claim that this decoder has been run against the shapes hardware actually drives, and that claim is currently unsupported."
+    },
+    {
+      "id": "every-expected-output-comes-from-an-emulator",
+      "parts": ["s-dd1"],
+      "severity": "high",
+      "status": "open",
+      "documentSays": "Nothing.",
+      "referenceDoes": "Produces the bytes both conformance files compare against.",
+      "packageFollows": "reference",
+      "reasoning": "There is no other source. The algorithm has no published specification, and the chip's output for a given input cannot be derived from anything on this machine. Agreement with the corpus therefore means agreement with snes9x, and where snes9x is wrong this decoder is wrong with it.",
+      "wouldSettleIt": "A recording taken off a real S-DD1: feed a known stream and capture what comes out. A cartridge with the chip and a way to read its output bus would do it."
+    },
+    {
+      "id": "no-document-exists-for-this-part",
+      "parts": ["s-dd1"],
+      "severity": "high",
+      "status": "open",
+      "documentSays": "Nothing. Neither Ricoh nor Nintendo published a datasheet for the S-DD1.",
+      "referenceDoes": "n/a",
+      "packageFollows": "neither",
+      "reasoning": "The top rung of this family's authority ladder is empty for this part, which is worth stating rather than leaving a reader to infer it from the absence of quotes. Every constant in hardware.json carries verified false for this reason and not because anybody doubts the value.",
+      "wouldSettleIt": "A Ricoh or Nintendo datasheet, or a die photograph."
+    },
+    {
+      "id": "nothing-here-is-a-timing-claim",
+      "parts": ["s-dd1"],
+      "severity": "medium",
+      "status": "notModelled",
+      "documentSays": "Nothing.",
+      "referenceDoes": "Decodes a whole stream in one call, as this package does.",
+      "packageFollows": "reference",
+      "reasoning": "How long the chip takes, and whether a console reading the decompressed data can outrun it, is not modelled. On real hardware that question decides whether a game has to wait, and nothing on this machine can answer it.",
+      "wouldSettleIt": "A measurement on a real cartridge, or a datasheet."
+    }
+  ]
+}

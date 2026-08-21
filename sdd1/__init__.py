@@ -11,17 +11,18 @@ stream decides how many planes there are and which bits of that history select
 the context.
 """
 
+from typing import Any
+
 from .decoder import (
     BITPLANE_COUNTS,
     HEADER_BYTES,
-    MAX_LENGTH,
     Stream,
     TruncatedStream,
     bitplane_count,
     decompress,
 )
 from .models import MODELS, UnknownModelError, describe
-from .probability import CONTEXT_COUNT, CONTEXT_MASKS, EVOLUTION, PLANE_COUNT, RUN_TABLE
+from .probability import CONTEXT_COUNT, CONTEXT_MASKS, EVOLUTION, MAX_LENGTH, PLANE_COUNT, RUN_TABLE
 from .version import VERSION
 
 __version__ = VERSION
@@ -29,7 +30,7 @@ __version__ = VERSION
 DEFAULT_MODEL = "sdd1"
 
 
-def Sdd1(model=DEFAULT_MODEL, **options):  # noqa: N802
+def Sdd1(model: str = DEFAULT_MODEL, **options: Any) -> Any:  # noqa: N802
     """A chip of the named model, sharing one interface across the family."""
     return describe(model).build(**options)
 

@@ -40,12 +40,12 @@ class TruncatedStream(Exception):
 Stream = namedtuple("Stream", "data end bitplanes context")
 
 
-def bitplane_count(bitplane_type):
+def bitplane_count(bitplane_type: int) -> int:
     """How many bit planes a stream of that type interleaves."""
     return BITPLANE_COUNTS[bitplane_type]
 
 
-def decompress(rom, offset, length):
+def decompress(rom: bytes | bytearray, offset: int, length: int) -> "Stream":
     """Expand one stream, returning its bytes and where it stopped reading.
 
     A length of zero means one whole block, which is what the hardware makes of
@@ -70,7 +70,7 @@ def decompress(rom, offset, length):
     prev = [0] * PLANE_COUNT
     out = bytearray()
 
-    def get_bit(plane):
+    def get_bit(plane: int) -> int:
         nonlocal stream, valid, pos
         history = prev[plane]
         context = ((plane & 1) << 4) | ((history & high_mask) >> 5) | (history & low_mask)

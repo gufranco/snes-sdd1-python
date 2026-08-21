@@ -1,0 +1,55 @@
+{
+  "note": "What this decoder asserts about the S-DD1, and where each assertion comes from. No manufacturer document for this part is known to exist, so every entry names the evidence it does have and says plainly that it is not a document.",
+  "authority": {
+    "order": [
+      "a manufacturer document, of which there is none",
+      "a retail cartridge, for anything a stream in one can settle",
+      "the reference decoder, for the output values, which nothing else on this machine can produce"
+    ],
+    "why": "The S-DD1 was a Ricoh part made for Nintendo and neither published a datasheet. Everything anybody knows about the algorithm was reconstructed from the silicon or from its output, so the top rung of the ladder is empty here and the entries below say what stands in for it.",
+    "whatIsMissing": "A Ricoh or Nintendo datasheet for the S-DD1. Searched on 2026-08-21; nothing was found, and nothing suggests one was ever published."
+  },
+  "facts": {
+    "bitplaneCounts": {
+      "value": [2, 4, 4, 8],
+      "verified": false,
+      "why": "Two bits of the header select how many bit planes a stream interleaves, and these are the four counts they select. The values are a property of the chip's interface rather than of any encoder, because an encoder takes whichever of the sixteen header shapes fits its data.",
+      "evidence": "The reference decoder, corroborated by every stream decoding to its declared length.",
+      "howToSettleIt": "A datasheet, or a die photograph of the header decode."
+    },
+    "headerBytes": {
+      "value": 2,
+      "verified": false,
+      "why": "A stream begins with two bytes: the shape byte and one more.",
+      "evidence": "The reference decoder, corroborated by the streams in tagged builds.",
+      "howToSettleIt": "A datasheet."
+    },
+    "contextCount": {
+      "value": 32,
+      "verified": false,
+      "why": "How many probability contexts the arithmetic coder keeps.",
+      "evidence": "The reference decoder.",
+      "howToSettleIt": "A datasheet, or a die photograph of the context memory."
+    },
+    "maximumLength": {
+      "value": 65536,
+      "verified": false,
+      "why": "A stream decodes at most one sixty four kilobyte block. This is the one figure with a second witness that is not a decoder: it is the size of a bank, and the chip decompresses into one.",
+      "evidence": "The reference decoder, and the console's own bank size.",
+      "howToSettleIt": "A datasheet."
+    },
+    "headerShapes": {
+      "value": 16,
+      "verified": false,
+      "why": "Four bit plane selections times four context selections.",
+      "evidence": "Follows from the two two-bit fields above.",
+      "howToSettleIt": "A datasheet."
+    }
+  },
+  "notStated": [
+    "Everything. No manufacturer document for this part is known to exist, so nothing here is verified in the sense the sibling repositories use the word.",
+    "How the chip behaves on a malformed stream. Every implementation guesses, and none of the guesses can be checked.",
+    "Anything about timing. How long the chip takes to decode a block, and whether the console can outrun it, is unmodelled and unmeasured.",
+    "What the second header byte means beyond selecting a shape."
+  ]
+}

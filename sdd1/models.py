@@ -9,6 +9,9 @@ A model with no evidence behind it does not belong in this table, because then
 its fidelity would be a claim rather than a measurement.
 """
 
+from collections.abc import Callable, Sequence
+from typing import Any, override
+
 
 class UnknownModelError(Exception):
     pass
@@ -17,7 +20,15 @@ class UnknownModelError(Exception):
 class Model:
     """One part: what it is, what it interleaves, and how to build it."""
 
-    def __init__(self, name, summary, planes, contexts, core, aliases=()):
+    def __init__(
+        self,
+        name: str,
+        summary: str,
+        planes: int,
+        contexts: int,
+        core: Callable[..., Any],
+        aliases: Sequence[str] = (),
+    ) -> None:
         self.name = name
         self.summary = summary
         self.planes = planes
@@ -25,26 +36,27 @@ class Model:
         self.core = core
         self.aliases = tuple(aliases)
 
-    def build(self, **options):
+    def build(self, **options: Any) -> Any:
         return self.core(self, **options)
 
-    def __repr__(self):
+    @override
+    def __repr__(self) -> str:
         return f"<Model {self.name}, up to {self.planes} bit planes>"
 
 
 class Decompressor:
     """The chip as a thing you hold, rather than a function you call."""
 
-    def __init__(self, model):
+    def __init__(self, model: "Model") -> None:
         self.model = model.name
 
-    def decompress(self, rom, offset, length):
+    def decompress(self, rom: bytes | bytearray, offset: int, length: int) -> Any:
         from .decoder import decompress
 
         return decompress(rom, offset, length)
 
 
-def _build_sdd1(model, **options):
+def _build_sdd1(model: "Model", **options: Any) -> Any:
     return Decompressor(model, **options)
 
 
@@ -72,11 +84,11 @@ for _model in _CATALOGUE:
         _BY_ALIAS[_alias] = _model
 
 
-def _normalise(name):
+def _normalise(name: str) -> str:
     return str(name).strip().lower().replace("-", "").replace("_", "")
 
 
-def describe(name):
+def describe(name: str) -> "Model":
     """The model of that name, however it happens to be written."""
     found = _BY_ALIAS.get(_normalise(name))
     if found is None:

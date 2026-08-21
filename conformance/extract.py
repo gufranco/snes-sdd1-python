@@ -32,7 +32,9 @@ pass a table of offsets and lengths worked out however you like.
 import collections
 import json
 import sys
+from collections.abc import Sequence
 from pathlib import Path
+from typing import Any
 
 TAG = b"SDD1"
 
@@ -42,7 +44,7 @@ TAG_BYTES = 8
 HEADER_BYTES = 2
 
 
-def tagged_streams(rom):
+def tagged_streams(rom: bytes | bytearray) -> list[int]:
     """Where each tagged stream starts, for builds that carry the tag."""
     found = []
     at = rom.find(TAG)
@@ -54,7 +56,7 @@ def tagged_streams(rom):
     return sorted(found)
 
 
-def table(path):
+def table(path: Path | str) -> list[tuple[int, int]]:
     """A list of offset and length pairs, however the file spells it."""
     with Path(path).open() as handle:
         found = json.load(handle)
@@ -63,11 +65,11 @@ def table(path):
     return [(int(offset), int(length)) for offset, length in found]
 
 
-def shapes(rom, streams):
+def shapes(rom: bytes | bytearray, streams: Sequence[tuple[int, int]]) -> dict[str, Any]:
     """A census of the streams, carrying none of what they hold."""
-    headers = collections.Counter()
-    lengths = collections.Counter()
-    combinations = collections.Counter()
+    headers: collections.Counter[int] = collections.Counter()
+    lengths: collections.Counter[int] = collections.Counter()
+    combinations: collections.Counter[tuple[int, int]] = collections.Counter()
     counted = 0
 
     for offset, length in streams:
@@ -95,7 +97,7 @@ def shapes(rom, streams):
     }
 
 
-def main(argv):
+def main(argv: Sequence[str]) -> int:
     if len(argv) < 2:
         print("usage: extract.py <rom> <shapes out> [stream table]")
         return 2

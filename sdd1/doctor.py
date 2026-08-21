@@ -24,7 +24,9 @@ import hashlib
 import json
 import platform
 import sys
+from collections.abc import Callable, Sequence
 from pathlib import Path
+from typing import Any, override
 
 from . import decoder, models
 from .version import VERSION
@@ -42,29 +44,30 @@ OLDEST_PYTHON = (3, 12)
 class Finding:
     """One thing that was looked at, and what was there."""
 
-    def __init__(self, name, ok, detail, advice=None):
+    def __init__(self, name: str, ok: bool, detail: str, advice: str | None = None) -> None:
         self.name = name
         self.ok = ok
         self.detail = detail
         self.advice = advice
 
     @property
-    def line(self):
+    def line(self) -> str:
         """The one-line form, which is what a reader scans."""
         return f"  {'ok  ' if self.ok else '   !'}  {self.name}: {self.detail}"
 
     @property
-    def report(self):
+    def report(self) -> str:
         """The same, with what to do about it when there is something to do."""
         if self.ok or not self.advice:
             return self.line
         return f"{self.line}\n         {self.advice}"
 
-    def __repr__(self):
+    @override
+    def __repr__(self) -> str:
         return f"<Finding {self.name} {'ok' if self.ok else 'not ok'}>"
 
 
-def _python():
+def _python() -> "Finding":
     return Finding(
         "python",
         sys.version_info[:2] >= OLDEST_PYTHON,
@@ -73,7 +76,7 @@ def _python():
     )
 
 
-def _package():
+def _package() -> "Finding":
     """The project, named after the repository rather than the import.
 
     The part this covers is also called sdd1, and two lines with one name in a
@@ -82,11 +85,11 @@ def _package():
     return Finding("snes-sdd1-python", True, f"version {VERSION}")
 
 
-def _default_build(name):
+def _default_build(name: str) -> Any:
     return models.describe(name).build()
 
 
-def _part(name, build):
+def _part(name: str, build: Callable[[str], Any]) -> "Finding":
     """Whether that part builds, saying exactly what stopped it if not."""
     try:
         chip = build(name)
@@ -107,7 +110,7 @@ def _part(name, build):
     )
 
 
-def _decoder(decompress):
+def _decoder(decompress: Callable[..., Any]) -> "Finding":
     """That the decoder refuses what it must refuse, rather than inventing bytes.
 
     A decompressor that returns something for every input is the failure mode
@@ -136,7 +139,7 @@ def _decoder(decompress):
     )
 
 
-def _corpus(label, where):
+def _corpus(label: str, where: Path | str) -> "Finding":
     """One corpus that is here, which is what settles a disagreement about bytes.
 
     Two people running the same part against different corpora will disagree
@@ -167,7 +170,11 @@ def _corpus(label, where):
     return Finding(label, bool(cases), f"{len(cases)} cases from {source}, sha256 {digest}")
 
 
-def examine(build=_default_build, corpora=CORPORA, decompress=decoder.decompress):
+def examine(
+    build: Callable[[str], Any] = _default_build,
+    corpora: Sequence[tuple[str, Path]] = CORPORA,
+    decompress: Callable[..., Any] = decoder.decompress,
+) -> list["Finding"]:
     """Everything worth looking at on this machine, in the order a reader wants it."""
     found = [_python(), _package()]
     found.extend(_part(name, build) for name in sorted(models.MODELS))
@@ -176,7 +183,7 @@ def examine(build=_default_build, corpora=CORPORA, decompress=decoder.decompress
     return found
 
 
-def report(found):
+def report(found: list["Finding"]) -> list[str]:
     """The lines a person pastes into an issue."""
     unwell = [one for one in found if not one.ok]
     lines = [f"sdd1 {VERSION} on {platform.python_version()}, {platform.system()}", ""]
@@ -189,7 +196,11 @@ def report(found):
     return lines
 
 
-def main(argv=(), examine=examine, say=print):
+def main(
+    argv: Sequence[str] = (),
+    examine: Callable[..., list["Finding"]] = examine,
+    say: Callable[[str], None] = print,
+) -> int:
     found = examine()
     for line in report(found):
         say(line)

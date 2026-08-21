@@ -31,7 +31,9 @@ import hashlib
 import json
 import random
 import sys
+from collections.abc import Mapping, Sequence
 from pathlib import Path
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -44,13 +46,14 @@ DEFAULT_CORPUS = Path(__file__).resolve().parent / "corpus.json"
 WHOLE_BLOCK = 0x10000
 
 
-def load(path=None):
+def load(path: Path | str | None = None) -> dict[str, Any]:
     """The corpus, from where it was asked for or from the one that ships."""
     with Path(path or DEFAULT_CORPUS).open() as handle:
-        return json.load(handle)
+        loaded: dict[str, Any] = json.load(handle)
+    return loaded
 
 
-def body(found):
+def body(found: Mapping[str, Any]) -> bytes:
     """The image every case decodes from, rebuilt exactly as it was generated.
 
     One image, not one per case. A stream reads as far past its own offset as its
@@ -65,7 +68,7 @@ def body(found):
     return bytes(view)
 
 
-def check(blob, case):
+def check(blob: bytes, case: Mapping[str, Any]) -> str | None:
     """What went wrong with one case, or nothing when it agreed."""
     try:
         produced = decompress(blob, case["offset"], case["length"] % WHOLE_BLOCK).data
@@ -81,11 +84,11 @@ def check(blob, case):
     )
 
 
-def run(found):
+def run(found: Mapping[str, Any]) -> tuple[int, int, list[str]]:
     """How many cases agreed, how many did not, and a few that did not."""
     blob = body(found)
     passed = failed = 0
-    examples = []
+    examples: list[str] = []
     for case in found["cases"]:
         wrong = check(blob, case)
         if wrong is None:
@@ -97,7 +100,7 @@ def run(found):
     return passed, failed, examples
 
 
-def main(argv):
+def main(argv: Sequence[str]) -> int:
     path = Path(argv[0]) if argv else DEFAULT_CORPUS
     if not path.is_file():
         print(f"  no corpus at {path}")

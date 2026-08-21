@@ -1,0 +1,15 @@
+# Every path, one owner. The repository has a single maintainer, so this file
+# exists to make review required rather than to route it: without an owner,
+# GitHub's branch protection has nobody to ask.
+*       @gufranco
+
+# The two files that decide what everything else is checked against. A change to
+# either one changes what "correct" means for the whole package.
+/conformance/hardware.json      @gufranco
+/conformance/divergences.json   @gufranco
+
+# Both corpora, and the tool that measures one of them. What produced them is
+# recorded rather than assumed, and one of those records is currently a finding.
+/conformance/corpus.json        @gufranco
+/conformance/vectors.json       @gufranco
+/conformance/extract.py         @gufranco
