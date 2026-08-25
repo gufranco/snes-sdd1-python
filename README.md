@@ -24,7 +24,7 @@
   <a href="https://github.com/gufranco/snes-sdd1-python/issues">Issues</a>
 </p>
 
-**4,000** synthetic vectors + **2,652** cartridge-shaped cases, **0** failures · **all 16** plane and context combinations · shapes from **11,306** real streams · lengths to **65,536** · **378** tests · **100%** statement and branch coverage · no dependencies
+**4,000** synthetic vectors + **2,652** cartridge-shaped cases, **0** failures · **all 16** plane and context combinations · shapes from **11,306** real streams · lengths to **65,536** · **379** tests · **100%** statement and branch coverage · no dependencies
 
 ```python
 from sdd1 import decompress
