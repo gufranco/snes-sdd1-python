@@ -65,8 +65,7 @@ ignore = [
 # module and its tests are read together.
 # A test file sits beside the module it covers and is named after it, so its
 # module name carries a dot that N999 rejects, and it has to extend the import
-# path before importing the package, which E402 reads as a misplaced import.
-"*.test.py" = ["PLR2004", "N999", "E402"]
+"*.test.py" = ["PLR2004", "N999"]
 # These are command line tools. Printing is their output, not a stray debug
 # statement left behind, and routing it through a logger would put a level and
 # a timestamp in front of a report meant to be read by a person.

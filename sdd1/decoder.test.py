@@ -6,8 +6,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from sdd1 import decoder, errors
-from sdd1.probability import MAX_LENGTH
+from sdd1 import decoder, errors  # noqa: E402
+from sdd1.probability import MAX_LENGTH  # noqa: E402
 
 VECTORS = json.loads((ROOT / "conformance" / "vectors.json").read_text())
 BLOB = bytes.fromhex(VECTORS["input"])

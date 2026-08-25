@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from conformance import speed
+from conformance import speed  # noqa: E402
 
 
 class TimedTest(unittest.TestCase):
