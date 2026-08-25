@@ -28,10 +28,13 @@ from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, override
 
-from . import decoder, models
-from .version import VERSION
-
 ROOT = Path(__file__).resolve().parent.parent
+
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from sdd1 import decoder, errors, models  # noqa: E402
+from sdd1.version import VERSION  # noqa: E402
 
 CORPORA = (
     ("vectors", ROOT / "conformance" / "vectors.json"),
@@ -120,7 +123,7 @@ def _decoder(decompress: Callable[..., Any]) -> "Finding":
     """
     try:
         found = decompress(b"", 0, 8)
-    except decoder.TruncatedStream:
+    except errors.TruncatedStream:
         return Finding("decoder", True, "refuses a stream that is not there")
     except Exception as trouble:
         return Finding(

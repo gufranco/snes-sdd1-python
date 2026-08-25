@@ -1,8 +1,8 @@
 """A model of the S-DD1, the decompressor in two SNES cartridges.
 
-    from sdd1 import Sdd1
+    from sdd1 import Chip
 
-    chip = Sdd1(model="sdd1")
+    chip = Chip(model="sdd1")
     chip.decompress(rom, offset, length).data
 
 Its arithmetic coder carries a run length per context rather than a probability,
@@ -13,15 +13,9 @@ the context.
 
 from typing import Any
 
-from .decoder import (
-    BITPLANE_COUNTS,
-    HEADER_BYTES,
-    Stream,
-    TruncatedStream,
-    bitplane_count,
-    decompress,
-)
-from .models import MODELS, UnknownModelError, describe
+from .decoder import BITPLANE_COUNTS, HEADER_BYTES, Stream, bitplane_count, decompress
+from .errors import TruncatedStream, UnknownModelError
+from .models import MODELS, Model, describe
 from .probability import CONTEXT_COUNT, CONTEXT_MASKS, EVOLUTION, MAX_LENGTH, PLANE_COUNT, RUN_TABLE
 from .version import VERSION
 
@@ -30,7 +24,7 @@ __version__ = VERSION
 DEFAULT_MODEL = "sdd1"
 
 
-def Sdd1(model: str = DEFAULT_MODEL, **options: Any) -> Any:  # noqa: N802
+def Chip(model: str = DEFAULT_MODEL, **options: Any) -> Any:  # noqa: N802
     """A chip of the named model, sharing one interface across the family."""
     return describe(model).build(**options)
 
@@ -39,13 +33,15 @@ __all__ = [
     "BITPLANE_COUNTS",
     "CONTEXT_COUNT",
     "CONTEXT_MASKS",
+    "DEFAULT_MODEL",
     "EVOLUTION",
     "HEADER_BYTES",
     "MAX_LENGTH",
     "MODELS",
     "PLANE_COUNT",
     "RUN_TABLE",
-    "Sdd1",
+    "Chip",
+    "Model",
     "Stream",
     "TruncatedStream",
     "UnknownModelError",

@@ -7,7 +7,11 @@
       "the reference decoder, for the output values, which nothing else on this machine can produce"
     ],
     "why": "The S-DD1 was a Ricoh part made for Nintendo and neither published a datasheet. Everything anybody knows about the algorithm was reconstructed from the silicon or from its output, so the top rung of the ladder is empty here and the entries below say what stands in for it.",
-    "whatIsMissing": "A Ricoh or Nintendo datasheet for the S-DD1. Searched on 2026-08-21; nothing was found, and nothing suggests one was ever published."
+    "whatIsMissing": "A Ricoh or Nintendo datasheet for the S-DD1. Searched on 2026-08-21; nothing was found, and nothing suggests one was ever published.",
+    "comparedAgainst": {
+      "runner": "conformance/vectors.py",
+      "what": "The reference decoder, built from a pinned commit and asked to expand 4,000 streams of noise and 2,652 cartridge-shaped ones. Noise rather than artwork, because artwork walks the probability model along the path a picture happens to take and leaves most of the state table unvisited."
+    }
   },
   "facts": {
     "bitplaneCounts": {
@@ -44,6 +48,12 @@
       "why": "Four bit plane selections times four context selections.",
       "evidence": "Follows from the two two-bit fields above.",
       "howToSettleIt": "A datasheet."
+    },
+    "resetLine": {
+      "value": "nothing, because this part carries no state between streams",
+      "verified": false,
+      "evidence": "Not a claim about a pin. Every stream is decoded from its own header and the probability model is built per stream and discarded with it, so there is no state a reset could clear. What the real part's reset pin does to its internal registers is not known and is not modelled.",
+      "howToSettleIt": "A capture of the cartridge bus across a console reset mid-stream, which would show whether a partly decoded block survives."
     }
   },
   "notStated": [
@@ -51,5 +61,6 @@
     "How the chip behaves on a malformed stream. Every implementation guesses, and none of the guesses can be checked.",
     "Anything about timing. How long the chip takes to decode a block, and whether the console can outrun it, is unmodelled and unmeasured.",
     "What the second header byte means beyond selecting a shape."
-  ]
+  ],
+  "documents": {}
 }

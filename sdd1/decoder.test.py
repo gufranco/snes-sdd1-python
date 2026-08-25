@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from sdd1 import decoder
+from sdd1 import decoder, errors
 from sdd1.probability import MAX_LENGTH
 
 VECTORS = json.loads((ROOT / "conformance" / "vectors.json").read_text())
@@ -23,19 +23,19 @@ class BitplaneTest(unittest.TestCase):
 
 class HeaderTest(unittest.TestCase):
     def test_a_stream_shorter_than_its_header_is_refused(self) -> None:
-        with self.assertRaises(decoder.TruncatedStream):
+        with self.assertRaises(errors.TruncatedStream):
             decoder.decompress(b"\x00", 0, 16)
 
     def test_an_offset_past_the_end_is_refused(self) -> None:
-        with self.assertRaises(decoder.TruncatedStream):
+        with self.assertRaises(errors.TruncatedStream):
             decoder.decompress(b"\x00\x00", 5, 16)
 
     def test_a_negative_offset_is_refused(self) -> None:
-        with self.assertRaises(decoder.TruncatedStream):
+        with self.assertRaises(errors.TruncatedStream):
             decoder.decompress(b"\x00\x00", -1, 16)
 
     def test_a_stream_that_runs_out_mid_decode_is_refused(self) -> None:
-        with self.assertRaises(decoder.TruncatedStream):
+        with self.assertRaises(errors.TruncatedStream):
             decoder.decompress(bytes([0xFF, 0xFF]), 0, 0x1000)
 
     def test_the_header_decides_how_many_planes_are_reported(self) -> None:

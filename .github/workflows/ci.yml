@@ -115,3 +115,16 @@ jobs:
 
       - name: Coverage must be total
         run: python -m coverage report
+
+  speed:
+    name: Throughput
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: The decoder must still run faster than the floor
+        run: python -m conformance.speed

@@ -18,6 +18,8 @@ a table can be checked on its own and a walk cannot.
 
 from collections import namedtuple
 
+from sdd1.errors import TruncatedStream
+
 from .probability import (
     CONTEXT_COUNT,
     CONTEXT_MASKS,
@@ -31,10 +33,6 @@ from .probability import (
 BITPLANE_COUNTS = (2, 4, 4, 8)
 
 HEADER_BYTES = 2
-
-
-class TruncatedStream(Exception):
-    pass
 
 
 Stream = namedtuple("Stream", "data end bitplanes context")

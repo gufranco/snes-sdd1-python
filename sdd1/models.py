@@ -12,13 +12,13 @@ its fidelity would be a claim rather than a measurement.
 from collections.abc import Callable, Sequence
 from typing import Any, override
 
-
-class UnknownModelError(Exception):
-    pass
+from sdd1.errors import UnknownModelError
 
 
 class Model:
     """One part: what it is, what it interleaves, and how to build it."""
+
+    __slots__ = ("aliases", "contexts", "core", "name", "planes", "summary")
 
     def __init__(
         self,
@@ -44,8 +44,10 @@ class Model:
         return f"<Model {self.name}, up to {self.planes} bit planes>"
 
 
-class Decompressor:
+class Chip:
     """The chip as a thing you hold, rather than a function you call."""
+
+    __slots__ = ("model",)
 
     def __init__(self, model: "Model") -> None:
         self.model = model.name
@@ -55,9 +57,23 @@ class Decompressor:
 
         return decompress(rom, offset, length)
 
+    def reset(self) -> "Chip":
+        """The console's reset line, which this part carries no state across.
+
+        Every stream is decoded from its own header, and nothing survives from
+        one call to the next: the probability model is built per stream and
+        discarded with it. So this changes nothing, and it exists because a
+        caller driving a board resets every part on it and should not have to
+        special-case which ones hold state.
+
+        The part is handed back so a caller can build and reset in one
+        expression, as the rest of the family does.
+        """
+        return self
+
 
 def _build_sdd1(model: "Model", **options: Any) -> Any:
-    return Decompressor(model, **options)
+    return Chip(model, **options)
 
 
 _CATALOGUE = (
