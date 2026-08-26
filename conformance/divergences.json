@@ -10,11 +10,11 @@
       "id": "the-shape-census-is-not-from-retail-cartridges",
       "parts": ["s-dd1"],
       "severity": "high",
-      "status": "open",
+      "status": "narrowed",
       "documentSays": "Nothing.",
       "referenceDoes": "conformance/corpus.json describes its census as measured from real S-DD1 cartridges and records no provenance: no file names, no digests, no dates.",
       "packageFollows": "reference",
-      "reasoning": "conformance/extract.py finds a stream by searching for a four byte SDD1 tag. Measured on 2026-08-21 across a library of 7,578 images: the four retail cartridges that carry this chip, Star Ocean (Japan), Street Fighter Alpha 2 (USA) and (Europe), and Street Fighter Zero 2 (Japan), contain that tag zero times. The only builds that carry it are two modified Virtual Console re-releases, and they yield 5,630 streams spread evenly across all sixteen shapes, where the shipped census records 11,306 with 2,815 of them in a single shape. Neither the count nor the distribution can be reproduced from anything in that library, and a run of 2,815 streams all sharing one shape is what coincidental byte matches look like rather than what a game's data looks like. So the census cannot have been measured the way its own comment says, and part of it is probably not measuring streams at all.",
+      "reasoning": "conformance/extract.py finds a stream by searching for a four byte SDD1 tag. Measured on 2026-08-21 across a library of 7,578 images: the four retail cartridges that carry this chip, Star Ocean (Japan), Street Fighter Alpha 2 (USA) and (Europe), and Street Fighter Zero 2 (Japan), contain that tag zero times. The only builds that carry it are two modified Virtual Console re-releases, and they yield 5,630 streams spread evenly across all sixteen shapes, where the shipped census records 11,306 with 2,815 of them in a single shape. Neither the count nor the distribution can be reproduced from anything in that library, and a run of 2,815 streams all sharing one shape is what coincidental byte matches look like rather than what a game's data looks like. So the census cannot have been measured the way its own comment says, and part of it is probably not measuring streams at all. Since 2026-08-25 a census with full provenance exists beside it: conformance/cartridges.json records 55,023 streams found in Star Ocean by decoding rather than by searching for a tag, with the file names, four digests each and the date, and 238 distinct header bytes across all sixteen kinds. It does not replace conformance/corpus.json, which still carries the shipped vectors, and it covers one of the four cartridges rather than all of them.",
       "wouldSettleIt": "A stream table for a retail cartridge: the offset and length of each stream, found by following the game's own code rather than by searching for a tag. extract.py already accepts one. Failing that, regenerating the census from a named source with its digest recorded, and saying outright that the source is not a retail dump.",
       "doesItAffectTheDecoder": "Not directly. The census describes which shapes real data uses; it does not decide what the decoder does with one. Every shape is exercised by the random vectors regardless. What it does affect is the claim that this decoder has been run against the shapes hardware actually drives, and that claim is currently unsupported."
     },
@@ -22,12 +22,12 @@
       "id": "every-expected-output-comes-from-an-emulator",
       "parts": ["s-dd1"],
       "severity": "high",
-      "status": "open",
+      "status": "narrowed",
       "documentSays": "Nothing.",
-      "referenceDoes": "Produces the bytes both conformance files compare against.",
+      "referenceDoes": "Produces the bytes the corpus and the vector file compare against. It is no longer the only thing this decoder has been measured against.",
       "packageFollows": "reference",
-      "reasoning": "There is no other source. The algorithm has no published specification, and the chip's output for a given input cannot be derived from anything on this machine. Agreement with the corpus therefore means agreement with snes9x, and where snes9x is wrong this decoder is wrong with it.",
-      "wouldSettleIt": "A recording taken off a real S-DD1: feed a known stream and capture what comes out. A cartridge with the chip and a way to read its output bus would do it."
+      "reasoning": "It was true that there was no other source, and it is no longer. Since 2026-08-25 this decoder is also measured against a retail cartridge and an expanded image somebody else produced from it, with no emulator anywhere in the chain: 55,023 streams in Star Ocean decode to bytes that appear in the expanded image and appear nowhere in the cartridge, so they were decompressed rather than copied. All sixteen header kinds are covered. The oracle was calibrated first, because graphics repeat and a run can match by luck: the same sweep against a different game's image confirms 1,306, a separation of 42 to 1, and both figures are published beside each other in conformance/cartridges.json. What still rests on the reference is the corpus in conformance/corpus.json and the vectors, which cover shapes and lengths the cartridge does not use.",
+      "wouldSettleIt": "A recording taken off a real S-DD1: feed a known stream and capture what comes out. Short of that, an expansion of a second cartridge would widen what the emulator-free measurement covers; only Star Ocean has one."
     },
     {
       "id": "no-document-exists-for-this-part",

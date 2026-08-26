@@ -116,6 +116,26 @@ jobs:
       - name: Coverage must be total
         run: python -m coverage report
 
+      # The census is checked into the tree, so this confirms it still says what
+      # the record cites it for. Re-deriving it needs a retail cartridge and the
+      # expanded image somebody made from it, neither of which is carried here;
+      # conformance/against_cartridges.py does that from copies you own.
+      - name: The emulator-free census still separates from its control
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          sys.path.insert(0, 'conformance')
+          from conformance import against_cartridges as against
+          found = against.recorded()
+          assert found, 'the census is missing from the tree'
+          real, control = found['confirmed'], found['control']['confirmed']
+          assert len(found['kinds']) == 16, sorted(found['kinds'])
+          assert real > control * 20, (real, control)
+          print(f'  {real} confirmed against {control} in the control, {real/control:.1f} to 1')
+          "
+        shell: bash
+
   speed:
     name: Throughput
     runs-on: ubuntu-latest

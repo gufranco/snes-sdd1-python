@@ -41,12 +41,39 @@ of a real cartridge's bus while a compressed block is read.
 **What this project follows.** A reference decoder, built from a pinned commit
 and asked to expand 6,652 streams.
 
-**Why.** It is the only source that produces output at all. What it settles is
-that two implementations agree, which is not the same as either being right about
-silicon.
+**It is no longer the only thing standing behind the output.** Somebody expanded
+one of the four cartridges years ago, decompressing every stream and rewriting
+the game to read the results directly. That expansion was not made with this
+decoder and not with the reference, and the expanded image is a check with no
+emulator anywhere in it.
+
+Run on 2026-08-25 across the whole of *Star Ocean*: at every offset in the
+cartridge, decode sixty four bytes and ask whether they appear in the expanded
+image and appear nowhere in the cartridge. Bytes meeting both conditions were not
+copied across by the expansion, so something decompressed them, and this decoder
+produced the same ones.
+
+| | Confirmed | Kinds reached |
+|:--|--:|--:|
+| Star Ocean against its own expansion | 55,023 | 16 of 16 |
+| Star Ocean against a different game's image | 1,306 | 16 of 16 |
+
+The second row is the point of the first. Graphics repeat, so a sixty four byte
+run can match by luck, and a figure published without its noise floor is a figure
+nobody can weigh. The separation is 42 to 1, and 238 distinct header bytes are
+covered. Both rows and the digests of all three files are in
+[`conformance/cartridges.json`](conformance/cartridges.json), and
+[`conformance/against_cartridges.py`](conformance/against_cartridges.py)
+reproduces them from copies you own.
+
+**What it does not cover.** One of the four cartridges, because only that one has
+an expansion. The corpus in [`conformance/corpus.json`](conformance/corpus.json)
+and the vectors still rest on the reference, and they reach shapes and lengths
+this cartridge does not use.
 
 **What would settle or reopen it.** A capture of a real S-DD1 expanding a known
-block.
+block. Short of that, an expansion of a second cartridge would widen what the
+emulator-free measurement reaches.
 
 ### What the chip does with a malformed stream.
 
