@@ -1,30 +1,10 @@
-<div align="center">
+# S-DD1
 
-<h1>S-DD1</h1>
-
-<strong>A model of the SNES S-DD1, checked against the reference decoder on noise rather than on artwork.</strong>
-
-<br>
-<br>
+A model of the SNES S-DD1, checked against the reference decoder on noise rather than on artwork.
 
 [![CI](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
-[![Vectors](https://img.shields.io/badge/golden%20vectors-4%2C000%20%2F%204%2C000-brightgreen)](#how-this-is-proved)
-[![Coverage](https://img.shields.io/badge/coverage-100%25%20statement%20%2B%20branch-brightgreen)](#tests)
-[![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue)](pyproject.toml)
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-</div>
-
-<p align="center">
-  <a href="#quick-start">Quick start</a> &nbsp;|&nbsp;
-  <a href="#how-this-is-proved">How this is proved</a> &nbsp;|&nbsp;
-  <a href="#the-cartridge-shaped-corpus-and-why-it-can-ship">Why the corpus is legal</a> &nbsp;|&nbsp;
-  <a href="#how-the-decoder-works">How it works</a> &nbsp;|&nbsp;
-  <a href="#regenerating-the-vectors">Regenerating vectors</a> &nbsp;|&nbsp;
-  <a href="https://github.com/gufranco/snes-sdd1-python/issues">Issues</a>
-</p>
-
-**4,000** synthetic vectors + **2,652** cartridge-shaped cases, **0** failures · **all 16** plane and context combinations · shapes from **11,306** real streams · lengths to **65,536** · **403** tests · **100%** statement and branch coverage · no dependencies
+**4,000** synthetic vectors + **2,652** cartridge-shaped cases, **0** failures, **all 16** plane and context combinations, shapes from **11,306** real streams, lengths to **65,536**, **403** tests, **100%** statement and branch coverage, no dependencies
 
 ```python
 from sdd1 import decompress
@@ -38,7 +18,6 @@ len(stream.data)
 # 4
 ```
 
----
 
 ## Install
 ```bash
