@@ -4,7 +4,7 @@ A model of the SNES S-DD1, checked against the reference decoder on noise rather
 
 [![CI](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
 
-**4,000** synthetic vectors + **2,652** cartridge-shaped cases, **0** failures, **all 16** plane and context combinations, shapes from **11,306** real streams, lengths to **65,536**, **403** tests, **100%** statement and branch coverage, no dependencies
+**4,000** synthetic vectors + **2,652** cartridge-shaped cases, **0** failures, **all 16** plane and context combinations, shapes from **11,306** real streams, lengths to **65,536**, **407** tests, **100%** statement and branch coverage, no dependencies
 
 ```python
 from sdd1 import decompress
@@ -34,7 +34,7 @@ Everything a caller touches. Nothing else is public.
 | `Chip(model)` | A part of that model |
 | `decompress(data, offset, length)` | The same, without naming a part first |
 | `Stream` | What came out: the bytes, where the input ended, and how many planes it interleaves |
-| `describe(model)`, `MODELS` | The catalogue, without building anything |
+| `MODELS` | Every model this package covers, by the name it goes by |
 | `bitplane_count(mode)` | How many planes a header's mode names |
 | `EVOLUTION`, `RUN_TABLE`, `CONTEXT_MASKS`, `CONTEXT_COUNT` | The tables the decoder works from |
 | `BITPLANE_COUNTS`, `PLANE_COUNT`, `HEADER_BYTES`, `MAX_LENGTH` | The shapes a stream can have |
@@ -44,12 +44,19 @@ Everything a caller touches. Nothing else is public.
 takes first, and the name is the kind rather than the chip.
 
 ```python
-from sdd1 import Chip, describe
+from sdd1 import MODELS, Chip
 
-describe("s-dd1").planes
+chip = Chip("s-dd1")
+
+MODELS[chip.model].planes
 
 # 8
 ```
+
+There is no default. Naming none raises and lists every model there is, which on
+a package covering one part is the point rather than the exception: a caller who
+learns to leave it out here writes the same call against a member covering
+sixteen.
 
 A name no part answers to is refused rather than quietly building the only one
 there is:

@@ -89,7 +89,7 @@ def _package() -> "Finding":
 
 
 def _default_build(name: str) -> Any:
-    return models.describe(name).build()
+    return models.lookup(name).build()
 
 
 def _part(name: str, build: Callable[[str], Any]) -> "Finding":
@@ -104,7 +104,7 @@ def _part(name: str, build: Callable[[str], Any]) -> "Finding":
             "this is the part failing to build rather than anything to do with a"
             " corpus; the line above is what it said",
         )
-    described = models.describe(name)
+    described = models.lookup(name)
     return Finding(
         name,
         True,

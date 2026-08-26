@@ -2,7 +2,7 @@
 
     from sdd1 import Chip
 
-    chip = Chip(model="sdd1")
+    chip = Chip("sdd1", model="sdd1")
     chip.decompress(rom, offset, length).data
 
 Its arithmetic coder carries a run length per context rather than a probability,
@@ -13,27 +13,25 @@ the context.
 
 from typing import Any
 
+from . import models as models
 from .decoder import BITPLANE_COUNTS, HEADER_BYTES, Stream, bitplane_count, decompress
 from .errors import TruncatedStream, UnknownModelError
-from .models import MODELS, Model, describe
+from .models import MODELS, Model
 from .probability import CONTEXT_COUNT, CONTEXT_MASKS, EVOLUTION, MAX_LENGTH, PLANE_COUNT, RUN_TABLE
 from .version import VERSION
 
 __version__ = VERSION
 
-DEFAULT_MODEL = "sdd1"
 
-
-def Chip(model: str = DEFAULT_MODEL, **options: Any) -> Any:  # noqa: N802
+def Chip(model: str | None = None, **options: Any) -> Any:  # noqa: N802
     """A chip of the named model, sharing one interface across the family."""
-    return describe(model).build(**options)
+    return models.lookup(model).build(**options)
 
 
 __all__ = [
     "BITPLANE_COUNTS",
     "CONTEXT_COUNT",
     "CONTEXT_MASKS",
-    "DEFAULT_MODEL",
     "EVOLUTION",
     "HEADER_BYTES",
     "MAX_LENGTH",
@@ -48,5 +46,4 @@ __all__ = [
     "__version__",
     "bitplane_count",
     "decompress",
-    "describe",
 ]
