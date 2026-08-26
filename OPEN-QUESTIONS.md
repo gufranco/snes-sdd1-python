@@ -43,9 +43,25 @@ and asked to expand 6,652 streams.
 
 **It is no longer the only thing standing behind the output.** Somebody expanded
 one of the four cartridges years ago, decompressing every stream and rewriting
-the game to read the results directly. That expansion was not made with this
-decoder and not with the reference, and the expanded image is a check with no
-emulator anywhere in it.
+the game to read the results directly. That expansion was neviksti's, it was not
+made with this decoder or with the reference, and the game it produced runs on
+hardware that has no S-DD1 fitted, so it is a check with no emulator in it and
+one that a playable game already validated.
+
+**How independent it actually is, stated exactly.** Not fully, and the reason is
+worth reading before the number below is weighed. The reference decoder's own
+header says it is "based on code and documentation by Andreas Naive", and quotes
+Naive crediting neviksti with "some steps in the right direction" at the start of
+that research. The second reference an obvious reader would reach for, bsnes,
+says in its own header that the code is Naive's and the port is byuu's, so it is
+the same origin again.
+
+Every implementation of this part, this one included, therefore descends from one
+body of research. What the measurement below establishes is that this decoder's
+transcription of that algorithm reproduces, on real cartridge data, exactly what a
+different author's implementation produced. What it cannot establish is that the
+algorithm is what the silicon does. Nothing available can, which is why a capture
+is still what would settle it.
 
 Run on 2026-08-25 across the whole of *Star Ocean*: at every offset in the
 cartridge, decode sixty four bytes and ask whether they appear in the expanded
@@ -72,8 +88,9 @@ and the vectors still rest on the reference, and they reach shapes and lengths
 this cartridge does not use.
 
 **What would settle or reopen it.** A capture of a real S-DD1 expanding a known
-block. Short of that, an expansion of a second cartridge would widen what the
-emulator-free measurement reaches.
+block. An expansion of a second cartridge would widen the measurement's reach. A
+second implementation would not help and is not available: every one that exists
+descends from the same research.
 
 ### What the chip does with a malformed stream.
 

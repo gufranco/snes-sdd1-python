@@ -8,7 +8,16 @@ which is carried here.
 **The two files.** A retail cartridge carrying the part, and the expanded image
 somebody else produced from it by decompressing every stream and rewriting the
 game to read them directly. The expansion was not made with this decoder, was not
-made with snes9x, and predates both.
+made with snes9x, predates both, and the game it produced runs on hardware with
+no S-DD1 fitted.
+
+**How independent that is, exactly.** Not fully. The reference's own header says
+it is based on Andreas Naive's code and documentation, and quotes Naive crediting
+neviksti, who wrote the expansion, with early steps in the same research. Every
+implementation of this part descends from that one body of work. What this
+measures is whether this decoder's transcription of the algorithm reproduces what
+a different author's implementation produced on real data. Whether the algorithm
+is what the silicon does is a separate question and only a capture answers it.
 
 **What a confirmation is.** Decode at an offset in the cartridge. If the bytes
 that come out appear in the expanded image and appear nowhere in the cartridge
