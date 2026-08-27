@@ -1,0 +1,33 @@
+{
+  "what": "The tables this package carries in source because no artifact exists to fetch, pinned by digest the way a fetched image is.",
+  "why": "These are data lifted from the hardware rather than a design anyone here chose, and no manufacturer published them as a file. Nothing was checking that they stay what they were: the decoder walks them on every stream, and an edit that preserved the invariants would change every output with nothing to notice.",
+  "howTheDigestIsTaken": "sha256 of the values as compact JSON, json.dumps(list(table), separators=(',', ':')) encoded as UTF-8. Of the values rather than of the source, so reformatting the module, rewrapping a line or changing a comment leaves the digest alone and changing a number does not.",
+  "whatThisIsNot": "A claim that the table is correct. The self-checks beside each one and this digest are different questions: the checks say the table could be the part's, the digest says it has not changed since somebody last argued that it is.",
+  "notStated": "No Ricoh or Nintendo document for this part has been found, so no entry here can carry a publisher's digest and none pretends to.",
+  "tables": [
+    {
+      "name": "EVOLUTION",
+      "module": "sdd1/probability.py",
+      "entries": 33,
+      "sha256": "9b397806b03bebe573f9cc3e6401e130b701d2047c8810839d092ee2b5d1a415",
+      "what": "The state machine every context walks: the code size to use, and where to go when each symbol arrives.",
+      "selfCheck": "The evolution graph must terminate."
+    },
+    {
+      "name": "RUN_TABLE",
+      "module": "sdd1/probability.py",
+      "entries": 128,
+      "sha256": "120c19d5a15649e54fa08fe2ea72f258a20a387a4d2b3079be68bbaa3f59c3d5",
+      "what": "What a code word turns into as a run length.",
+      "selfCheck": "It is a permutation."
+    },
+    {
+      "name": "CONTEXT_MASKS",
+      "module": "sdd1/probability.py",
+      "entries": 4,
+      "sha256": "4dc07f725fa05a325705393f23fe523b0f4bbb93b31a88ec0d32708103376dd7",
+      "what": "Which bits of a plane's recent history select its context, one row per shape the header byte picks.",
+      "selfCheck": "Read beside the header byte that selects the row."
+    }
+  ]
+}
