@@ -93,9 +93,17 @@ def _default_build(name: str) -> Any:
 
 
 def _part(name: str, build: Callable[[str], Any]) -> "Finding":
-    """Whether that part builds, saying exactly what stopped it if not."""
+    """Whether that part builds and resets, saying what stopped it if not.
+
+    The reset is driven even though this part carries nothing across one, because
+    a caller driving a board pulls the line on every part on it and should not
+    have to know which ones hold state. Driving it here is what keeps that true:
+    a part that stopped offering the line would otherwise be found by the caller
+    rather than by the report.
+    """
     try:
         chip = build(name)
+        chip.reset()
     except Exception as trouble:
         return Finding(
             name,
@@ -109,7 +117,8 @@ def _part(name: str, build: Callable[[str], Any]) -> "Finding":
         name,
         True,
         f"up to {described.planes} bit planes, {described.contexts} contexts,"
-        f" model {getattr(chip, 'model', name)}",
+        f" model {getattr(chip, 'model', name)},"
+        " resets and carries nothing across it",
     )
 
 

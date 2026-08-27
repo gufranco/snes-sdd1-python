@@ -3,11 +3,11 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-from typing import Any
+from typing import Any, NoReturn, override
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from sdd1 import doctor
+from sdd1 import doctor, models
 
 
 class Complaint(Exception):
@@ -99,6 +99,26 @@ class ExamineTest(unittest.TestCase):
         for one in doctor.examine():
             if one.name == "sdd1":
                 self.assertIn("32 contexts", one.detail)
+
+    def test_and_says_the_line_was_pulled(self) -> None:
+        """Driven rather than described, so a part that stopped offering it shows here."""
+        found = [one for one in doctor.examine() if one.name == "sdd1"]
+
+        self.assertIn("resets and carries nothing across it", found[0].detail)
+
+    def test_a_part_that_builds_and_will_not_reset_is_reported_as_broken(self) -> None:
+        class WillNotReset(models.Chip):
+            @override
+            def reset(self) -> NoReturn:
+                raise Complaint("the line did nothing")
+
+        found = [
+            one
+            for one in doctor.examine(build=lambda name: WillNotReset(models.lookup(name)))
+            if one.name == "sdd1"
+        ]
+
+        self.assertFalse(found[0].ok)
 
 
 class DecoderTest(unittest.TestCase):
