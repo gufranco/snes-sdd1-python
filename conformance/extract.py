@@ -30,6 +30,7 @@ pass a table of offsets and lengths worked out however you like.
 """
 
 import collections
+import itertools
 import json
 import sys
 from collections.abc import Sequence
@@ -56,10 +57,61 @@ def tagged_streams(rom: bytes | bytearray) -> list[int]:
     return sorted(found)
 
 
+def tag_offsets(index: bytes | bytearray) -> list[int]:
+    """Where each tag sits in a build that carries an index of them."""
+    found = []
+    at = index.find(TAG)
+    while at != -1:
+        found.append(at)
+        at = index.find(TAG, at + 1)
+    return found
+
+
+def indexed_streams(index: bytes | bytearray) -> list[tuple[int, int]]:
+    """A stream table read out of another author's build of the same game.
+
+    Some re-releases replace the eight bytes at each stream start with the
+    literal `SDD1` and a four byte destination. Those destinations run forward
+    across the whole image, so the gap between one and the next is the length the
+    stream decompresses to, and the tag's own offset is where the stream begins.
+    That is an offset and a length per stream, which is what a census needs and
+    what searching a retail cartridge for a tag cannot give, because a retail
+    cartridge carries no tag.
+
+    **Why the offset is the tag and not the byte after it.** Both are candidates
+    and the header bytes decide, calibrated against the one cartridge whose
+    streams are confirmed. Star Ocean's 55,023 confirmed streams use 8 of the 16
+    kinds heavily and 4 of them under one percent each, which is what an encoder
+    taking whichever shape fits looks like. Read at the tag, Street Fighter Alpha
+    2 gives 52 distinct header bytes across 8 kinds with 88 percent in one of
+    them. Read at the byte after, it gives all 256 byte values spread evenly
+    across all 16 kinds, which is what reading random data as a header looks
+    like. The USA and Europe builds give identical figures.
+
+    The last tag is dropped, because there is no next destination to subtract
+    from and a length nobody can derive is not a measurement.
+    """
+    spots = tag_offsets(index)
+    found = []
+    for at, following in itertools.pairwise(spots):
+        here = int.from_bytes(index[at + 4 : at + TAG_BYTES], "little")
+        there = int.from_bytes(index[following + 4 : following + TAG_BYTES], "little")
+        if there > here:
+            found.append((at, there - here))
+    return found
+
+
 def table(path: Path | str) -> list[tuple[int, int]]:
-    """A list of offset and length pairs, however the file spells it."""
-    with Path(path).open() as handle:
-        found = json.load(handle)
+    """A stream table, from a list of pairs or from a build that indexes them.
+
+    A file carrying the tag is another author's build of the same game, and the
+    table is derived from it. Anything else is read as a list of offset and
+    length pairs somebody worked out however they liked.
+    """
+    body = Path(path).read_bytes()
+    if TAG in body:
+        return indexed_streams(body)
+    found = json.loads(body)
     if isinstance(found, dict):
         found = found["streams"]
     return [(int(offset), int(length)) for offset, length in found]
@@ -99,7 +151,7 @@ def shapes(rom: bytes | bytearray, streams: Sequence[tuple[int, int]]) -> dict[s
 
 def main(argv: Sequence[str]) -> int:
     if len(argv) < 2:
-        print("usage: extract.py <rom> <shapes out> [stream table]")
+        print("usage: extract.py <rom> <shapes out> [stream table or indexing build]")
         return 2
 
     rom_path = Path(argv[0])

@@ -167,5 +167,69 @@ class MainTest(unittest.TestCase):
         self.assertEqual(json.loads(out.read_text())["streams"], 1)
 
 
+def an_index(entries: "Sequence[tuple[int, int]]", size: int = 0x2000) -> bytes:
+    """A build that carries a tag and a destination at each named offset."""
+    body = bytearray(a_rom([], size))
+    for offset, destination in entries:
+        body[offset : offset + 8] = b"SDD1" + destination.to_bytes(4, "little")
+    return bytes(body)
+
+
+class IndexTest(unittest.TestCase):
+    def test_every_tag_is_located(self) -> None:
+        found = extract.tag_offsets(an_index([(0x100, 0), (0x300, 0x40)]))
+
+        self.assertEqual(found, [0x100, 0x300])
+
+    def test_a_build_with_no_tag_indexes_nothing(self) -> None:
+        self.assertEqual(extract.tag_offsets(a_rom([])), [])
+
+    def test_a_stream_starts_at_its_tag(self) -> None:
+        found = extract.indexed_streams(an_index([(0x100, 0), (0x300, 0x40)]))
+
+        self.assertEqual([offset for offset, _length in found], [0x100])
+
+    def test_its_length_is_the_gap_between_two_destinations(self) -> None:
+        found = extract.indexed_streams(an_index([(0x100, 0x20), (0x300, 0x60)]))
+
+        self.assertEqual([length for _offset, length in found], [0x40])
+
+    def test_the_last_tag_is_dropped_because_nothing_follows_it(self) -> None:
+        found = extract.indexed_streams(an_index([(0x100, 0), (0x300, 0x40), (0x500, 0x80)]))
+
+        self.assertEqual(len(found), 2)
+
+    def test_a_destination_that_does_not_move_forward_is_dropped(self) -> None:
+        found = extract.indexed_streams(an_index([(0x100, 0x80), (0x300, 0x20)]))
+
+        self.assertEqual(found, [])
+
+    def test_a_single_tag_yields_no_stream_at_all(self) -> None:
+        self.assertEqual(extract.indexed_streams(an_index([(0x100, 0)])), [])
+
+
+class TableSourceTest(unittest.TestCase):
+    def test_a_build_carrying_tags_is_read_as_an_index(self) -> None:
+        with tempfile.TemporaryDirectory() as where:
+            path = Path(where) / "indexing.sfc"
+            path.write_bytes(an_index([(0x100, 0), (0x300, 0x40)]))
+
+            self.assertEqual(extract.table(path), [(0x100, 0x40)])
+
+    def test_anything_else_is_read_as_a_list_of_pairs(self) -> None:
+        with tempfile.TemporaryDirectory() as where:
+            path = Path(where) / "table.json"
+            path.write_text(json.dumps({"streams": [[16, 32]]}))
+
+            self.assertEqual(extract.table(path), [(16, 32)])
+
+    def test_a_bare_list_is_read_the_same_way(self) -> None:
+        with tempfile.TemporaryDirectory() as where:
+            path = Path(where) / "table.json"
+            path.write_text(json.dumps([[16, 32]]))
+
+            self.assertEqual(extract.table(path), [(16, 32)])
+
+
 if __name__ == "__main__":
     unittest.main()

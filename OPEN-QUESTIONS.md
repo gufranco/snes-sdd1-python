@@ -82,10 +82,30 @@ covered. Both rows and the digests of all three files are in
 [`conformance/against_cartridges.py`](conformance/against_cartridges.py)
 reproduces them from copies you own.
 
-**What it does not cover.** One of the four cartridges, because only that one has
-an expansion. The corpus in [`conformance/corpus.json`](conformance/corpus.json)
+**Two more cartridges, by a different route.** Street Fighter Alpha 2 has no
+expansion, so nothing can confirm its streams the way Star Ocean's are confirmed.
+It has something else: a re-release that replaces the eight bytes at each stream
+start with the literal `SDD1` and a four byte destination. Those destinations run
+forward across the whole image, so the gap between two of them is a decompressed
+length and the tag's offset is where the stream begins. That is a stream table
+for a cartridge that carries no tag of its own, and
+[`conformance/indexed.json`](conformance/indexed.json) is the census of the 2,814
+streams it names.
+
+Which of the two candidate starts is the real one was decided rather than
+assumed. Read at the tag, the header bytes are 52 distinct values across 8 of the
+16 kinds with 88 percent in one of them. Read at the byte after, they are all 256
+values spread evenly across all 16, which is what reading data that is not a
+header looks like. Star Ocean's confirmed streams have the concentrated shape,
+not the even one. The USA and Europe cartridges give identical counts from the
+same table.
+
+**What it still does not cover.** Street Fighter Zero 2 (Japan), which has
+neither an expansion nor an indexing re-release: the same table read against it
+gives 167 distinct headers across all 16 kinds, so that build holds its streams
+at other offsets. The corpus in [`conformance/corpus.json`](conformance/corpus.json)
 and the vectors still rest on the reference, and they reach shapes and lengths
-this cartridge does not use.
+these cartridges do not use.
 
 **What would settle or reopen it.** A capture of a real S-DD1 expanding a known
 block. An expansion of a second cartridge would widen the measurement's reach. A
