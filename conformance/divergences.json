@@ -8,7 +8,9 @@
   "divergences": [
     {
       "id": "the-shape-census-is-not-from-retail-cartridges",
-      "parts": ["s-dd1"],
+      "parts": [
+        "s-dd1"
+      ],
       "severity": "high",
       "status": "narrowed",
       "documentSays": "Nothing.",
@@ -20,18 +22,22 @@
     },
     {
       "id": "every-expected-output-comes-from-an-emulator",
-      "parts": ["s-dd1"],
+      "parts": [
+        "s-dd1"
+      ],
       "severity": "high",
       "status": "narrowed",
       "documentSays": "Nothing.",
-      "referenceDoes": "Produces the bytes the corpus and the vector file compare against. It is no longer the only thing this decoder has been measured against.",
+      "referenceDoes": "Produces the bytes the corpus and the vector file compare against. It is no longer the only thing this decoder has been measured against, and since 2026-08-31 it is no longer the only lineage either.",
       "packageFollows": "reference",
-      "reasoning": "It was true that there was no other source, and it is no longer. Since 2026-08-25 this decoder is also measured against a retail cartridge and an expanded image somebody else produced from it, with no emulator anywhere in the chain: 55,023 streams in Star Ocean decode to bytes that appear in the expanded image and appear nowhere in the cartridge, so they were decompressed rather than copied. All sixteen header kinds are covered. The oracle was calibrated first, because graphics repeat and a run can match by luck: the same sweep against a different game's image confirms 1,306, a separation of 42 to 1, and both figures are published beside each other in conformance/cartridges.json. The independence is partial and the extent is worth naming: the reference's own header says it is based on Andreas Naive's code and documentation, and quotes Naive crediting neviksti with early steps in that research, so the expansion and the reference share a lineage. Every implementation of this part descends from one body of research, bsnes included, whose header names the same origin. What the measurement establishes is that this decoder's transcription reproduces what a different author's implementation produced on real data. What still rests on the reference alone is the corpus in conformance/corpus.json and the vectors, which cover shapes and lengths the cartridge does not use. Narrowed on 2026-08-31 by a source that is not another decoder. An MSU-1 modification of Street Fighter Alpha 2 ships its assembly source, and with it twenty streams its author compressed, each beside the bytes it was made from. That is an encoder rather than a decompressor, so reproducing what it emitted asks a different question from agreeing with a second decoder that descends from the same research. Eighteen of the twenty reproduce byte for byte. The other two decode sixty four bytes short of what their own file declares, every byte they do produce matches, and the same decoder reads full-length streams at the same addresses in the retail cartridge, so the shortfall is in that export rather than here. conformance/independent.json carries the counts and four digests for both halves of every pair, and no byte of either.",
-      "wouldSettleIt": "A recording taken off a real S-DD1. An expansion of a second cartridge would widen the measurement; only Star Ocean has one. A second implementation would not help, because none exists that does not descend from the same research."
+      "reasoning": "It was true that there was no other source, and it is no longer. This decoder is also measured against a retail cartridge, against an expansion somebody else produced from one, against streams a third party's encoder emitted, and now against a Capcom prototype of the Japanese cartridge dated 1996-09-15 that predates the compression. That last one is the first witness that does not descend from Andreas Naive's research: 242 streams this decoder expands from the retail cartridge appear verbatim in the prototype, 311,264 bytes in total, which makes them Capcom's own input to Capcom's own compressor. The decoder has been shown to invert the thing rather than to agree with an account of it.",
+      "wouldSettleIt": "A recording taken off a real S-DD1, which would move this to the top of the ladder. The prototype settles the lineage objection for the streams it covers and cannot settle the rest, because it is a different build and most of its data differs."
     },
     {
       "id": "no-document-exists-for-this-part",
-      "parts": ["s-dd1"],
+      "parts": [
+        "s-dd1"
+      ],
       "severity": "high",
       "status": "open",
       "documentSays": "Nothing. Neither Ricoh nor Nintendo published a datasheet for the S-DD1.",
@@ -42,7 +48,9 @@
     },
     {
       "id": "nothing-here-is-a-timing-claim",
-      "parts": ["s-dd1"],
+      "parts": [
+        "s-dd1"
+      ],
       "severity": "medium",
       "status": "notModelled",
       "documentSays": "Nothing.",

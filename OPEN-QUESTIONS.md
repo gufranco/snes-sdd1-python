@@ -140,6 +140,32 @@ byte is used by any of them. It is not evidence that nothing else is used.
 **What would settle or reopen it.** A stream that varies the rest of the byte,
 or a document.
 
+## Where a witness outside the lineage now stands
+
+Everything above concerns one problem: every implementation of this part
+descends from one body of research, so two of them agreeing is one witness
+counted twice. That objection is now answered for part of the output.
+
+Capcom shipped a prototype of the Japanese cartridge dated 1996-09-15. It
+declares no coprocessor and stores uncompressed a large amount of data the retail
+cartridge compresses. Decompressing every stream in the Japanese table from the
+retail cartridge and searching that prototype for the result finds **242 streams
+matching in full, 311,264 bytes**, with no partial match counted.
+
+Those bytes are Capcom's own input to Capcom's own compressor. They were written
+before Naive's research existed and owe nothing to it, so for those streams this
+decoder has been shown to invert the thing itself rather than to agree with a
+reading of it. The record is
+[`conformance/prototype.json`](conformance/prototype.json), and the run is
+[`conformance/prototype.py`](conformance/prototype.py).
+
+**What it does not settle.** The prototype is a different build four months
+before release, so most of its art and tables differ: 2,138 streams are absent
+from it and 472 share only a first sixty four bytes, which is counted as absent
+rather than as partial agreement. It says nothing about timing, nothing about the
+chip's registers, and nothing about the streams it does not carry. The remaining
+route to the top of the ladder is unchanged: a recording taken off a real S-DD1.
+
 ## Where the question is a scope boundary, not an unknown
 
 ### Anything about timing.

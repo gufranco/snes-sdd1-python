@@ -1,0 +1,1485 @@
+{
+  "note": "This decoder against a prototype cartridge that predates the compression. Offsets, lengths and digests only. No byte of either cartridge is recorded here and none can be recovered from this.",
+  "why": "Every other witness for this decoder is downstream of the same reverse engineering, or is an encoder written by somebody modifying the game. This one is neither. Capcom shipped a prototype of the Japanese cartridge on 1996-09-15 that declares no coprocessor and stores data the retail cartridge compresses. Where a stream this decoder expands appears verbatim in that prototype, the bytes are Capcom's own input to Capcom's own compressor, so the decoder has been shown to invert it rather than to agree with somebody's reimplementation of it.",
+  "rung": 2,
+  "aboutTheRung": "The artifact itself, which is the second rung of the family ladder and the highest any question about this chip has reached. It is not a document, so it cannot say what the hardware is specified to do; it is evidence about what the data actually was.",
+  "measuredOn": "2026-08-31",
+  "howToRepeat": "Decompress every stream in the Japanese table from the retail cartridge and search the prototype image for the result. Neither image is carried here; both are identified below by four digests.",
+  "cartridges": {
+    "final": {
+      "bytes": 4194304,
+      "crc32": "7455a7cf",
+      "md5": "70761ab447f48091a8dc437fd2e9c14d",
+      "sha1": "a0db1045fb308d6a2975a4d305b69f877be727a4",
+      "sha256": "f15731675e22dbf3882b777b2d8cd541a637dfdf5d8880c83903cf1e0b64590e"
+    },
+    "prototype": {
+      "bytes": 4194304,
+      "crc32": "349d8084",
+      "md5": "1bdf3d1524794b36745fde718e2ba646",
+      "sha1": "cc4cc2f858d25280fd984f5a9f8164dc120860eb",
+      "sha256": "2ad0d7fd9815041974f65fee99b2b50221b4ff4b6c5e66fcd86005617eb1782f"
+    }
+  },
+  "decoded": 2852,
+  "matchedInFull": 242,
+  "prefixOnly": 472,
+  "absent": 2138,
+  "bytesConfirmed": 311264,
+  "aboutTheMisses": "A stream that is absent is not a failure. The prototype is a different build four months before release, so most of its art and tables differ, and 2,138 of them do. The 472 that share only a first sixty four bytes are the same shape of difference, not a partial disagreement: a full match is required to count, and a prefix is not treated as one.",
+  "aboutTheAmbiguousTwo": "Two of the matched streams appear at more than one offset in the prototype, so their location is recorded as ambiguous rather than guessed. Their content is confirmed either way, which is what is being measured.",
+  "matches": [
+    {
+      "streamAt": "0x197199",
+      "declaredBytes": 1792,
+      "protoAt": "0x130000",
+      "expanded": "77e81c32ff0b838687c095cfdaa1551465271f1aec09b3f3bcea723db323bfdc"
+    },
+    {
+      "streamAt": "0x197241",
+      "declaredBytes": 1728,
+      "protoAt": "0x131000",
+      "expanded": "824c1b53522bfce8364d99d3ba2e614afe6faa65ff075f6a53eba5141483e20d"
+    },
+    {
+      "streamAt": "0x1972D3",
+      "declaredBytes": 1664,
+      "protoAt": "0x132000",
+      "expanded": "9fa2f85d74840b1e4c24f5c92f11e36a6713e4c73b4a4f919e0135fc78558081"
+    },
+    {
+      "streamAt": "0x1973F5",
+      "declaredBytes": 1600,
+      "protoAt": "0x133000",
+      "expanded": "1d7afc2a2fd993f570a2e645e04a0b27fc2dbfe13b70e42421c2d1575afddcc7"
+    },
+    {
+      "streamAt": "0x197530",
+      "declaredBytes": 2048,
+      "protoAt": "0x134000",
+      "expanded": "8de3fad287a34c7bb2d3ca42cb020727bfec74efaaf1d786f316125ad0a4bd36"
+    },
+    {
+      "streamAt": "0x197641",
+      "declaredBytes": 1984,
+      "protoAt": "0x135000",
+      "expanded": "f22eedc3b6bae08f53cf7c808f2032c732c58ef49b974ba2eaf79ffcebcf6593"
+    },
+    {
+      "streamAt": "0x1976E4",
+      "declaredBytes": 2048,
+      "protoAt": "0x136000",
+      "expanded": "2f117c3b406b62dd52d5f12e04d91b0c5cdebf15a4ff551565c6a99fc6d36c68"
+    },
+    {
+      "streamAt": "0x19780D",
+      "declaredBytes": 2016,
+      "protoAt": "0x13A000",
+      "expanded": "61a5b850c29d1d0d63ed49e7eae12021b5343c0f2ccb50dba101e7c3f3479cb3"
+    },
+    {
+      "streamAt": "0x1978EA",
+      "declaredBytes": 3584,
+      "protoAt": "0x13B000",
+      "expanded": "425d56bd2f3ad799352283dc827af553943720e65278d9ca84b038223f042ea1"
+    },
+    {
+      "streamAt": "0x198B2B",
+      "declaredBytes": 3584,
+      "protoAt": "0x139000",
+      "expanded": "a39d6a20e2f8466b92feb54c625fa1e44278020cce015b8d0d05d86ad2fe4d01"
+    },
+    {
+      "streamAt": "0x1A2243",
+      "declaredBytes": 256,
+      "protoAt": "more than once",
+      "expanded": "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+    },
+    {
+      "streamAt": "0x1BED10",
+      "declaredBytes": 64,
+      "protoAt": "more than once",
+      "expanded": "8667e718294e9e0df1d30600ba3eeb201f764aad2dad72748643e4a285e1d1f7"
+    },
+    {
+      "streamAt": "0x1C0EF6",
+      "declaredBytes": 3040,
+      "protoAt": "0x3235A0",
+      "expanded": "31cec35cd4e1459f4feca1ad0c802497e681ab5ce3985d326287199a8ba39806"
+    },
+    {
+      "streamAt": "0x1C1560",
+      "declaredBytes": 3040,
+      "protoAt": "0x324180",
+      "expanded": "80440ff3ab26121b6c2b1ba8cdd306ee36df8e14e11ee8f9e2c9d64bc6fa27ea"
+    },
+    {
+      "streamAt": "0x1C1A4B",
+      "declaredBytes": 3040,
+      "protoAt": "0x324D60",
+      "expanded": "88e4530491a8fcfba06c958305d515f7760c9a8d1f32d39387b0eda274a2027d"
+    },
+    {
+      "streamAt": "0x1C210C",
+      "declaredBytes": 2816,
+      "protoAt": "0x325940",
+      "expanded": "24ae3f6d789ceac63c259e70ca2d33285d4239a9b8ac6c018afb86d715807ba6"
+    },
+    {
+      "streamAt": "0x1C2C78",
+      "declaredBytes": 960,
+      "protoAt": "0x22B060",
+      "expanded": "c68d3dc7b9cc2a771e7c4403c0afadf5bc631f2f12f22fa454a1bfbb77c50e03"
+    },
+    {
+      "streamAt": "0x1C2EBE",
+      "declaredBytes": 992,
+      "protoAt": "0x22B420",
+      "expanded": "aedb2bbc378e97008c2fbe99b3a580351e6b3d59bcd10154eea8c64348e97b8a"
+    },
+    {
+      "streamAt": "0x1C3329",
+      "declaredBytes": 960,
+      "protoAt": "0x22BB80",
+      "expanded": "14a99a5e7fe8f2e453746d377d755943197b641d2eedc8dc88bb7597ae65ccee"
+    },
+    {
+      "streamAt": "0x1C373C",
+      "declaredBytes": 1024,
+      "protoAt": "0x22C280",
+      "expanded": "1fb527dabf6076e8e9c1d08356ae3f698c4f72d6ab7c45efa5aab0fcf49c46bb"
+    },
+    {
+      "streamAt": "0x1C4497",
+      "declaredBytes": 928,
+      "protoAt": "0x264620",
+      "expanded": "84bbbd34755c0049df4cd9308374b7b85dd0e65d121795271c33c28c5daa80e4"
+    },
+    {
+      "streamAt": "0x1C46BF",
+      "declaredBytes": 1024,
+      "protoAt": "0x2649C0",
+      "expanded": "80adc4f4e54c6a74e8d64e4163cde50730fa937e5055b62c8ad6213d24552f00"
+    },
+    {
+      "streamAt": "0x1C49C7",
+      "declaredBytes": 896,
+      "protoAt": "0x265100",
+      "expanded": "64f40691cc426264c5e55d3a2fb2b1cff24409c86ae02884114276c657cd9a5b"
+    },
+    {
+      "streamAt": "0x1C4B3C",
+      "declaredBytes": 1024,
+      "protoAt": "0x265480",
+      "expanded": "5e30c1dabbc59ef2f5fd30300e18391d804cc5f83887c0f85f902d7064ddec17"
+    },
+    {
+      "streamAt": "0x1C4DC7",
+      "declaredBytes": 960,
+      "protoAt": "0x265880",
+      "expanded": "18e120caebc5ded745ded48068364875c1fee87d7ff51add8a450c9f8362831c"
+    },
+    {
+      "streamAt": "0x1C4FCF",
+      "declaredBytes": 704,
+      "protoAt": "0x265C40",
+      "expanded": "452a45cd0f7af33452d30ceb87c4d2bb00fd4e946ad47d89b991f25c83d65bd3"
+    },
+    {
+      "streamAt": "0x1C50E4",
+      "declaredBytes": 1024,
+      "protoAt": "0x265F00",
+      "expanded": "738de8a2d0b8af0c3fb20769b2772298fd8227c8b160a6949526c426bba1d9db"
+    },
+    {
+      "streamAt": "0x1C52A2",
+      "declaredBytes": 768,
+      "protoAt": "0x266300",
+      "expanded": "1c9af9b8b748283eebca7f923c53c6387cd8e499facee76a6cf449299efd8c98"
+    },
+    {
+      "streamAt": "0x1C53F2",
+      "declaredBytes": 960,
+      "protoAt": "0x266600",
+      "expanded": "832c2c01845e18c78eb4b5e66989619a44f59cd45ab82dd01e462ffd60efffc8"
+    },
+    {
+      "streamAt": "0x1C867A",
+      "declaredBytes": 960,
+      "protoAt": "0x326FC0",
+      "expanded": "0b406ebffdb2fd561ea4335568a7568afc6107c2707e1a45bce8612d0afe59e2"
+    },
+    {
+      "streamAt": "0x1C8885",
+      "declaredBytes": 960,
+      "protoAt": "0x327380",
+      "expanded": "265c92cc47863ccd50a006f4ce0dde6fa14af0890ee14fb6eff95a3b4448ad6f"
+    },
+    {
+      "streamAt": "0x1C8A77",
+      "declaredBytes": 1024,
+      "protoAt": "0x327740",
+      "expanded": "c7c71fd886b57305f2a587f99d943a6fb4760162331e9eb695a7b1774d0c9bd7"
+    },
+    {
+      "streamAt": "0x1C8C51",
+      "declaredBytes": 1024,
+      "protoAt": "0x327B40",
+      "expanded": "dbf67f1520511cf2c51a77257e8a0b175110cb040b1b8d6a743245431892d440"
+    },
+    {
+      "streamAt": "0x1C8E1F",
+      "declaredBytes": 768,
+      "protoAt": "0x327F40",
+      "expanded": "401738b5303d807d3bc4d7e918b6cc0db741596b38cc98204844a640fa67e390"
+    },
+    {
+      "streamAt": "0x1C8F3F",
+      "declaredBytes": 896,
+      "protoAt": "0x328240",
+      "expanded": "44755de2e3e937a48f7ce1929e48f1993a9449e40d9dff1569c54499957728fd"
+    },
+    {
+      "streamAt": "0x1C9107",
+      "declaredBytes": 960,
+      "protoAt": "0x3285C0",
+      "expanded": "daab958f1abe90389216fea7020a3154c3b837802c84b501f612502d957250a2"
+    },
+    {
+      "streamAt": "0x1C9322",
+      "declaredBytes": 1024,
+      "protoAt": "0x328980",
+      "expanded": "05ba71a92a7a3febbee487ad216c6e1bb87117508beb7520711ca8183dde0249"
+    },
+    {
+      "streamAt": "0x1C94EA",
+      "declaredBytes": 1024,
+      "protoAt": "0x328D80",
+      "expanded": "655f1f161a3d6caebec92ee53894d320224abf35717265453f5869e7e8232f57"
+    },
+    {
+      "streamAt": "0x1C96BC",
+      "declaredBytes": 896,
+      "protoAt": "0x329180",
+      "expanded": "92179fd9151c17a33bd93803f3bd5a7c42490201e6d7b19564d61a2f060d2ee6"
+    },
+    {
+      "streamAt": "0x1C9800",
+      "declaredBytes": 1024,
+      "protoAt": "0x329500",
+      "expanded": "6b6b9bd09b00a201d0179d813ec5700ec182c5f471b030e29c9eebbc15523669"
+    },
+    {
+      "streamAt": "0x1C9D7D",
+      "declaredBytes": 928,
+      "protoAt": "0x329EC0",
+      "expanded": "f71c202cccb5cea138b73e3e5c3292274870da31024ee3e5d2dd1c44495eacf4"
+    },
+    {
+      "streamAt": "0x1C9FD0",
+      "declaredBytes": 832,
+      "protoAt": "0x32A260",
+      "expanded": "83a38f672f24ed635144b98d0cd6556bda0db55ed4aab6edf7e0b1517b5b44ae"
+    },
+    {
+      "streamAt": "0x1CA2D5",
+      "declaredBytes": 896,
+      "protoAt": "0x32A7E0",
+      "expanded": "9adf90400aef163d50ae48a8a684a04147ed78459aefc8276fd79514f7c3b4a0"
+    },
+    {
+      "streamAt": "0x1CA54B",
+      "declaredBytes": 1024,
+      "protoAt": "0x32AB60",
+      "expanded": "f20fd9d5d035b28fd610a20bb69d24e8f84737f579cd190af681f89185f5b2cc"
+    },
+    {
+      "streamAt": "0x1CA7B4",
+      "declaredBytes": 704,
+      "protoAt": "0x36E6C0",
+      "expanded": "1989e6e1d4c245a79b01933b453f57dfc5307d2c527047bb58938cf5f655eddc"
+    },
+    {
+      "streamAt": "0x1CA8EB",
+      "declaredBytes": 832,
+      "protoAt": "0x36E980",
+      "expanded": "aa1b85d4463781be570dcff353f71e96eaa3fb8bb99824725cd011b7b188b24f"
+    },
+    {
+      "streamAt": "0x1CAA4E",
+      "declaredBytes": 1024,
+      "protoAt": "0x36ECC0",
+      "expanded": "ebb720ca85f4589adf7a774c2204a2e17c0189763f91668be981561c20ceb24e"
+    },
+    {
+      "streamAt": "0x1CAC73",
+      "declaredBytes": 832,
+      "protoAt": "0x36F0C0",
+      "expanded": "f9ae05568d64b54ef6086b7c8875fd29fa173cd6ec98b72be799138d091421d4"
+    },
+    {
+      "streamAt": "0x1CAE0D",
+      "declaredBytes": 896,
+      "protoAt": "0x36F400",
+      "expanded": "d136d94ad342753fc6e93767dee07ffbc75053dfa0c5c637c611bf7d78264ea6"
+    },
+    {
+      "streamAt": "0x1CB01A",
+      "declaredBytes": 896,
+      "protoAt": "0x36F780",
+      "expanded": "602947516ba832d97b5ac3c92cb6f900acef53853695230f67bd3ca7cf1f2568"
+    },
+    {
+      "streamAt": "0x1CB21C",
+      "declaredBytes": 928,
+      "protoAt": "0x36FB00",
+      "expanded": "489089d7aca3ea52c4cc43c3c022a6b935ff6b10aba254947ee1fd50758bfb08"
+    },
+    {
+      "streamAt": "0x1CB435",
+      "declaredBytes": 1024,
+      "protoAt": "0x370000",
+      "expanded": "019487bf8b4634645a0bae4a1f42c9e1e10ead6696ab1ea3004b279e44bfd8a9"
+    },
+    {
+      "streamAt": "0x1CB65C",
+      "declaredBytes": 832,
+      "protoAt": "0x370400",
+      "expanded": "c8ddc5363d339b9e1f8c07307160fb9a92cf04fdc6b25774c9e2c561b690ee4f"
+    },
+    {
+      "streamAt": "0x1CB933",
+      "declaredBytes": 832,
+      "protoAt": "0x370A80",
+      "expanded": "b1301eaa12302de529d42460a9d96376ba241d1a0e3b2b656ea4dfce8f7727ef"
+    },
+    {
+      "streamAt": "0x1CBC10",
+      "declaredBytes": 832,
+      "protoAt": "0x371100",
+      "expanded": "14c1f16a82a2ecb1613f50e8caeb2211a02127219c7ca608ff6c31ed0dc3bfa0"
+    },
+    {
+      "streamAt": "0x1CC2AD",
+      "declaredBytes": 896,
+      "protoAt": "0x372100",
+      "expanded": "1caad1c94c03d526a5753b55a2c589c27216b264876aa575ea5ad921c0ec61c5"
+    },
+    {
+      "streamAt": "0x1CC3AA",
+      "declaredBytes": 640,
+      "protoAt": "0x372480",
+      "expanded": "d281f0766470280764b133d34ee1b4a3efcb59bcd227258b1be02d84060039d4"
+    },
+    {
+      "streamAt": "0x200000",
+      "declaredBytes": 1568,
+      "protoAt": "0x200000",
+      "expanded": "ae5d78ef885ce7a6fee50d3d3b1adf8093048367f217e6ed38edf5ffd1d57ebe"
+    },
+    {
+      "streamAt": "0x200427",
+      "declaredBytes": 1600,
+      "protoAt": "0x200620",
+      "expanded": "062b84db15b28bd81f7eca07b96e9a3a37833e869092025dd4241b07ded1a011"
+    },
+    {
+      "streamAt": "0x200865",
+      "declaredBytes": 1664,
+      "protoAt": "0x200C60",
+      "expanded": "ec6fa4755748c6e8ffd70f15336491c3ab57b6100fc93a4fa2e4691835a60da8"
+    },
+    {
+      "streamAt": "0x200CAD",
+      "declaredBytes": 1472,
+      "protoAt": "0x2012E0",
+      "expanded": "f2dbac7253d755b9ceb671568260066a0e18e0e5e0b96ff6c1485fef16e01569"
+    },
+    {
+      "streamAt": "0x20106F",
+      "declaredBytes": 1280,
+      "protoAt": "0x2018A0",
+      "expanded": "a5bc2210e28d4542b71a54ce815b6e5783dae625c12086ebc66d5c0a21eef098"
+    },
+    {
+      "streamAt": "0x201416",
+      "declaredBytes": 1504,
+      "protoAt": "0x201DA0",
+      "expanded": "bf618a2052088319efe92475dd2cd9ea26d0c1197a57bb33c7f9689278541f1b"
+    },
+    {
+      "streamAt": "0x2017FD",
+      "declaredBytes": 1632,
+      "protoAt": "0x202380",
+      "expanded": "99f4bbc29c517e938499296d3b100f670a82bc0995d0fadd73e2afdb5dd1d396"
+    },
+    {
+      "streamAt": "0x201BEF",
+      "declaredBytes": 1664,
+      "protoAt": "0x203000",
+      "expanded": "1b6410a4508a9bceaab6fbf5547908376344eed8c8a14c0294a712a69c16b3e7"
+    },
+    {
+      "streamAt": "0x20246A",
+      "declaredBytes": 1184,
+      "protoAt": "0x204E40",
+      "expanded": "8df4f59a8a97c52a5e3695d7d05aa1f858842c4912d2a1b9332c9a268de339d3"
+    },
+    {
+      "streamAt": "0x2027AB",
+      "declaredBytes": 992,
+      "protoAt": "0x2052E0",
+      "expanded": "022cf5cfc4204c97cc14cb437fedf3ef828adc1f2fd99878faa68e4158333bb5"
+    },
+    {
+      "streamAt": "0x202E09",
+      "declaredBytes": 1440,
+      "protoAt": "0x205D40",
+      "expanded": "f8008a33abf013c83b2e58a93a60b90416fc3f71e04170e141e0e9ea9b0b96f2"
+    },
+    {
+      "streamAt": "0x2031C8",
+      "declaredBytes": 1536,
+      "protoAt": "0x2062E0",
+      "expanded": "ea6709af34f9d955d6a9505fa079fd0ce36b03c10a61d2b02000ea0fa9637b97"
+    },
+    {
+      "streamAt": "0x2043EA",
+      "declaredBytes": 1888,
+      "protoAt": "0x207D00",
+      "expanded": "358a5e289ec38acb88cf01ce6592ca52b51b1d0dbc1b8ac4dcf37708d34493e0"
+    },
+    {
+      "streamAt": "0x204914",
+      "declaredBytes": 1664,
+      "protoAt": "0x2085A0",
+      "expanded": "c114c9226968c2657c235997eec9e09529b63e54a46c96404a5669ec5271d36d"
+    },
+    {
+      "streamAt": "0x204D0D",
+      "declaredBytes": 1024,
+      "protoAt": "0x208C20",
+      "expanded": "f5115b780f4589b699e5095d6a9d9488ea041cd91c3facbc14bde62b93881486"
+    },
+    {
+      "streamAt": "0x204FBD",
+      "declaredBytes": 768,
+      "protoAt": "0x209020",
+      "expanded": "b08581a4447685a9acd9aa2f50092c7aba830a416daacc7d05f63ff9349d0b53"
+    },
+    {
+      "streamAt": "0x20ABC9",
+      "declaredBytes": 1184,
+      "protoAt": "0x213900",
+      "expanded": "1c677c00ae7fff19c69754de9ed234ffbed18bccb82209f5a19a06be277510e3"
+    },
+    {
+      "streamAt": "0x20AEA1",
+      "declaredBytes": 1248,
+      "protoAt": "0x213DA0",
+      "expanded": "7377f6e50ab23138bcdd8e289a4b6d4ae1961c83ef055f8fb5e5c32020c037a6"
+    },
+    {
+      "streamAt": "0x20B198",
+      "declaredBytes": 1120,
+      "protoAt": "0x214280",
+      "expanded": "dae760df6ee3068d72822baa553cb33df32b1a3f1d3be2b7f3a81d1308cf3047"
+    },
+    {
+      "streamAt": "0x20B753",
+      "declaredBytes": 1344,
+      "protoAt": "0x214D20",
+      "expanded": "94a4cc95f500c1b4ab1ca1a0a2a15e49f105b870e3644b88c6df9c3f704055ae"
+    },
+    {
+      "streamAt": "0x20BA54",
+      "declaredBytes": 1184,
+      "protoAt": "0x215260",
+      "expanded": "9f84be54f00cd3151f0d12da79de3607ba752c5b0c991c7cd503cfcc1fea64e8"
+    },
+    {
+      "streamAt": "0x20C3DF",
+      "declaredBytes": 1024,
+      "protoAt": "0x216B80",
+      "expanded": "a73c02aa1f38efbf4291292a1bc82bc836f0650378cad98dca5e24833b89ff9c"
+    },
+    {
+      "streamAt": "0x20D73E",
+      "declaredBytes": 1024,
+      "protoAt": "0x2188E0",
+      "expanded": "74398bfe314c19ea64f574ae40f3b850f6b9e8fc2eec3c92c2f0215a87f7a119"
+    },
+    {
+      "streamAt": "0x211855",
+      "declaredBytes": 1184,
+      "protoAt": "0x21D620",
+      "expanded": "1f5b52691f9120f2fcb9bf0ca49e4901a90f457184769e44d499b8dc41c74946"
+    },
+    {
+      "streamAt": "0x211B60",
+      "declaredBytes": 992,
+      "protoAt": "0x21DEA0",
+      "expanded": "b33f70e3fef5eb9c1e674c998c64d50d6b210cd1cbf0bc7d9a0c13ba29503943"
+    },
+    {
+      "streamAt": "0x211E18",
+      "declaredBytes": 1216,
+      "protoAt": "0x21E280",
+      "expanded": "59b825d7c8859d831a4127bbc7766d81eb7f01f2d107b690d720bea68ffed949"
+    },
+    {
+      "streamAt": "0x21214E",
+      "declaredBytes": 1312,
+      "protoAt": "0x21E740",
+      "expanded": "8d4fbbf7fb6576059a6315c4dfce32b0e846ea01020453ca4a512b1cda73dc53"
+    },
+    {
+      "streamAt": "0x213DDE",
+      "declaredBytes": 1152,
+      "protoAt": "0x221C00",
+      "expanded": "940aa1489b1d38cbbab4eea72171a2a9e2cff77ad0eb2c9f0f4058cc87390103"
+    },
+    {
+      "streamAt": "0x214762",
+      "declaredBytes": 1248,
+      "protoAt": "0x2229A0",
+      "expanded": "6e816a475acb7d242e12e2d46c93e7fac526a70da41613beb80a3335836c336a"
+    },
+    {
+      "streamAt": "0x214F7E",
+      "declaredBytes": 1184,
+      "protoAt": "0x223520",
+      "expanded": "49170e10ac7c1750f59590234f46695fdc447a2f9dac3f20ec3a24cfe6dce5de"
+    },
+    {
+      "streamAt": "0x2185A0",
+      "declaredBytes": 1472,
+      "protoAt": "0x227E60",
+      "expanded": "9082e435ee6248140c5ca80325453f81644ada0886e0764f8cb838fd51c99ce1"
+    },
+    {
+      "streamAt": "0x21897C",
+      "declaredBytes": 1344,
+      "protoAt": "0x228AA0",
+      "expanded": "a68b476b48d0c98925c0d94ea32327397f45af83d5731f235f2a321c615ba20c"
+    },
+    {
+      "streamAt": "0x218CAD",
+      "declaredBytes": 1728,
+      "protoAt": "0x228FE0",
+      "expanded": "2b465844ea93eee8503b961bc92d9b86b4ecd013245f937b9cfe6a0ecee80704"
+    },
+    {
+      "streamAt": "0x2190DD",
+      "declaredBytes": 2016,
+      "protoAt": "0x2296A0",
+      "expanded": "38f7171170624f0481f7b6cdf73ec113750c542e7e44bdee5dd3c007eb3045e7"
+    },
+    {
+      "streamAt": "0x231D5D",
+      "declaredBytes": 1600,
+      "protoAt": "0x230780",
+      "expanded": "baa5b40d9b70c2e611f598fea0b64d10432b16739005f2894e0a6c876cbc9204"
+    },
+    {
+      "streamAt": "0x23254E",
+      "declaredBytes": 1216,
+      "protoAt": "0x231AC0",
+      "expanded": "eb5262d3cac56ca73bfcce91050a2ce63248a9368f1dd6422611534846215d60"
+    },
+    {
+      "streamAt": "0x2334C9",
+      "declaredBytes": 1760,
+      "protoAt": "0x233440",
+      "expanded": "218147df59f3c80212d341cd24e4aaf19ba642666efa213422a6643ca2118c55"
+    },
+    {
+      "streamAt": "0x23417E",
+      "declaredBytes": 1152,
+      "protoAt": "0x2368C0",
+      "expanded": "7746e50aadbef685a90a7774d55570a88efd7e4b1042d6c8e19f6a5a7da879ab"
+    },
+    {
+      "streamAt": "0x23477F",
+      "declaredBytes": 1472,
+      "protoAt": "0x237900",
+      "expanded": "7448f93af40d677bb2bf4bd91489b3a30643bfa6dc796ce3d74b91537089b650"
+    },
+    {
+      "streamAt": "0x2351CC",
+      "declaredBytes": 832,
+      "protoAt": "0x2391A0",
+      "expanded": "658eb4cb20302cb5c47e11db1aa17cd8534ec58f659f19720b51f1b58aac4627"
+    },
+    {
+      "streamAt": "0x23654C",
+      "declaredBytes": 2048,
+      "protoAt": "0x23D400",
+      "expanded": "f4a44a2468e97ff876034b5658ed7ff2f7679671539356a3905411f0ba9b3e16"
+    },
+    {
+      "streamAt": "0x236ABA",
+      "declaredBytes": 2016,
+      "protoAt": "0x23DC00",
+      "expanded": "a10a76cbe8fa59c0436d027bb14c33b29cd1d2cf74197a1292da66b0610010fb"
+    },
+    {
+      "streamAt": "0x237BE8",
+      "declaredBytes": 1728,
+      "protoAt": "0x240000",
+      "expanded": "6e933710db9bf6cedddec68d73780375e259aa2c6fc2073db646b57c06b818df"
+    },
+    {
+      "streamAt": "0x238007",
+      "declaredBytes": 1696,
+      "protoAt": "0x240D80",
+      "expanded": "9e162591634a3914623931f4f7fb80d70bb5e8e50a4def35e62bb33594c18f2a"
+    },
+    {
+      "streamAt": "0x23887D",
+      "declaredBytes": 1408,
+      "protoAt": "0x2421E0",
+      "expanded": "ba8ba3c21ff621c0078930867964619b496bdb9eef1182ddbfe0fc1ffb72d1d9"
+    },
+    {
+      "streamAt": "0x238F43",
+      "declaredBytes": 1376,
+      "protoAt": "0x2433E0",
+      "expanded": "b602619b3f47c5774a82497db86e5b91402ebe0a4398ab060d7e174d994f7f0c"
+    },
+    {
+      "streamAt": "0x2392C3",
+      "declaredBytes": 1984,
+      "protoAt": "0x244C80",
+      "expanded": "44a9d26a43a0c90a7baebbee631cf31e196a441401e04c7252a165cc96966dc4"
+    },
+    {
+      "streamAt": "0x239A0D",
+      "declaredBytes": 864,
+      "protoAt": "0x245780",
+      "expanded": "bb5729cdfdc5a0cc74a6b7cae689fd38e6ad3010e6856620fe660d196f8e0054"
+    },
+    {
+      "streamAt": "0x23A012",
+      "declaredBytes": 1696,
+      "protoAt": "0x2467A0",
+      "expanded": "b8952d0309c40c4b06c5fe90e7677b37cb680e8c0f850e1b647961e2152beb16"
+    },
+    {
+      "streamAt": "0x23B5E5",
+      "declaredBytes": 1824,
+      "protoAt": "0x249300",
+      "expanded": "6d6550af439b1c7aebea396332be8073228e0ffb37d60ac5b4d19fad2b853929"
+    },
+    {
+      "streamAt": "0x23BA43",
+      "declaredBytes": 1824,
+      "protoAt": "0x249A20",
+      "expanded": "42699e91d6ae0c539a098881b54db614ce35d459e1e51b6d914f6c37e1efbc83"
+    },
+    {
+      "streamAt": "0x23C2EA",
+      "declaredBytes": 1856,
+      "protoAt": "0x24B020",
+      "expanded": "beaf79afeda61f42f594d04fef792fa77931c223e7cfb7fa5aa7d30f9d9e46aa"
+    },
+    {
+      "streamAt": "0x23CE4C",
+      "declaredBytes": 2016,
+      "protoAt": "0x24C460",
+      "expanded": "aea7e715dcb33d099e6ba9f65b74a180cb39a171dd9380238bc282df62ea797f"
+    },
+    {
+      "streamAt": "0x23DABF",
+      "declaredBytes": 1216,
+      "protoAt": "0x24DF40",
+      "expanded": "6ed6062d06470b7808ea8ccaf44918d4991ae424e997aa3f147ac8b8115558be"
+    },
+    {
+      "streamAt": "0x23DDB2",
+      "declaredBytes": 1216,
+      "protoAt": "0x2588E0",
+      "expanded": "6abb9d7269237335f327b3d5e867acb8af5ea418861c618915c022f9cc52a99b"
+    },
+    {
+      "streamAt": "0x23E06F",
+      "declaredBytes": 1760,
+      "protoAt": "0x24EA80",
+      "expanded": "1d906385214dcdf7616bf7fe97467748af8a70a9887924d9ffa4ddc1714994a5"
+    },
+    {
+      "streamAt": "0x23E470",
+      "declaredBytes": 1760,
+      "protoAt": "0x24F160",
+      "expanded": "dcdaa6f04daa2d9ef2ac2dc2bd75e8e6d4635b41dbfefdb8ba95a24cad9c4d7c"
+    },
+    {
+      "streamAt": "0x23ED1A",
+      "declaredBytes": 1792,
+      "protoAt": "0x2513A0",
+      "expanded": "c96598de812cd8f4e9deaea3615ea2b9137f9747c93a1637455e46b474d21dde"
+    },
+    {
+      "streamAt": "0x23F177",
+      "declaredBytes": 1824,
+      "protoAt": "0x251AA0",
+      "expanded": "6313fa56fb3f43a38584973f1691542045a150f972734681ab27223edbcb0ce2"
+    },
+    {
+      "streamAt": "0x23F93B",
+      "declaredBytes": 1024,
+      "protoAt": "0x253A80",
+      "expanded": "158e1dbdee94173814bc9a58fcf488387792d5426693e0ebfc1ee7ee9ef5fb22"
+    },
+    {
+      "streamAt": "0x23FD32",
+      "declaredBytes": 992,
+      "protoAt": "0x2541C0",
+      "expanded": "ce95cbe85566925ac5c2f69bb0421da1927cf2aa48873325ca17ea70e9613987"
+    },
+    {
+      "streamAt": "0x240000",
+      "declaredBytes": 1344,
+      "protoAt": "0x2545A0",
+      "expanded": "7ddc097b64d967e7e2ddc1da09546da2017c9a52ca48d932edb3ff5c9d991c85"
+    },
+    {
+      "streamAt": "0x240483",
+      "declaredBytes": 1408,
+      "protoAt": "0x255140",
+      "expanded": "98730d5c6b725874f724aa8f5d0b6b4de6e2c2484db588a26775d192e713c93e"
+    },
+    {
+      "streamAt": "0x2407D2",
+      "declaredBytes": 1280,
+      "protoAt": "0x2556C0",
+      "expanded": "e77efe80b13db1e145c33aeae0aec5e3decd89fe67835dbb972fe262ceba95c5"
+    },
+    {
+      "streamAt": "0x240B01",
+      "declaredBytes": 1312,
+      "protoAt": "0x256020",
+      "expanded": "d64b4338f9fbe4c5ca2dd5074e66a632a2d34245b4c797b00b3e04bd0d2f9329"
+    },
+    {
+      "streamAt": "0x240E15",
+      "declaredBytes": 1184,
+      "protoAt": "0x256540",
+      "expanded": "2d27d8289ee27929f2f6b47b4867d3e3a9d911dba90769808e08494d4bce26ed"
+    },
+    {
+      "streamAt": "0x2410FC",
+      "declaredBytes": 1504,
+      "protoAt": "0x2569E0",
+      "expanded": "c65d5ae62a4385822c925ae3d126a05dfd03f1cceaa248d7997152bf2c8be3ff"
+    },
+    {
+      "streamAt": "0x24147D",
+      "declaredBytes": 1760,
+      "protoAt": "0x256FC0",
+      "expanded": "73d7a2b0a7dd9805a979e0aac8c8c554f13dca86c5db1f54ac44b61a5d93efb1"
+    },
+    {
+      "streamAt": "0x24187C",
+      "declaredBytes": 1280,
+      "protoAt": "0x2576A0",
+      "expanded": "87e19263a4f4dae7a851d9b326834671da3fe9d2996d7535ee1fd0c79854b7a0"
+    },
+    {
+      "streamAt": "0x241F62",
+      "declaredBytes": 1792,
+      "protoAt": "0x2581E0",
+      "expanded": "b3e55d4e9a4a11192f1fe874666d6ef27bea9b3a1c9769087ed9c003621bc6ff"
+    },
+    {
+      "streamAt": "0x24231B",
+      "declaredBytes": 1280,
+      "protoAt": "0x259280",
+      "expanded": "7fb4018a7e43050a25ba28edd0b4a633d118fe31232c8655f62f5805279d73dd"
+    },
+    {
+      "streamAt": "0x2425EC",
+      "declaredBytes": 1600,
+      "protoAt": "0x259780",
+      "expanded": "11788c5e6cc8ffe0984587aa962f9e7b5ffab85d74bf32bbdce6db2b85d8e603"
+    },
+    {
+      "streamAt": "0x2429E7",
+      "declaredBytes": 1440,
+      "protoAt": "0x25A400",
+      "expanded": "25f442ef95bd00d67b8c1feef85e5c3655a09374e497ba7056c1e539b1421f1b"
+    },
+    {
+      "streamAt": "0x2438E2",
+      "declaredBytes": 1888,
+      "protoAt": "0x25CA20",
+      "expanded": "73ba3c22e11ad018adbbbaa6aca326694aa8c2ee3c84bd696817e93d35e0b633"
+    },
+    {
+      "streamAt": "0x243D75",
+      "declaredBytes": 1952,
+      "protoAt": "0x25D180",
+      "expanded": "158dd9332329a872cbda19887962f348fe9b72899e8c162b06bb02b33174adae"
+    },
+    {
+      "streamAt": "0x244A6C",
+      "declaredBytes": 832,
+      "protoAt": "0x25E700",
+      "expanded": "2c4a03f5b1b813bf4cace82e1db735685f62b9af1b877c13825c6fa2c1bd4f08"
+    },
+    {
+      "streamAt": "0x244C0D",
+      "declaredBytes": 1760,
+      "protoAt": "0x25EA40",
+      "expanded": "080ca17707d1940d7efa36a34c3b66bed63cf2bf624538bba172936339063fa5"
+    },
+    {
+      "streamAt": "0x245436",
+      "declaredBytes": 1920,
+      "protoAt": "0x260000",
+      "expanded": "48a731775e7de941fc56a740550ba58d8e2ad943922840d9a49c3d74589c1e32"
+    },
+    {
+      "streamAt": "0x245F3E",
+      "declaredBytes": 1408,
+      "protoAt": "0x261480",
+      "expanded": "64d6069ba96471dcf13c0fdae99b5e1b9598ae7a60913ddabe7f2156489abaee"
+    },
+    {
+      "streamAt": "0x24625B",
+      "declaredBytes": 1792,
+      "protoAt": "0x261A00",
+      "expanded": "78ab682b923dfc837467974c45ef486507bf8930fe828683a1330699994dfa84"
+    },
+    {
+      "streamAt": "0x24665A",
+      "declaredBytes": 1696,
+      "protoAt": "0x262100",
+      "expanded": "791388a0c82f0d9365b0f657f024954a1beb4c49fef1487ca36c8380c8249cfb"
+    },
+    {
+      "streamAt": "0x246A2C",
+      "declaredBytes": 1344,
+      "protoAt": "0x2627A0",
+      "expanded": "f008f177ea896ad52e73502114d74c9261f22f70346f125621ccadfcec15a9ae"
+    },
+    {
+      "streamAt": "0x2A58FB",
+      "declaredBytes": 1760,
+      "protoAt": "0x270640",
+      "expanded": "9ac6b440e238657cd716c49ee3ff04c8b64e6eb5be9a3a51c87b6dfd4037f940"
+    },
+    {
+      "streamAt": "0x2A5D2E",
+      "declaredBytes": 1888,
+      "protoAt": "0x270D20",
+      "expanded": "3a2ed4c6c1e982e3b63f1cb410818b4c616626de882a2d1567a4f269cc795f15"
+    },
+    {
+      "streamAt": "0x2A61BE",
+      "declaredBytes": 1664,
+      "protoAt": "0x271480",
+      "expanded": "ee2c36bb9e90bfb5a26cdabe4a42bfb606b1f489b7db4a79eec3eaf2da4b9d6a"
+    },
+    {
+      "streamAt": "0x2C08C6",
+      "declaredBytes": 1344,
+      "protoAt": "0x330000",
+      "expanded": "5361ae0b8ab9ad19b6e3cde574633b24780f98e0dcd3a92006df1a3a03740be6"
+    },
+    {
+      "streamAt": "0x2C0C1F",
+      "declaredBytes": 1312,
+      "protoAt": "0x330540",
+      "expanded": "a268d390a5ae8d4a449fc9766e2a50640fed849c31076c5e7ba8c48f69c5278c"
+    },
+    {
+      "streamAt": "0x2C0F4B",
+      "declaredBytes": 1344,
+      "protoAt": "0x330A60",
+      "expanded": "bf1d5f74d5490904778a1519aed40fc636e25add283f9d228e9359b537f3684e"
+    },
+    {
+      "streamAt": "0x2C1286",
+      "declaredBytes": 1312,
+      "protoAt": "0x330FA0",
+      "expanded": "c8ff0fd323fb876decd1d6c780044c02393a37d65bd7561d10f79d14221c8988"
+    },
+    {
+      "streamAt": "0x2C15BA",
+      "declaredBytes": 1344,
+      "protoAt": "0x3314C0",
+      "expanded": "ac4ca45ae318d49d4fc25ede01e222f6320c08cf8b09d2d6d9f6615b2271e2b7"
+    },
+    {
+      "streamAt": "0x2C18F1",
+      "declaredBytes": 1280,
+      "protoAt": "0x331A00",
+      "expanded": "120be525407dd5ea2842787b9c896eedc40b3f6ba29e2af4002d97fed5838d1f"
+    },
+    {
+      "streamAt": "0x2C1C12",
+      "declaredBytes": 1024,
+      "protoAt": "0x332360",
+      "expanded": "b605cf487f2836e28628a0a4a90c41de717cf9f7a8b2873d2504689210a0f4a8"
+    },
+    {
+      "streamAt": "0x2C2ECD",
+      "declaredBytes": 1472,
+      "protoAt": "0x3348C0",
+      "expanded": "507ccf655ec186f0cdda0f582de489c0735167b213420c04d4f68f2453ffbf7e"
+    },
+    {
+      "streamAt": "0x2C3245",
+      "declaredBytes": 736,
+      "protoAt": "0x362B80",
+      "expanded": "9c07ad8937004c67787432ff4ad40d5a44b347261912815f8fceaf3ac08020dd"
+    },
+    {
+      "streamAt": "0x2C8286",
+      "declaredBytes": 1184,
+      "protoAt": "0x348520",
+      "expanded": "e475b0c2f6487b039c59c3a2b8fedbbed6d837eefbc8c946d1671a9b8ef797c9"
+    },
+    {
+      "streamAt": "0x2C8575",
+      "declaredBytes": 1216,
+      "protoAt": "0x348E60",
+      "expanded": "46a602e5e68ad8dffdba50e5b0036af2958426f2af7db16f51c02557d28d0fb2"
+    },
+    {
+      "streamAt": "0x2C8831",
+      "declaredBytes": 864,
+      "protoAt": "0x349320",
+      "expanded": "eef5993b5f3a91dc851dc6dc9ce49694900d05c3923f62ae189bfbd444168929"
+    },
+    {
+      "streamAt": "0x2C8A79",
+      "declaredBytes": 896,
+      "protoAt": "0x349A00",
+      "expanded": "5e12e805cda182bb44956e67361ad6607f2e69c47ed049956b16c0845bbba7ed"
+    },
+    {
+      "streamAt": "0x2C8CF5",
+      "declaredBytes": 1376,
+      "protoAt": "0x349D80",
+      "expanded": "a59cef3d86489b917096e2756153e9d0b7d6e779cf1e4bae5aab79898e001609"
+    },
+    {
+      "streamAt": "0x2C9045",
+      "declaredBytes": 1344,
+      "protoAt": "0x34A2E0",
+      "expanded": "413baeb9c26445f8d1b979c4a0146c03d0bdb3169258980b8b2ee27d1b52fc38"
+    },
+    {
+      "streamAt": "0x2C9385",
+      "declaredBytes": 1024,
+      "protoAt": "0x34A820",
+      "expanded": "b362b089af80710c4e1024940ce3c3c60a519676aebc9e760c4b6801f4bff1c3"
+    },
+    {
+      "streamAt": "0x2C962F",
+      "declaredBytes": 896,
+      "protoAt": "0x34AC20",
+      "expanded": "fc5e44e179234c8321812a2daf558f851bc60e04006a3d6868bda0b1ee283ea3"
+    },
+    {
+      "streamAt": "0x2C9899",
+      "declaredBytes": 992,
+      "protoAt": "0x34B3A0",
+      "expanded": "85d4c5e14d604ec3b9ad35589740b2d8973bd69751354d3c8e0d9ebd4a65fedb"
+    },
+    {
+      "streamAt": "0x2C9B29",
+      "declaredBytes": 1152,
+      "protoAt": "0x34B780",
+      "expanded": "a435f3a10fe20d2d8dc73951d20dc144aa292587a4c6d3f77725007de176bf7a"
+    },
+    {
+      "streamAt": "0x2C9E5D",
+      "declaredBytes": 1184,
+      "protoAt": "0x34BC00",
+      "expanded": "4e0deea3ad2368122ff40abf008e94f6142dda7a033beb9ae071e2c148e5ad2a"
+    },
+    {
+      "streamAt": "0x2CA13F",
+      "declaredBytes": 1152,
+      "protoAt": "0x34C0A0",
+      "expanded": "1fb24a5f97fc120eb8b9497d6b88c3ac9ee20787d659a61b28df4765a30b612f"
+    },
+    {
+      "streamAt": "0x2CA402",
+      "declaredBytes": 1184,
+      "protoAt": "0x34C980",
+      "expanded": "cdc8f11cc60af976b56dc8818ff40fdce10e5007959a482ff784cbeccbb400a5"
+    },
+    {
+      "streamAt": "0x2CA6FA",
+      "declaredBytes": 1376,
+      "protoAt": "0x34CE20",
+      "expanded": "7dd035d09660b9bf9ed227b73a7b5bbf51a83c9d37874ba0530891cc9349f940"
+    },
+    {
+      "streamAt": "0x2CAA2A",
+      "declaredBytes": 1376,
+      "protoAt": "0x34D380",
+      "expanded": "3242a362fdab42f2b14ce740722773534648e6de855b5bc78c131c31f5672f30"
+    },
+    {
+      "streamAt": "0x2CAD6F",
+      "declaredBytes": 1312,
+      "protoAt": "0x34DD80",
+      "expanded": "2a829bef9a24b7e580f29076531a061980a4410e3267d9b03fbc353c895c7ca8"
+    },
+    {
+      "streamAt": "0x2CB09B",
+      "declaredBytes": 1248,
+      "protoAt": "0x34E2A0",
+      "expanded": "33048002299c3305cabf719ff6f2adcdabc07c5106cb5c9aed24cbefe077e11c"
+    },
+    {
+      "streamAt": "0x2CB3C4",
+      "declaredBytes": 1344,
+      "protoAt": "0x34E780",
+      "expanded": "7901f83e364b2d62869a8c8107f9881ee0feb892ed6f19437b86689203653d1e"
+    },
+    {
+      "streamAt": "0x2CB6ED",
+      "declaredBytes": 1152,
+      "protoAt": "0x3504E0",
+      "expanded": "6be2d37196cb42a38fe65c10c6b8cb8838cd1cdb9b904eb26a8f61837dd69bc2"
+    },
+    {
+      "streamAt": "0x2CB98F",
+      "declaredBytes": 1056,
+      "protoAt": "0x350960",
+      "expanded": "71b77dd9956083c4a847c33ce24f789622a6a56f0c7e654098524231520a8cba"
+    },
+    {
+      "streamAt": "0x2CBC2C",
+      "declaredBytes": 1344,
+      "protoAt": "0x350D80",
+      "expanded": "cc617557f3620a38e93b7df2c5cebd4f30fab7276f05abb4939b5702c28ed030"
+    },
+    {
+      "streamAt": "0x2CBF22",
+      "declaredBytes": 1376,
+      "protoAt": "0x3512C0",
+      "expanded": "0432b82cc9a45c90ba9a7f72a6089ead760ffa0adc72638160354eaa268b9527"
+    },
+    {
+      "streamAt": "0x2CC224",
+      "declaredBytes": 1248,
+      "protoAt": "0x351820",
+      "expanded": "da47e15e5665c5eebe3818fc71a5f11d67c56fd7a0aa5609514bd991c4b5aa15"
+    },
+    {
+      "streamAt": "0x2CC4FF",
+      "declaredBytes": 1408,
+      "protoAt": "0x351D00",
+      "expanded": "ef28d9c878463d29faca851a580da20ee66ce70e53d55fb67827fba8494b061d"
+    },
+    {
+      "streamAt": "0x2CCB25",
+      "declaredBytes": 1120,
+      "protoAt": "0x3528C0",
+      "expanded": "dc47422f30638f59ddb95612a6c2899fac51f9fd6c50858cec26b6225bd85b65"
+    },
+    {
+      "streamAt": "0x2CCDB9",
+      "declaredBytes": 1376,
+      "protoAt": "0x352D20",
+      "expanded": "d371e6ad45a83e7aac173f6788c8d8e32bffb12bc9c9c12b0cd70782169558c6"
+    },
+    {
+      "streamAt": "0x2CD0EB",
+      "declaredBytes": 1088,
+      "protoAt": "0x353280",
+      "expanded": "b0dc58fb6b3f32f7af855329311404b28ad98d1864e6d68606c8e62ec4b898e6"
+    },
+    {
+      "streamAt": "0x2CD5C3",
+      "declaredBytes": 1248,
+      "protoAt": "0x353A20",
+      "expanded": "eba43acd6db91c3a447af821de4f4261803c1c8c10c8b87341b53e06e8ff394a"
+    },
+    {
+      "streamAt": "0x2CD88C",
+      "declaredBytes": 1056,
+      "protoAt": "0x3543C0",
+      "expanded": "9167840f306fe653fc5cf6668b74a7a9f6ed3651b060fd0f7bb70aac560c05c6"
+    },
+    {
+      "streamAt": "0x2CDF0A",
+      "declaredBytes": 1056,
+      "protoAt": "0x355260",
+      "expanded": "6a9009782afac63948834af6fd209028b9580e2b75fe130a7c0a2f10df91166b"
+    },
+    {
+      "streamAt": "0x2CE1DA",
+      "declaredBytes": 1440,
+      "protoAt": "0x355680",
+      "expanded": "d9463b42eb36a116f16705fad62f4c9d86999a9e8dc1c7381f6e4cf78f5d8107"
+    },
+    {
+      "streamAt": "0x2CE577",
+      "declaredBytes": 1152,
+      "protoAt": "0x355C20",
+      "expanded": "7d327cd688679fa22058cef312577270579bbabb704bc6f485c759b53d6f87c8"
+    },
+    {
+      "streamAt": "0x2CE867",
+      "declaredBytes": 1024,
+      "protoAt": "0x356480",
+      "expanded": "4f5f8e85cde7a12eb9adfd992d6eeb7e6e0971a313e375231e58e3937c2b3e41"
+    },
+    {
+      "streamAt": "0x2CEB13",
+      "declaredBytes": 1248,
+      "protoAt": "0x356880",
+      "expanded": "b3918c215a4866a3b41c8b86e88b15ffddb96a5f762bf44750f4de69231fbe77"
+    },
+    {
+      "streamAt": "0x2CEE11",
+      "declaredBytes": 1280,
+      "protoAt": "0x356D60",
+      "expanded": "dca50684f837af7bfededdf8175c52737808d3c8742cc424ad86b512a6e1fe86"
+    },
+    {
+      "streamAt": "0x2CF444",
+      "declaredBytes": 1376,
+      "protoAt": "0x357EE0",
+      "expanded": "db0b60a3314729b6fe4d3e93af540f205c850997baf8d8e43d42e5e33ca40ce4"
+    },
+    {
+      "streamAt": "0x2CF783",
+      "declaredBytes": 1184,
+      "protoAt": "0x358440",
+      "expanded": "552b600aeb008cbae6086293e283c6ab8c905b31c9967050a62c32aa238b0093"
+    },
+    {
+      "streamAt": "0x2CFA78",
+      "declaredBytes": 992,
+      "protoAt": "0x3595C0",
+      "expanded": "63db9258adabc4d53b28bef351208b1573d14d77eacf863eed241f4b8fe33a64"
+    },
+    {
+      "streamAt": "0x2CFCDA",
+      "declaredBytes": 1088,
+      "protoAt": "0x35A7C0",
+      "expanded": "250c0a3642f209bb41f12e4268ebbf29707e051ff8b47cf71156b5bede5eefae"
+    },
+    {
+      "streamAt": "0x2D0000",
+      "declaredBytes": 1120,
+      "protoAt": "0x3588E0",
+      "expanded": "dd94759a9c94698a115f21b258b78d0ca70582bac917a96c1fc54eaf97a47899"
+    },
+    {
+      "streamAt": "0x2D02C5",
+      "declaredBytes": 1184,
+      "protoAt": "0x358D40",
+      "expanded": "ddeb5df2e0fb620361fd18989c419c125e4bde987c95aaf523540d60181073e1"
+    },
+    {
+      "streamAt": "0x2D055E",
+      "declaredBytes": 1184,
+      "protoAt": "0x3599A0",
+      "expanded": "9e659e4a65063dbf78382409da6c74e1c285ef1d43d272c10ade47fd817968e4"
+    },
+    {
+      "streamAt": "0x2D07E8",
+      "declaredBytes": 1184,
+      "protoAt": "0x359E40",
+      "expanded": "e2bc802619a39344977ba5eb5d70706948810b261a0520af8154230f1f77ba42"
+    },
+    {
+      "streamAt": "0x2D0AAF",
+      "declaredBytes": 1248,
+      "protoAt": "0x35A2E0",
+      "expanded": "d576980c564a38d9299f3a5a72e29b2584f627bd6a1f59afe85ed3b8ed5325e0"
+    },
+    {
+      "streamAt": "0x2D0D75",
+      "declaredBytes": 1120,
+      "protoAt": "0x35AC00",
+      "expanded": "651dd5c9b05a64d9d9e61ee50bebdb44ce21c95a7e409919397f2d45201d2880"
+    },
+    {
+      "streamAt": "0x2D100D",
+      "declaredBytes": 1088,
+      "protoAt": "0x35B4C0",
+      "expanded": "b699adfabae6c537fcc6765b11d5d4f24695b9e7097d22d88e4a0c83b7ab6426"
+    },
+    {
+      "streamAt": "0x2D12BC",
+      "declaredBytes": 992,
+      "protoAt": "0x35B900",
+      "expanded": "1638ea28972c205b77b5eff97391f70c444b65a3ece9250aeaf425b1d7688351"
+    },
+    {
+      "streamAt": "0x2D1542",
+      "declaredBytes": 1024,
+      "protoAt": "0x35C0C0",
+      "expanded": "073e0aeb2fb88280242c75aa34a148560a28fce43fd9ad6d878fe1b86e35df7d"
+    },
+    {
+      "streamAt": "0x2D17AF",
+      "declaredBytes": 1408,
+      "protoAt": "0x360000",
+      "expanded": "f280aacbfd71c746790e81cf34cdc504dd97d0d3c700963c0ec32189f479d35b"
+    },
+    {
+      "streamAt": "0x2D1AD6",
+      "declaredBytes": 1184,
+      "protoAt": "0x360580",
+      "expanded": "b13f1c3ad2a6da9b9211a4ccc1bb6848d575414300ee1981abd90b47dcd3da00"
+    },
+    {
+      "streamAt": "0x2D1DCA",
+      "declaredBytes": 1152,
+      "protoAt": "0x360A20",
+      "expanded": "4f85a9549aa289c3627effa8ed55235ec164abdde0e449b3e003e5ae62f57b45"
+    },
+    {
+      "streamAt": "0x2D2079",
+      "declaredBytes": 1152,
+      "protoAt": "0x360EA0",
+      "expanded": "79f06e6af327953c0c4f1397b1e3b5d8a4d0be5efed0633bf6ed35bd3d623055"
+    },
+    {
+      "streamAt": "0x2D231E",
+      "declaredBytes": 1056,
+      "protoAt": "0x361320",
+      "expanded": "ad84e4189d53ff078e8560c00d0b63df2c3dd87c35ff926b1cd8173bc73abf6b"
+    },
+    {
+      "streamAt": "0x2D2597",
+      "declaredBytes": 1184,
+      "protoAt": "0x361740",
+      "expanded": "03f3da47a7fc73e1376c49ad9c00821a4ec126d0d55786016e37b9c48ade031f"
+    },
+    {
+      "streamAt": "0x2D2888",
+      "declaredBytes": 1184,
+      "protoAt": "0x362220",
+      "expanded": "ef6c7687666bce7cd5c17af2482c0fd626d6043e09bf49a9723711099cb050de"
+    },
+    {
+      "streamAt": "0x2D2BA2",
+      "declaredBytes": 928,
+      "protoAt": "0x362E60",
+      "expanded": "954ddf665e922e98bf9c2b0d48ff0dc44582485a1ebc55ab90baa1bb6dcf677b"
+    },
+    {
+      "streamAt": "0x2D2E22",
+      "declaredBytes": 1056,
+      "protoAt": "0x363200",
+      "expanded": "cdcf76998444f80238b59f33a456e6dc3fec8a5c4b95ffe903be8d48861085ab"
+    },
+    {
+      "streamAt": "0x2D30EE",
+      "declaredBytes": 832,
+      "protoAt": "0x363620",
+      "expanded": "ae71d0ffeb53f88c022618147b3d845dd23f4bf5cb23b5d01c70437591366846"
+    },
+    {
+      "streamAt": "0x2D3326",
+      "declaredBytes": 1088,
+      "protoAt": "0x363960",
+      "expanded": "8eecb433c64264d1def9c5059c9214dade8133401a8c5c074350a99e91c22bf8"
+    },
+    {
+      "streamAt": "0x2D35D0",
+      "declaredBytes": 896,
+      "protoAt": "0x363DA0",
+      "expanded": "7c1e438b29c44842a9ab37a55d243cb8c40ea870f83a68821ca9b03f37a7e104"
+    },
+    {
+      "streamAt": "0x2D37FC",
+      "declaredBytes": 800,
+      "protoAt": "0x364120",
+      "expanded": "c95a2f0d7e975b5895c5b6005c740b5feaf4ccd974d67c6e4ec4cd58a3bfefc2"
+    },
+    {
+      "streamAt": "0x2D3A2B",
+      "declaredBytes": 1088,
+      "protoAt": "0x364440",
+      "expanded": "167e68c44ce73ba11a8514a29955fd58420b4eef5300384bc7a16ebd55fbeae3"
+    },
+    {
+      "streamAt": "0x2D3CD0",
+      "declaredBytes": 864,
+      "protoAt": "0x364CC0",
+      "expanded": "1505dbdeb6a785468498f9a1c475320a602dcf45edaac20bf9ada9bfff248840"
+    },
+    {
+      "streamAt": "0x2D3F19",
+      "declaredBytes": 832,
+      "protoAt": "0x365020",
+      "expanded": "4b356c4bfac6d80c15a830915e0716d4810437df5e26d20692eeb8bb3dcaf1d3"
+    },
+    {
+      "streamAt": "0x2D4151",
+      "declaredBytes": 960,
+      "protoAt": "0x365360",
+      "expanded": "a70122851279fba8c94d4a24c794228aa8f1894cd4aae14db807890943884755"
+    },
+    {
+      "streamAt": "0x2D43D2",
+      "declaredBytes": 1120,
+      "protoAt": "0x365B40",
+      "expanded": "dda697a9aa01f7325f3380b057b3fc57faa4ecf6056998fc5810f422d073981a"
+    },
+    {
+      "streamAt": "0x2D468C",
+      "declaredBytes": 928,
+      "protoAt": "0x365FA0",
+      "expanded": "45b6242783efc3cfd52a3390444d70bbce9f2df93665b7724b144b042f8aca63"
+    },
+    {
+      "streamAt": "0x2D48C2",
+      "declaredBytes": 1600,
+      "protoAt": "0x366340",
+      "expanded": "10375ab5564d66d18e154a19fda232f4b0732a1caeaa8d373ad6c13dd0e94acf"
+    },
+    {
+      "streamAt": "0x2D4C7D",
+      "declaredBytes": 1120,
+      "protoAt": "0x366980",
+      "expanded": "2f9566e26072be1c74fae7a0b98e0a3ab61861993d0a6c0ff9d3a1e79517360e"
+    },
+    {
+      "streamAt": "0x2D4F10",
+      "declaredBytes": 832,
+      "protoAt": "0x366DE0",
+      "expanded": "8bab3a2268855f36a15a3b431b35c6a37087216291943b94934c13770fa13032"
+    },
+    {
+      "streamAt": "0x2D5160",
+      "declaredBytes": 1088,
+      "protoAt": "0x367120",
+      "expanded": "0b812e5d91137d9c678063c28763223ad65357712e43912d46bbf80b3872d890"
+    },
+    {
+      "streamAt": "0x2D53FA",
+      "declaredBytes": 1056,
+      "protoAt": "0x367560",
+      "expanded": "59456caa0cc3c9c4f5749ab2e5e1a5b141b4db0d10ef351ffc962dc583107ca5"
+    },
+    {
+      "streamAt": "0x2D5684",
+      "declaredBytes": 928,
+      "protoAt": "0x367980",
+      "expanded": "7f7bfd070cb0da1d18dbebbecbf00cd6379ef67687177a44b451b6173f8ac4c3"
+    },
+    {
+      "streamAt": "0x2D58D3",
+      "declaredBytes": 960,
+      "protoAt": "0x367D20",
+      "expanded": "a3f98de5a30cc31149547f48af3d9d7fe7cc99eff41a3c781179007e087e3dd0"
+    },
+    {
+      "streamAt": "0x2D5B45",
+      "declaredBytes": 928,
+      "protoAt": "0x3680E0",
+      "expanded": "deefcf5edbac0f471d36856058a44d4f17778e8675cc3988bbc0058cabd20622"
+    },
+    {
+      "streamAt": "0x2D5DD1",
+      "declaredBytes": 1728,
+      "protoAt": "0x368480",
+      "expanded": "f4ff51f74422f2b76254358f2b8944abfe2a032e1d564b2f45856fbc9870ff5e"
+    },
+    {
+      "streamAt": "0x2D6262",
+      "declaredBytes": 1024,
+      "protoAt": "0x369A20",
+      "expanded": "8858c14f8faa25fcafeba75a74c58911d3a2b86f1f715e6a5123fdb39d89ca19"
+    },
+    {
+      "streamAt": "0x2D64D4",
+      "declaredBytes": 1248,
+      "protoAt": "0x369E20",
+      "expanded": "52b5dbe4470b12589c17b61eeedfd85785f51701bc4de50d8df0165f9754d3f5"
+    },
+    {
+      "streamAt": "0x2D67CC",
+      "declaredBytes": 1152,
+      "protoAt": "0x36A300",
+      "expanded": "30966795a67826b093fcb2acf3fbfd2b0aae050b60269df13ba5b4458d954680"
+    },
+    {
+      "streamAt": "0x2D6ED9",
+      "declaredBytes": 1248,
+      "protoAt": "0x36AE80",
+      "expanded": "0544ac92b71560e6a640daa09109b7138859ef6b210410eed094c1e75f847335"
+    },
+    {
+      "streamAt": "0x2D71C3",
+      "declaredBytes": 1152,
+      "protoAt": "0x36B360",
+      "expanded": "51dfb78b5680a5551261e967bbad887e41e92acb37e90a1c0137b8370285e18b"
+    },
+    {
+      "streamAt": "0x2D77E0",
+      "declaredBytes": 1216,
+      "protoAt": "0x36C060",
+      "expanded": "338126a7fe8b23200bf578f19e7ad5c18feb47b0bcb7425d3f7d16a83ec4d960"
+    },
+    {
+      "streamAt": "0x2D7A8F",
+      "declaredBytes": 1024,
+      "protoAt": "0x36C520",
+      "expanded": "c2788a64f7a8a7dbedc0f67e0d1b2ee066cd6b4e3287af9c10d0d7ecced80d65"
+    },
+    {
+      "streamAt": "0x2D7CDE",
+      "declaredBytes": 928,
+      "protoAt": "0x36C920",
+      "expanded": "e66e2d82d6ab1634fdda8c13c2fe6cccb6ebf232bee03cd30af7dad604c09373"
+    },
+    {
+      "streamAt": "0x2D7EFF",
+      "declaredBytes": 960,
+      "protoAt": "0x36CCC0",
+      "expanded": "58ebef627aff0fa419110869aaf9f84fe4a0b085dec26e25c01889931f3058ab"
+    },
+    {
+      "streamAt": "0x2D816D",
+      "declaredBytes": 1088,
+      "protoAt": "0x36D080",
+      "expanded": "790b9a00c6b41ab1ce51029fd3e13d3e97be3f7c3769947cfc457e35fe07a98e"
+    },
+    {
+      "streamAt": "0x2D83F5",
+      "declaredBytes": 1248,
+      "protoAt": "0x36D4C0",
+      "expanded": "478152072a0038183512e18b2d75e7c9e64f62a06ccd22c6b5aef87f562e4d01"
+    },
+    {
+      "streamAt": "0x2D86E8",
+      "declaredBytes": 1376,
+      "protoAt": "0x36DD40",
+      "expanded": "a7fc507beff46ba474e851ce48d304460cd4464883ceeeeddf3c460c8ffee4f0"
+    },
+    {
+      "streamAt": "0x2D8A72",
+      "declaredBytes": 1056,
+      "protoAt": "0x36E2A0",
+      "expanded": "2f1bef690b41a89eb2a3710ab9f29cf280df1c47101095ac109d089d378b935b"
+    },
+    {
+      "streamAt": "0x2DD29C",
+      "declaredBytes": 1184,
+      "protoAt": "0x387780",
+      "expanded": "fb886b98b7e8049a9dcc89ce979ea1b9f8b5a99e82291c168b857bd904467ed1"
+    },
+    {
+      "streamAt": "0x2EAC48",
+      "declaredBytes": 832,
+      "protoAt": "0x3A7700",
+      "expanded": "6bb30e302dc3c8381a7f8280e8f5c8849c4ee6464dde1c630359b567e3cf2877"
+    }
+  ]
+}
