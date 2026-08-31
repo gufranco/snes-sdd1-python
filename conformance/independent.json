@@ -1,0 +1,398 @@
+{
+  "note": "This decoder run against pairs a third party produced: twenty streams that somebody else compressed, each shipped beside the bytes they compressed from. Counts, lengths and digests only. No compressed byte and no decompressed byte is recorded here, and none can be recovered from this.",
+  "why": "Every other check on this decoder compares it against a decompressor, and every decompressor that exists descends from one body of reverse engineering, so agreement between them is one witness counted twice. These pairs come from the other side: an encoder, written by somebody making a modification to the game, who had to produce streams the real chip would read. Reproducing what that encoder emitted is a different question from agreeing with another decoder, and it is the only source on this machine that asks it.",
+  "source": {
+    "what": "The assembly source shipped inside an MSU-1 modification of Street Fighter Alpha 2",
+    "author": "gizaha",
+    "dated": "2021-03-08, inside a package dated 2022-10-21",
+    "carried": false,
+    "howToRepeat": "The pairs sit under Source/sdd1 in that package, each stream as a .sdd1 beside the .raw it was made from. Decode each .sdd1 for the length of its .raw and compare. The digests below identify both halves of every pair without carrying either."
+  },
+  "measuredOn": "2026-08-31",
+  "reproduced": 18,
+  "shortByAuthor": 2,
+  "differs": 0,
+  "aboutTheShortOnes": "Two pairs decode to sixty four bytes fewer than their .raw declares, and every byte they do produce matches. The tails they are missing are structured records rather than padding, and the same decoder reads full-length streams at the same addresses in the retail cartridge without running out, so the shortfall is in the author's own export rather than here. It is recorded as the author's rather than corrected, because correcting somebody else's file to make a check pass is the failure this whole record exists to prevent.",
+  "pairs": [
+    {
+      "name": "c2af56",
+      "compressedBytes": 4571,
+      "declaredBytes": 7210,
+      "reproduced": 7210,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "22e65e0a",
+        "md5": "34ecb27106b1f2c487c9ea059fc4d109",
+        "sha1": "2e1ceb105bfa8c06be77dfc7129fc4e127371b6b",
+        "sha256": "ad5df4804cf6fa4fc4b4dd3f18154c4cfc48459755dd507d2c92c5e29d5bb62f"
+      },
+      "declared": {
+        "crc32": "b6ce43dc",
+        "md5": "1406b6ef1c7e833c5e51fe79ba3dd0d6",
+        "sha1": "0945b652b2b99f9384cba8d03b2d67d19579a018",
+        "sha256": "1abaf62cacb147154aba2b48df8393a357626b5744d69fbdefb26d11e9ca6b60"
+      }
+    },
+    {
+      "name": "c2d013",
+      "compressedBytes": 4466,
+      "declaredBytes": 7218,
+      "reproduced": 7218,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "829ee7e0",
+        "md5": "f83ee35d7ec3fc33dda129cf58a1bc69",
+        "sha1": "68ee613be4edce171786ff9374d715b62b90be84",
+        "sha256": "fe1842c53efb1320ae433fe0f58e2442ed870d2b6ae1c583142d8f18c4b0605a"
+      },
+      "declared": {
+        "crc32": "0b96e768",
+        "md5": "a617bd06c172e7d7bf2d97c7c8e16a68",
+        "sha1": "4e439a365ac1da39ae03626c5e63c5137344229d",
+        "sha256": "bff49e76fa5e7e151263d99ff23c2db8c2e61aedca8820c14b0da9e0028963e1"
+      }
+    },
+    {
+      "name": "c3c411",
+      "compressedBytes": 3368,
+      "declaredBytes": 4600,
+      "reproduced": 4600,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "d1ca0bb5",
+        "md5": "51d2ed1bacad55925e1a69c6df2e8cad",
+        "sha1": "35e8de71f8f1b9bb8d2a68e6fe51c05c6106111a",
+        "sha256": "135a957f8e7a138aae72fa2428f6e8b506d374fb9f6c61d4ea01ea9d16f96310"
+      },
+      "declared": {
+        "crc32": "e3fb97ff",
+        "md5": "32e53b5769e046d8ebe5cb4eb4b311dc",
+        "sha1": "65668ef7db79b1a9d9528f251f3c2915540b94cc",
+        "sha256": "ca29269ab811096bfa1dbfb359cd45e708defb3bf3148d47289e68a9d7cb31df"
+      }
+    },
+    {
+      "name": "c3f142",
+      "compressedBytes": 2938,
+      "declaredBytes": 3992,
+      "reproduced": 3992,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "43261e1a",
+        "md5": "20f2ede39c349d7355dd57b34e6b8823",
+        "sha1": "cb3a95e54fa94e5150d144a76a3fa609f5a2e248",
+        "sha256": "3921d6c7bd627f39037bc97a65d0c56ca20ceb8fa1c142b406c289587bcad108"
+      },
+      "declared": {
+        "crc32": "b1815679",
+        "md5": "93754c41b6dca71cd2c1f0b9174d75ab",
+        "sha1": "ed2254edb8a7bb62b632943606075222b7296da1",
+        "sha256": "9798da8923a83b139b358853bb371f72241e16f24063551f7afb95d4ec4c63d0"
+      }
+    },
+    {
+      "name": "player movesets/c20000",
+      "compressedBytes": 6531,
+      "declaredBytes": 9852,
+      "reproduced": 9852,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "ca782be4",
+        "md5": "a9c34dcd883e6bbf3c7af11fdde2da24",
+        "sha1": "39dca9bead91b70e41b718b487514cdf48f95d58",
+        "sha256": "6868223cb141db526a2c642f7cbcb08389c7a319550f1c8613bf04dc34ba37c2"
+      },
+      "declared": {
+        "crc32": "5a3b1b7b",
+        "md5": "5efda6ddd95f2050d295f6c88172a290",
+        "sha1": "f9d45b18834547bbc335d220436707d1e6eb990e",
+        "sha256": "47e1162861cebc5b5e173e35638a8702a6be93cb0c7a66197fe03a6cf2457161"
+      }
+    },
+    {
+      "name": "player movesets/c22dbf",
+      "compressedBytes": 5652,
+      "declaredBytes": 7188,
+      "reproduced": 7188,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "c7dce6b3",
+        "md5": "f3768f0f19570b6581d1ed1648494e69",
+        "sha1": "245918e8e6801c1e0022a6498e77c8d9c754adcd",
+        "sha256": "d5ed69d5e78bdabdf8bf0c9a9c26287504985935262a44894ecac9d6336a7b7b"
+      },
+      "declared": {
+        "crc32": "b643a7bc",
+        "md5": "305d5e2a1f08eb35c096773cb3d2b419",
+        "sha1": "102a18c51884e094c30577098c366de00c5aa138",
+        "sha256": "14490269d59c23207a82774a6374e5fbaf62088db0736899ea16463fa2b14a99"
+      }
+    },
+    {
+      "name": "player movesets/c2441e",
+      "compressedBytes": 5630,
+      "declaredBytes": 7814,
+      "reproduced": 7814,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "62db1b04",
+        "md5": "bc94512ae792150baf473dd40bc9b797",
+        "sha1": "8ceb33ba8b92f05d2686a8ecfd92ce1feffdab7f",
+        "sha256": "47ab28f73107349eaea37dd3bbfa924c07c26aa5b2e65b92dfac3e83eff75cf5"
+      },
+      "declared": {
+        "crc32": "b08c8744",
+        "md5": "3b4e3397a41153e9474269f9ddf7f91f",
+        "sha1": "542fe167d9ab07b663db3e161413c1bbe7dfd914",
+        "sha256": "185b3f4b0dc2f7ff9a462ef782ac8d8c8911653d103c3290621424938f0da98e"
+      }
+    },
+    {
+      "name": "player movesets/c26aca",
+      "compressedBytes": 4834,
+      "declaredBytes": 8176,
+      "reproduced": 8168,
+      "outcome": "shortByAuthor",
+      "compressed": {
+        "crc32": "e61c9896",
+        "md5": "41154fbc6bef053c083ea6717f8c113a",
+        "sha1": "323fa62a210283bf2ef6494e8cc10713d247f3a4",
+        "sha256": "e1278afed283e776fe3ad904270adc4e8965207fc238c1337f0ef5de6fe1c23e"
+      },
+      "declared": {
+        "crc32": "318fe139",
+        "md5": "b15bc749fe5d68379a35119f1881d07f",
+        "sha1": "e9ebf50ea2f8a4f1cb63ebe1404f207358f8c479",
+        "sha256": "596bdc3ca13385698055cbe4235b224c0b250c39d0fc85d3dc67862b7827015a"
+      }
+    },
+    {
+      "name": "player movesets/c27c85",
+      "compressedBytes": 5371,
+      "declaredBytes": 8622,
+      "reproduced": 8622,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "799799b2",
+        "md5": "74456f7c640b895b5af1eaf363d64e16",
+        "sha1": "9d1c66361b7804bddfc44b9373e11a0c194b2216",
+        "sha256": "8fe10be4a1df59d6b1c24f911054a94eec1380bce5b7053586a0a360bd54f34a"
+      },
+      "declared": {
+        "crc32": "6bedca0f",
+        "md5": "e720c6483889ea3b823b4db398addf4f",
+        "sha1": "79299ddabfb741151609fa5bcc3555cd0f1463bd",
+        "sha256": "bdf4bc7bb0a13fdac3e20553c6ff77a26f50b3030b76d6579664090eced73ba6"
+      }
+    },
+    {
+      "name": "player movesets/c2bfe2",
+      "compressedBytes": 4097,
+      "declaredBytes": 5052,
+      "reproduced": 5052,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "96f6efeb",
+        "md5": "67a224aff2c26e69b56b89157b6598b8",
+        "sha1": "ac5484c766bf90481959a5d48d5bdc53b7cf21d2",
+        "sha256": "e2bc83c1b7534b2dc378b53a176a71aada9b5f868bd1ed796ff6c73be10d18b6"
+      },
+      "declared": {
+        "crc32": "673713b0",
+        "md5": "de88246bb454ea80c0ff6517d725226d",
+        "sha1": "9ea9f060e5007b0f6403acb4b752cc747b6c5f75",
+        "sha256": "66a64df4d54f5adea3bc64138bd87927bb00eb81edd1160d027936779bfcee79"
+      }
+    },
+    {
+      "name": "player movesets/c2d013",
+      "compressedBytes": 4467,
+      "declaredBytes": 7218,
+      "reproduced": 7218,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "728a9312",
+        "md5": "dd89df6eb330c41f36a8f6acebe70c5e",
+        "sha1": "0158f0f50f6ad0cd076c2e5d46f3ca11cb22d12c",
+        "sha256": "0f99795f605b087667eb5e92deeda66437cb3f52a07fb09de3ea1c4353e3c675"
+      },
+      "declared": {
+        "crc32": "0b96e768",
+        "md5": "a617bd06c172e7d7bf2d97c7c8e16a68",
+        "sha1": "4e439a365ac1da39ae03626c5e63c5137344229d",
+        "sha256": "bff49e76fa5e7e151263d99ff23c2db8c2e61aedca8820c14b0da9e0028963e1"
+      }
+    },
+    {
+      "name": "player movesets/c34a40",
+      "compressedBytes": 3223,
+      "declaredBytes": 4324,
+      "reproduced": 4324,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "15b56fc3",
+        "md5": "a51fa2c0a9a942cb144409edde519118",
+        "sha1": "1d4721612b1e6821d89c443109b353202f937a1b",
+        "sha256": "429c8961a4ba532426d03091eed8d02af5e8ae1d7180ab89c9c101a1cf0c83ed"
+      },
+      "declared": {
+        "crc32": "05d79b1d",
+        "md5": "25b15abdf536efee3520f4bf2764440b",
+        "sha1": "d2be1cbe292760ad50bf97a9f2224df40a3ec624",
+        "sha256": "ceb6f0f57eff1fd7f17493d4f72f2006a8280645fbb2749c359455f32a180d0f"
+      }
+    },
+    {
+      "name": "player movesets/c34be5",
+      "compressedBytes": 3788,
+      "declaredBytes": 5168,
+      "reproduced": 5168,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "1848327a",
+        "md5": "6f37bb280d3af7acdafbcea9018856bc",
+        "sha1": "ff02155c99280caf7221be01226e8d7e08c818d8",
+        "sha256": "cc8ff781176f5e854fca4e2a2f1db87840bf1ab49fe69d4f572fc8ab0b502c48"
+      },
+      "declared": {
+        "crc32": "d506ee15",
+        "md5": "750df36df440de712d7d99f329180a07",
+        "sha1": "f5115320a4b941c8aa111e534deebb715e81d13d",
+        "sha256": "8c6ae747a44c27cb7993b1e7561a927277752ced5d9db72f46de66d2337e176f"
+      }
+    },
+    {
+      "name": "player movesets/c35a4e",
+      "compressedBytes": 3941,
+      "declaredBytes": 6304,
+      "reproduced": 6304,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "3652e9de",
+        "md5": "2c17732ab69e95e90aaf8d87e7191da2",
+        "sha1": "0b683da5a8ac860490555eb8813e40609f22e267",
+        "sha256": "6a330cb9a260a89174da5324a16b2afc851426a112f71e83b9402b3e1e8cc9a2"
+      },
+      "declared": {
+        "crc32": "43c95479",
+        "md5": "e1bc54a9a1c8a687fcb353f45f4e26a0",
+        "sha1": "2d8b0aef7c2a10ff648095d30b89bcd5a4088bfe",
+        "sha256": "3da8954da856fc15d487b0361b262201c7db818bea5cb40d8df3b7eaf8ef73d0"
+      }
+    },
+    {
+      "name": "player movesets/c383e0",
+      "compressedBytes": 3619,
+      "declaredBytes": 5960,
+      "reproduced": 5950,
+      "outcome": "shortByAuthor",
+      "compressed": {
+        "crc32": "0ad6ae4c",
+        "md5": "a60d7b2438fe27915de08392f02417fb",
+        "sha1": "380bb5bbf6d228dfb26ca1dc829266ba91a04e07",
+        "sha256": "e03844b20651045c4f2ceb2a50995bb60f32b9df68b4d0dd607b62bd9d916825"
+      },
+      "declared": {
+        "crc32": "3385b3a5",
+        "md5": "9e6a69dcf68b76ea7213669628afaec4",
+        "sha1": "594063671f9a6b9aa4714c1e2027aba01d432115",
+        "sha256": "f291171dc73f86c7e658d1ce07fb8e0afeafbab2e50493989286489bdf931fd3"
+      }
+    },
+    {
+      "name": "player movesets/c39e99",
+      "compressedBytes": 3223,
+      "declaredBytes": 4324,
+      "reproduced": 4324,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "15b56fc3",
+        "md5": "a51fa2c0a9a942cb144409edde519118",
+        "sha1": "1d4721612b1e6821d89c443109b353202f937a1b",
+        "sha256": "429c8961a4ba532426d03091eed8d02af5e8ae1d7180ab89c9c101a1cf0c83ed"
+      },
+      "declared": {
+        "crc32": "05d79b1d",
+        "md5": "25b15abdf536efee3520f4bf2764440b",
+        "sha1": "d2be1cbe292760ad50bf97a9f2224df40a3ec624",
+        "sha256": "ceb6f0f57eff1fd7f17493d4f72f2006a8280645fbb2749c359455f32a180d0f"
+      }
+    },
+    {
+      "name": "player movesets/c3b7cc",
+      "compressedBytes": 3289,
+      "declaredBytes": 5194,
+      "reproduced": 5194,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "dd8d5f72",
+        "md5": "28e5db3205d020c0e9cc716025fe7cbd",
+        "sha1": "567f562d324744b68c9a174ed53f970b68a4fb29",
+        "sha256": "9fbc066c044760c3e076b56546f0727dcc2e26c6abe42a5318e97eaf72cf498e"
+      },
+      "declared": {
+        "crc32": "df83d719",
+        "md5": "9fe8f6b904d8f02bdec399aeb20824b8",
+        "sha1": "8a8b2728a449e60b7cd88cbc2b922645f8a80b4a",
+        "sha256": "ac967ecb474b0faeac4c6423e54b58f66e2359c25cc0aa4eb9c877c3a78b6fce"
+      }
+    },
+    {
+      "name": "player movesets/c3cfe9",
+      "compressedBytes": 2898,
+      "declaredBytes": 3782,
+      "reproduced": 3782,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "73aff94d",
+        "md5": "d615dc0c143d65cca0ddc84eddb6e6b1",
+        "sha1": "fb5badbda3121476147402b2535a51c7de643569",
+        "sha256": "0b9f14d0cb88dc3217407ea82db278ef77f06f38c21be82945b5f2a9f3d87b4e"
+      },
+      "declared": {
+        "crc32": "4bc72206",
+        "md5": "fe4af04388a307bc30931a6f89dfafbf",
+        "sha1": "5cebc904c6b9b3ee10adc75024b82020c146bfa8",
+        "sha256": "d08c38b3fd77b73a919d9af98da11988de140cb7160053d5599caeded928e39a"
+      }
+    },
+    {
+      "name": "player movesets/c3f142",
+      "compressedBytes": 2939,
+      "declaredBytes": 3992,
+      "reproduced": 3992,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "2f2330e9",
+        "md5": "9673cb3e84029af588b9b3692f2ead01",
+        "sha1": "71e9af5463cc7dace1b2545871d2c463c1e59546",
+        "sha256": "eadf82f63be259ce8bcffec01064ba1f5ab366b4a7467e4a54778fbda3575b8b"
+      },
+      "declared": {
+        "crc32": "b1815679",
+        "md5": "93754c41b6dca71cd2c1f0b9174d75ab",
+        "sha1": "ed2254edb8a7bb62b632943606075222b7296da1",
+        "sha256": "9798da8923a83b139b358853bb371f72241e16f24063551f7afb95d4ec4c63d0"
+      }
+    },
+    {
+      "name": "player movesets/c44ffd",
+      "compressedBytes": 1417,
+      "declaredBytes": 2578,
+      "reproduced": 2578,
+      "outcome": "identical",
+      "compressed": {
+        "crc32": "be7a947c",
+        "md5": "3b6b683c3f3b97db85c9d1b12d57b318",
+        "sha1": "5defc4c2fe4f9be9ba359f155e3fed7931c0d9de",
+        "sha256": "522c502dadb878b5ee08b011c54a03c3a77e063dbbfac6e2a23dd0240aebe36e"
+      },
+      "declared": {
+        "crc32": "2f0a8b87",
+        "md5": "b3cfa07fdfa2f7860abc68c1480f2d1c",
+        "sha1": "310ee6b14678b6912cf3d160eab8c3fff28cac89",
+        "sha256": "003acbf8d630f426363e5b5406c78e14763f096fc58651290159f6a5c686617e"
+      }
+    }
+  ]
+}
