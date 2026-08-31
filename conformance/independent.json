@@ -394,5 +394,163 @@
         "sha256": "003acbf8d630f426363e5b5406c78e14763f096fc58651290159f6a5c686617e"
       }
     }
-  ]
+  ],
+  "authored": {
+    "what": "Seven further streams from the same package that ship with no counterpart beside them, six of them content the author wrote rather than content the cartridge holds.",
+    "why": "The twenty pairs are a round trip inside one toolchain: the author's encoder out, this decoder back. These ask a different question, because one of them is an unmodified export of data the retail cartridge also carries. Decoding that one here and decoding the cartridge's own stream here must reach the same bytes, and the modified siblings beside it must not, which is the control that makes the agreement mean something.",
+    "positiveControl": {
+      "name": "vs results us names original",
+      "retailStreamAt": "0x1AB82E",
+      "retailDeclaredBytes": 2048,
+      "agreedBytes": 2016,
+      "outcome": "identical over every byte the author's export carries",
+      "shortByAuthor": 32
+    },
+    "negativeControl": {
+      "names": [
+        "vs results us names +sodom",
+        "vs results us names +nash +sodom",
+        "vs results japanese names"
+      ],
+      "outcome": "none matches any stream in either cartridge",
+      "why": "They are the same screen with names changed, so a match would have meant the comparison was insensitive to content."
+    },
+    "aboutTheShortOne": "The matching export stops thirty two bytes before the cartridge's own stream declares, and every byte it does carry agrees. That is the same shortfall the twenty pairs show at sixty four bytes, from the same author's export step, and it is left uncorrected here for the same reason.",
+    "searched": "Every stream in both cartridges whose declared length could hold the export, decoded and compared.",
+    "streams": [
+      {
+        "name": "7e9440 table",
+        "compressedBytes": 4064,
+        "expandedBytes": 8192,
+        "runsOn": true,
+        "compressed": {
+          "crc32": "1445271b",
+          "md5": "a9cf353545f7ebe7fb99701b664d841a",
+          "sha1": "833263cbc44ec83325a2a8b2186aa9535a89ab50",
+          "sha256": "517eb25b412a1153157d30e6e9476b6c81e81181434621425727e0067fb065e9"
+        },
+        "expanded": {
+          "crc32": "2b6f58b2",
+          "md5": "e1ded36613f94efc9b22386e3730957a",
+          "sha1": "ca2b8ab1a98e8c39f7633a6a4b8337c4afea61e2",
+          "sha256": "4a7617804d019b445d0455e9edb1894f115d40a77ae37bf9d95a98f10d0421ab"
+        },
+        "matchesRetail": false
+      },
+      {
+        "name": "nas name (tilemap) vs screen",
+        "compressedBytes": 56,
+        "expandedBytes": 68,
+        "runsOn": false,
+        "compressed": {
+          "crc32": "3e77a645",
+          "md5": "5be5a5fad683b12632bead695ee2e151",
+          "sha1": "2a9f44ba66a7581f54aac26b0cfadcaa6aa3d5d6",
+          "sha256": "3323b933610d3695d7684896729d4d5ce67af5d7403f784fc5708fcb9c80512e"
+        },
+        "expanded": {
+          "crc32": "10023040",
+          "md5": "8930609dbc264304e4f23edbae01553b",
+          "sha1": "4741ec17e1d2dbcbf2e50a2c00f6ae29645920ed",
+          "sha256": "c7ce379dc4f8ed9208a5036da66f4567d284d7281bd4c3ff82bc60a89dd398b1"
+        },
+        "matchesRetail": false
+      },
+      {
+        "name": "sodom name (tilemap) vs screen",
+        "compressedBytes": 56,
+        "expandedBytes": 66,
+        "runsOn": false,
+        "compressed": {
+          "crc32": "3bd4aab6",
+          "md5": "84bb256181d8c7ce6f398b1e9e16bc49",
+          "sha1": "9ae6a6975a476b829f75118d15ab11e424514201",
+          "sha256": "ae06c73f0df3c72b4d8d34ab1e98a947abf61ff96f3518de9c608da8c13d209c"
+        },
+        "expanded": {
+          "crc32": "3151b723",
+          "md5": "9e52695eaab365effeb043e26cb2b06f",
+          "sha1": "fe7bd9fc11231615fde07fb3d7379f436233d4e1",
+          "sha256": "5e05b6d593921042220e54212bf5d68e44c76492393028e3d52c753329befa50"
+        },
+        "matchesRetail": false
+      },
+      {
+        "name": "vs results japanese names",
+        "compressedBytes": 217,
+        "expandedBytes": 1954,
+        "runsOn": false,
+        "compressed": {
+          "crc32": "3bb8b927",
+          "md5": "d3a5051067139a54de8423e88a6314e2",
+          "sha1": "76ba76a6f1a3387f79a842e3db8dad265ed6e300",
+          "sha256": "8a047d2ca654a1e36887b1aecf1abb70b314ad4234ed7a337f38e675e4e0699b"
+        },
+        "expanded": {
+          "crc32": "9df7cf5a",
+          "md5": "ff5d11254664815774bf96a7573ddda6",
+          "sha1": "868441a41a1543f40a30ade8051db1c19ef46dd6",
+          "sha256": "bdc30ced224bd8aca67af13592a90b56608bff69b5d3205fa6b48d93084afd4b"
+        },
+        "matchesRetail": false
+      },
+      {
+        "name": "vs results us names +nash +sodom",
+        "compressedBytes": 266,
+        "expandedBytes": 2528,
+        "runsOn": false,
+        "compressed": {
+          "crc32": "65b8d8cc",
+          "md5": "a38ff4520299223bdcc1c7fd6b0326ef",
+          "sha1": "27d056ac699c3e03d64ab55dd70b2002c6e3884f",
+          "sha256": "0ab4c9fdbf5e496f5f606ecdb8d767916acdb3352ef44900e9ab6a8ea8b5ce01"
+        },
+        "expanded": {
+          "crc32": "2855f3db",
+          "md5": "26b5a40c53e61a2f73b4aeed40f39de8",
+          "sha1": "264e3c53ba638c8dda70745600ac164ab5035855",
+          "sha256": "2dda61536e1e8596e33c9d7de6c94d6c795aca4dcdf262c66177b1b2dfeacdf1"
+        },
+        "matchesRetail": false
+      },
+      {
+        "name": "vs results us names +sodom",
+        "compressedBytes": 260,
+        "expandedBytes": 1654,
+        "runsOn": false,
+        "compressed": {
+          "crc32": "cffaeb0a",
+          "md5": "0697e5859ef4d41231967ac51a76edf0",
+          "sha1": "2a2407980b8a498d3c8a16bedb8ce21e24ba09bc",
+          "sha256": "ea5abf9f70baefe9a1bc2374c429bd4d1efc51d10dabbeaa8fa7d9fed37be972"
+        },
+        "expanded": {
+          "crc32": "bc53cb24",
+          "md5": "941f488cfadf85ffb15f2a9afffaf39d",
+          "sha1": "995063f4f20f81bffad2d90e8a19792919ee51eb",
+          "sha256": "758122390768638aa0aa4ff9b4989a990e25975cb0860539c6f338186bc3d36d"
+        },
+        "matchesRetail": false
+      },
+      {
+        "name": "vs results us names original",
+        "compressedBytes": 266,
+        "expandedBytes": 2016,
+        "runsOn": false,
+        "compressed": {
+          "crc32": "d4396813",
+          "md5": "88126b51c42671ddd8faa5547ee1b88c",
+          "sha1": "f06d1df775f5c616aa354e58ba0f90fc080bf0e8",
+          "sha256": "2d38fc48fc1e6626c0cb4384138f41f65e32144d3a388f697183cbde1934c053"
+        },
+        "expanded": {
+          "crc32": "056eda8a",
+          "md5": "236b60fcca7ceb0f6f1e732c81f22b14",
+          "sha1": "c0d56069601479a69ac7d134c7309ba971cda3d1",
+          "sha256": "c821f8fce5fa896fa250f08c66de45a916592476bde4de73dd36c32ffc8b7e1e"
+        },
+        "matchesRetail": true
+      }
+    ]
+  }
 }

@@ -129,6 +129,89 @@ class RecordTest(unittest.TestCase):
         self.assertGreater(held["reproduced"], held["shortByAuthor"] + held["differs"])
 
 
+class AuthoredTest(unittest.TestCase):
+    """The seven streams that ship with nothing beside them, and the control among them.
+
+    The twenty pairs are a round trip inside one toolchain. One of these is an
+    unmodified export of data the retail cartridge also holds, so decoding it
+    here and decoding the cartridge here have to reach the same bytes. Its
+    modified siblings have to not, or the comparison was measuring nothing.
+    """
+
+    def held(self) -> dict[str, Any]:
+        found = independent.recorded()["authored"]
+        assert isinstance(found, dict)
+        return found
+
+    def test_the_section_says_why_it_is_not_the_pairs_again(self) -> None:
+        self.assertIn("round trip inside one toolchain", self.held()["why"])
+
+    def test_every_stream_names_both_halves_by_every_digest(self) -> None:
+        missing = [
+            (one["name"], half, key)
+            for one in self.held()["streams"]
+            for half in ("compressed", "expanded")
+            for key in DIGESTS
+            if key not in one[half]
+        ]
+
+        self.assertEqual(missing, [])
+
+    def test_every_digest_is_the_width_it_should_be(self) -> None:
+        wrong = [
+            (one["name"], half, key)
+            for one in self.held()["streams"]
+            for half in ("compressed", "expanded")
+            for key, width in WIDTHS.items()
+            if len(str(one[half][key])) != width
+        ]
+
+        self.assertEqual(wrong, [])
+
+    def test_exactly_one_stream_is_the_positive_control(self) -> None:
+        matched = [one["name"] for one in self.held()["streams"] if one["matchesRetail"]]
+
+        self.assertEqual(matched, [self.held()["positiveControl"]["name"]])
+
+    def test_the_control_names_where_in_the_cartridge_it_matched(self) -> None:
+        self.assertTrue(self.held()["positiveControl"]["retailStreamAt"])
+
+    def test_it_agreed_over_every_byte_the_export_carries(self) -> None:
+        control = self.held()["positiveControl"]
+
+        self.assertEqual(
+            control["agreedBytes"] + control["shortByAuthor"], control["retailDeclaredBytes"]
+        )
+
+    def test_the_negative_control_is_the_same_screen_with_names_changed(self) -> None:
+        self.assertIn("names changed", self.held()["negativeControl"]["why"])
+
+    def test_and_none_of_those_matched_anything(self) -> None:
+        names = set(self.held()["negativeControl"]["names"])
+        matched = {one["name"] for one in self.held()["streams"] if one["matchesRetail"]}
+
+        self.assertEqual(names & matched, set())
+
+    def test_there_are_more_negative_controls_than_positive(self) -> None:
+        self.assertGreater(len(self.held()["negativeControl"]["names"]), 1)
+
+    def test_the_search_says_how_wide_it_was(self) -> None:
+        self.assertIn("Every stream in both cartridges", self.held()["searched"])
+
+    def test_the_shortfall_is_the_authors_rather_than_corrected(self) -> None:
+        self.assertIn("left uncorrected", self.held()["aboutTheShortOne"])
+
+    def test_a_stream_that_never_runs_out_says_so(self) -> None:
+        endless = [one["name"] for one in self.held()["streams"] if one["runsOn"]]
+
+        self.assertEqual(endless, ["7e9440 table"])
+
+    def test_every_stream_expanded_to_something(self) -> None:
+        empty = [one["name"] for one in self.held()["streams"] if one["expandedBytes"] <= 0]
+
+        self.assertEqual(empty, [])
+
+
 class CountingTest(unittest.TestCase):
     def test_a_run_with_nothing_in_it_counts_nothing(self) -> None:
         self.assertEqual(independent.tally([]), {"identical": 0, "shortByAuthor": 0, "differs": 0})

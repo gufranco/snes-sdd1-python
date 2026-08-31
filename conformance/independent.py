@@ -20,6 +20,21 @@ container, and the digests identify them without carrying them.
 own file declares, and every byte they do produce matches. The record says so
 and leaves them short. Editing somebody else's file until a check passes is the
 failure the whole record exists to prevent.
+
+**The control.** The twenty pairs are still a round trip inside one toolchain:
+his encoder out, this decoder back. Seven further streams in the same package
+ship with nothing beside them, and one of them is an unmodified export of data
+the retail cartridge also holds. Decoding that export here and decoding the
+cartridge's own stream here reach the same bytes, all 2,016 of them, and the
+stream was found by decoding every candidate in both cartridges rather than by
+being told where to look.
+
+Its three modified siblings are the same screen with the names changed, and none
+of them matches anything in either cartridge. That is what makes the agreement
+mean something: a comparison that matched the modified ones too would have been
+measuring nothing. The matching export is itself thirty two bytes short, from the
+same export step that costs the two pairs sixty four, which turns a pair of
+oddities into a pattern.
 """
 
 from __future__ import annotations
