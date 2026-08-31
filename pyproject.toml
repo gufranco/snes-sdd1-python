@@ -76,6 +76,10 @@ ignore = [
 # take the rest of the report with it, which is the one outcome it must avoid.
 # It prints for the same reason every tool here does: its output is the product.
 "sdd1/doctor.py" = ["BLE001", "T201"]
+# The environment checks are the same shape and exist for the same reason: they
+# report what a machine is, so a check that throws has to become a line in the
+# report rather than end the run.
+"sdd1/environment.py" = ["BLE001", "T201"]
 
 [tool.mypy]
 # Every flag mypy has, plus the ones strict does not turn on. The errors that

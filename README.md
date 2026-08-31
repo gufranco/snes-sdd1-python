@@ -4,7 +4,7 @@ A model of the SNES S-DD1, checked against the reference decoder on noise rather
 
 [![CI](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
 
-**4,000** synthetic vectors + **2,652** cartridge-shaped cases, **0** failures, **all 16** plane and context combinations, shapes from **11,306** real streams, lengths to **65,536**, **497** tests, **100%** statement and branch coverage, no dependencies
+**4,000** synthetic vectors + **2,652** cartridge-shaped cases, **0** failures, **all 16** plane and context combinations, shapes from **11,306** real streams, lengths to **65,536**, **539** tests, **100%** statement and branch coverage, no dependencies
 
 ```python
 from sdd1 import decompress
