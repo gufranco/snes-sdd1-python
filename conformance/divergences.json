@@ -8,9 +8,7 @@
   "divergences": [
     {
       "id": "the-shape-census-is-not-from-retail-cartridges",
-      "parts": [
-        "s-dd1"
-      ],
+      "parts": ["s-dd1"],
       "severity": "high",
       "status": "narrowed",
       "documentSays": "Nothing.",
@@ -22,9 +20,7 @@
     },
     {
       "id": "every-expected-output-comes-from-an-emulator",
-      "parts": [
-        "s-dd1"
-      ],
+      "parts": ["s-dd1"],
       "severity": "high",
       "status": "narrowed",
       "documentSays": "Nothing.",
@@ -35,9 +31,7 @@
     },
     {
       "id": "no-document-exists-for-this-part",
-      "parts": [
-        "s-dd1"
-      ],
+      "parts": ["s-dd1"],
       "severity": "high",
       "status": "open",
       "documentSays": "Nothing. Neither Ricoh nor Nintendo published a datasheet for the S-DD1.",
@@ -48,9 +42,7 @@
     },
     {
       "id": "nothing-here-is-a-timing-claim",
-      "parts": [
-        "s-dd1"
-      ],
+      "parts": ["s-dd1"],
       "severity": "medium",
       "status": "notModelled",
       "documentSays": "Nothing.",
