@@ -34,9 +34,6 @@ packages = ["sdd1"]
 [tool.setuptools.dynamic]
 version = { attr = "sdd1.version.VERSION" }
 
-[tool.setuptools.exclude-package-data]
-sdd1 = ["*.test.py"]
-
 [tool.ruff]
 target-version = "py312"
 line-length = 100
