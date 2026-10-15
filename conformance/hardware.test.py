@@ -1,12 +1,3 @@
-"""Hold this decoder's constants to hardware.json, and to their standing.
-
-There is no manufacturer document for the S-DD1, so nothing here is verified in
-the sense the sibling repositories use the word. That is the point of the file:
-a reader should not have to infer the absence of a document from the absence of
-quotes, and a constant should not be able to drift from the record of what it is
-and where it came from.
-"""
-
 import json
 import sys
 import unittest

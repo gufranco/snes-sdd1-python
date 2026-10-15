@@ -101,7 +101,6 @@ class ExamineTest(unittest.TestCase):
                 self.assertIn("32 contexts", one.detail)
 
     def test_and_says_the_line_was_pulled(self) -> None:
-        """Driven rather than described, so a part that stopped offering it shows here."""
         found = [one for one in doctor.examine() if one.name == "sdd1"]
 
         self.assertIn("resets and carries nothing across it", found[0].detail)
@@ -122,8 +121,6 @@ class ExamineTest(unittest.TestCase):
 
 
 class DecoderTest(unittest.TestCase):
-    """That the decoder is exercised here rather than assumed to work."""
-
     def test_the_report_says_what_the_decoder_did(self) -> None:
         self.assertIn("decoder", [one.name for one in doctor.examine()])
 

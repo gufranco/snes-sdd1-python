@@ -1,24 +1,3 @@
-"""Check the decoder against golden vectors produced by the reference decoder.
-
-The S-DD1 has no published per-instruction suite, and the obvious substitute,
-replaying streams out of a cartridge, cannot be shipped: those streams are the
-game's artwork. So the vectors here decode something else entirely.
-
-The input is pseudo random bytes. The S-DD1 decoder does not care whether what it
-is handed was ever compressed; it walks its state machine over whatever arrives
-and produces a deterministic result. Feeding it noise therefore exercises the
-arithmetic coder, the context modelling and the plane interleaving exactly as
-real data would, while containing nothing from any cartridge and being free to
-distribute.
-
-It also covers more than a cartridge does. The shipped set reaches all sixteen
-combinations of bit plane type and context type, which no single game uses.
-
-The expected outputs came from the S-DD1 decoder in snes9x 1.63, not from this
-implementation, so agreement is a real cross-check rather than a restatement.
-`scripts/regenerate-vectors.md` says how to produce a new set.
-"""
-
 import hashlib
 import json
 import sys
@@ -36,14 +15,12 @@ DEFAULT_VECTORS = Path(__file__).resolve().parent / "vectors.json"
 
 
 def load(path: Path | str | None = None) -> dict[str, Any]:
-    """The vector set, from where it was asked for or from the one that ships."""
     with Path(path or DEFAULT_VECTORS).open() as handle:
         loaded: dict[str, Any] = json.load(handle)
     return loaded
 
 
 def check(blob: bytes, case: Mapping[str, Any]) -> str | None:
-    """What went wrong with one case, or nothing when it agreed."""
     try:
         produced = decompress(blob, case["offset"], case["length"]).data
     except Exception as error:  # noqa: BLE001
@@ -59,7 +36,6 @@ def check(blob: bytes, case: Mapping[str, Any]) -> str | None:
 
 
 def run(found: Mapping[str, Any]) -> tuple[int, int, list[str]]:
-    """How many cases agreed, how many did not, and a few that did not."""
     blob = bytes.fromhex(found["input"])
     passed = failed = 0
     examples: list[str] = []

@@ -1,25 +1,3 @@
-"""Look at this machine and say what is actually here, so a report can be believed.
-
-What goes wrong with this package is rarely a defect in it. It is a corpus that
-is not the corpus everybody else has, a Python too old to run it, or a stream
-that is not the stream the reporter thinks it is. All of those look the same from
-outside: the bytes disagree.
-
-So this looks, and prints what it found in a form that can be pasted into an
-issue as it stands.
-
-Two rules shape it, and they are the whole point.
-
-Nothing is hidden. A check that fails says what it saw, and a check that itself
-throws is caught and reported as what it threw, named by its type. Swallowing
-either would leave a report that says everything is fine on a machine where
-something is not, which is worse than no report.
-
-Nothing is inferred. Every line is something looked at on this machine just now:
-the version installed, the digest of the file present, whether the decoder
-actually refused what it should refuse.
-"""
-
 import hashlib
 import json
 import platform
@@ -47,8 +25,6 @@ OLDEST_PYTHON = (3, 12)
 
 
 class Finding:
-    """One thing that was looked at, and what was there."""
-
     def __init__(self, name: str, ok: bool, detail: str, advice: str | None = None) -> None:
         self.name = name
         self.ok = ok
@@ -57,12 +33,10 @@ class Finding:
 
     @property
     def line(self) -> str:
-        """The one-line form, which is what a reader scans."""
         return f"  {'ok  ' if self.ok else '   !'}  {self.name}: {self.detail}"
 
     @property
     def report(self) -> str:
-        """The same, with what to do about it when there is something to do."""
         if self.ok or not self.advice:
             return self.line
         return f"{self.line}\n         {self.advice}"
@@ -82,11 +56,6 @@ def _python() -> "Finding":
 
 
 def _package() -> "Finding":
-    """The project, named after the repository rather than the import.
-
-    The part this covers is also called sdd1, and two lines with one name in a
-    report is a line somebody misreads.
-    """
     return Finding("snes-sdd1-python", True, f"version {VERSION}")
 
 
@@ -95,14 +64,6 @@ def _default_build(name: str) -> Any:
 
 
 def _part(name: str, build: Callable[[str], Any]) -> "Finding":
-    """Whether that part builds and resets, saying what stopped it if not.
-
-    The reset is driven even though this part carries nothing across one, because
-    a caller driving a board pulls the line on every part on it and should not
-    have to know which ones hold state. Driving it here is what keeps that true:
-    a part that stopped offering the line would otherwise be found by the caller
-    rather than by the report.
-    """
     try:
         chip = build(name)
         chip.reset()
@@ -125,13 +86,6 @@ def _part(name: str, build: Callable[[str], Any]) -> "Finding":
 
 
 def _decoder(decompress: Callable[..., Any]) -> "Finding":
-    """That the decoder refuses what it must refuse, rather than inventing bytes.
-
-    A decompressor that returns something for every input is the failure mode
-    that hurts, because nothing downstream can tell invented bytes from real
-    ones. Asking for eight bytes out of an empty stream is the cheapest way to
-    see which kind is installed here, and it needs nobody's artwork to do it.
-    """
     try:
         found = decompress(b"", 0, 8)
     except errors.TruncatedStream:
@@ -154,12 +108,6 @@ def _decoder(decompress: Callable[..., Any]) -> "Finding":
 
 
 def _corpus(label: str, where: Path | str) -> "Finding":
-    """One corpus that is here, which is what settles a disagreement about bytes.
-
-    Two people running the same part against different corpora will disagree
-    forever and neither will be wrong. The digest ends that in one glance rather
-    than after a round trip.
-    """
     try:
         raw = Path(where).read_bytes()
     except OSError as trouble:
@@ -189,7 +137,6 @@ def examine(
     corpora: Sequence[tuple[str, Path]] = CORPORA,
     decompress: Callable[..., Any] = decoder.decompress,
 ) -> list["Finding"]:
-    """Everything worth looking at on this machine, in the order a reader wants it."""
     found = [_python(), _package()]
     found.extend(_part(name, build) for name in sorted(models.MODELS))
     found.append(_decoder(decompress))
@@ -198,7 +145,6 @@ def examine(
 
 
 def report(found: list["Finding"]) -> list[str]:
-    """The lines a person pastes into an issue."""
     unwell = [one for one in found if not one.ok]
     lines = [f"sdd1 {VERSION} on {platform.python_version()}, {platform.system()}", ""]
     lines.append("  the machine")

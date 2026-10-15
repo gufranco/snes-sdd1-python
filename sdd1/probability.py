@@ -1,17 +1,3 @@
-"""The tables the S-DD1's arithmetic decoder runs on.
-
-Three tables and nothing else. `EVOLUTION` is the state machine every context
-walks: each row gives the code size to use, the state to move to when the likely
-symbol arrives, and the state to move to when the unlikely one does. `RUN_TABLE`
-turns a code word into a run length. `CONTEXT_MASKS` says which bits of a plane's
-recent history select its context, and the header byte of a stream picks the row.
-
-These are data lifted from the hardware, not a design anyone here chose, so they
-are kept apart from the decoder that walks them. A table is checkable on its own:
-the run table is a permutation, the evolution graph must terminate, and both are
-verified rather than assumed.
-"""
-
 CONTEXT_COUNT = 32
 PLANE_COUNT = 8
 PREV_BITS_MASK = 0x3FF

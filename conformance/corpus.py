@@ -1,32 +1,3 @@
-"""Replay a corpus shaped by real S-DD1 cartridges against this decoder.
-
-The S-DD1 has no published per-instruction suite, and the obvious substitute
-cannot ship: decoding real streams means carrying the game's artwork. So the
-corpus is split along the line copyright draws, and each half does a different
-job.
-
-**What is real here.** Every header byte the cartridges use, and the lengths they
-ask for. A header says how many bit planes a stream interleaves and which bits of
-each plane's history select its context; there are sixteen possibilities and the
-encoder takes whichever fits, so it is the chip's interface rather than an
-author's choice. A decompressed length is a number. Both are functional or
-factual and sit outside what copyright reaches, per 17 U.S.C. 102(b) and Feist.
-`extract.py` measures them from a cartridge you own and records nothing else.
-
-**What is not.** The stream bodies. Those are generated from a seed, so no
-compressed byte of any game appears in this repository.
-
-**Where the answers come from.** The reference decoder in snes9x, not this
-implementation, so agreement is a cross-check rather than a restatement.
-
-**Why this is worth having on top of the random vectors.** The vectors in
-`vectors.json` reach all sixteen header shapes but stay short, because they were
-built for breadth. Real cartridges use fourteen of the sixteen and run streams out
-to a full sixty four kilobyte block. The length distribution here is the one the
-hardware actually drives, which takes the decoder much further into its state
-machine than a two kilobyte read ever does.
-"""
-
 import hashlib
 import json
 import random
@@ -47,21 +18,12 @@ WHOLE_BLOCK = 0x10000
 
 
 def load(path: Path | str | None = None) -> dict[str, Any]:
-    """The corpus, from where it was asked for or from the one that ships."""
     with Path(path or DEFAULT_CORPUS).open() as handle:
         loaded: dict[str, Any] = json.load(handle)
     return loaded
 
 
 def body(found: Mapping[str, Any]) -> bytes:
-    """The image every case decodes from, rebuilt exactly as it was generated.
-
-    One image, not one per case. A stream reads as far past its own offset as its
-    length demands, so a case can run through the ground another case sits on. If
-    the image were rebuilt differently here than it was when the expected answers
-    were computed, every long case would disagree for a reason that has nothing to
-    do with the decoder.
-    """
     view = bytearray(random.Random(found["body_seed"]).randbytes(found["body_bytes"]))
     for case in found["cases"]:
         view[case["offset"]] = case["header"]
@@ -69,7 +31,6 @@ def body(found: Mapping[str, Any]) -> bytes:
 
 
 def check(blob: bytes, case: Mapping[str, Any]) -> str | None:
-    """What went wrong with one case, or nothing when it agreed."""
     try:
         produced = decompress(blob, case["offset"], case["length"] % WHOLE_BLOCK).data
     except Exception as error:  # noqa: BLE001
@@ -85,7 +46,6 @@ def check(blob: bytes, case: Mapping[str, Any]) -> str | None:
 
 
 def run(found: Mapping[str, Any]) -> tuple[int, int, list[str]]:
-    """How many cases agreed, how many did not, and a few that did not."""
     blob = body(found)
     passed = failed = 0
     examples: list[str] = []

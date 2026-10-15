@@ -1,5 +1,3 @@
-"""Confirming streams against a cartridge and its decompressed counterpart."""
-
 import json
 import sys
 import tempfile

@@ -168,7 +168,6 @@ class MainTest(unittest.TestCase):
 
 
 def an_index(entries: "Sequence[tuple[int, int]]", size: int = 0x2000) -> bytes:
-    """A build that carries a tag and a destination at each named offset."""
     body = bytearray(a_rom([], size))
     for offset, destination in entries:
         body[offset : offset + 8] = b"SDD1" + destination.to_bytes(4, "little")

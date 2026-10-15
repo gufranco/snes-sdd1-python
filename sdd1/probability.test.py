@@ -22,12 +22,6 @@ class EvolutionTest(unittest.TestCase):
             self.assertIn(code_size, range(8))
 
     def walk(self, start: int, which: int) -> int:
-        """Where a state ends up when one symbol keeps arriving.
-
-        The states are finite and the walk never revisits one, so this always
-        returns. What it returns is the first state seen twice, which for a
-        settled chain is the self loop at its end.
-        """
         seen: list[int] = []
         state = start
         while state not in seen:

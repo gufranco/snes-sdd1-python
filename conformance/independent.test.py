@@ -1,13 +1,3 @@
-"""That the record of the independent encoder run says what a reader needs.
-
-The run itself needs twenty files this repository does not carry, so it cannot
-happen here. What can happen here is holding the record to its own shape: that
-every pair names both halves by digest, that the counts add up to the pairs
-listed, and that a pair the decoder did not reproduce says so rather than being
-quietly dropped. A record whose totals do not match its rows is worse than no
-record, because it reads as a measurement.
-"""
-
 import importlib
 import json
 import sys
@@ -130,14 +120,6 @@ class RecordTest(unittest.TestCase):
 
 
 class AuthoredTest(unittest.TestCase):
-    """The seven streams that ship with nothing beside them, and the control among them.
-
-    The twenty pairs are a round trip inside one toolchain. One of these is an
-    unmodified export of data the retail cartridge also holds, so decoding it
-    here and decoding the cartridge here have to reach the same bytes. Its
-    modified siblings have to not, or the comparison was measuring nothing.
-    """
-
     def held(self) -> dict[str, Any]:
         found = independent.recorded()["authored"]
         assert isinstance(found, dict)

@@ -1,14 +1,3 @@
-"""That the prototype record says what a reader needs and claims no more.
-
-The run itself needs two cartridges this repository does not carry, so it cannot
-happen here. What can happen here is holding the record to its own shape: that
-both cartridges are identified, that every match names where it was found and
-what it expanded to, that the counts add up to the streams decoded, and that a
-match which could not be placed says so rather than being written down as though
-it had been. A record whose totals do not match its rows reads as a measurement
-and is not one.
-"""
-
 import importlib
 import json
 import sys

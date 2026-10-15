@@ -1,21 +1,3 @@
-"""The S-DD1 decompressor, as the cartridge's mapper exposes it.
-
-The chip sits between the ROM and the console and expands a stream on the way
-past, so the game reads what looks like ordinary graphics data and never knows it
-was compressed. Inside it is an arithmetic coder with a twist: rather than
-carrying a probability, each context carries a run length, and the decoder emits
-the likely symbol that many times before consulting the stream again.
-
-Every bit belongs to a bit plane, and each plane keeps its own recent history.
-That history selects the context, which is why the same byte of stream decodes
-differently depending on what came before it in that plane and no other. The
-header byte at the start of a stream picks how many planes there are and which
-bits of the history to use.
-
-The tables this walks live in `probability`, apart from the walk itself, because
-a table can be checked on its own and a walk cannot.
-"""
-
 from collections import namedtuple
 
 from sdd1.errors import TruncatedStream
@@ -39,16 +21,10 @@ Stream = namedtuple("Stream", "data end bitplanes context")
 
 
 def bitplane_count(bitplane_type: int) -> int:
-    """How many bit planes a stream of that type interleaves."""
     return BITPLANE_COUNTS[bitplane_type]
 
 
 def decompress(rom: bytes | bytearray, offset: int, length: int) -> "Stream":
-    """Expand one stream, returning its bytes and where it stopped reading.
-
-    A length of zero means one whole block, which is what the hardware makes of
-    it: the counter is sixteen bits, and zero is what it holds after wrapping.
-    """
     if length == 0:
         length = MAX_LENGTH
     if offset < 0 or offset + HEADER_BYTES > len(rom):
