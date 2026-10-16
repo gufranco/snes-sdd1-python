@@ -1,395 +1,378 @@
+English | [日本語](README.ja.md) | [简体中文](README.zh-Hans.md) | [繁體中文（香港）](README.zh-HK.md)
+
 # S-DD1
 
-A model of the SNES S-DD1, checked against the reference decoder on noise rather than on artwork.
+The S-DD1, the arithmetic decompressor in two Super Nintendo games, in Python, held to the snes9x 1.63 decoder on 6,652 streams and to two retail cartridges with no emulator involved.
 
 [![CI](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**4,000** synthetic vectors + **2,652** cartridge-shaped cases, **0** failures, **all 16** plane and context combinations, shapes from **11,306** real streams, lengths to **65,536**, **591** tests, **100%** statement and branch coverage, no dependencies
+**4,000** noise streams and **2,652** cartridge-shaped streams compared with snes9x 1.63, **0** failures, **all 16** header shapes, lengths to **65,536** bytes, shapes from a census of **11,306** streams, **601** tests, **100%** statement and branch coverage, no dependencies
 
 ```python
-from sdd1 import decompress
+import random
 
-compressed = bytes([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+import sdd1
 
-stream = decompress(compressed, 0, 4)
+noise = random.Random(1996).randbytes(64)
+part = sdd1.Chip("sdd1")
 
-len(stream.data)
-
-# 4
+for header in (0x00, 0x50, 0xA0, 0xF0):
+    stream = part.decompress(bytes([header]) + noise[1:], 0, 8)
+    print(f"{header:#04x}", stream.bitplanes, stream.context, stream.end, stream.data.hex())
 ```
 
+```
+0x00 2 0 7 00000100e204f604
+0x50 4 1 7 00000100e104bd72
+0xa0 4 2 7 00000100e204e008
+0xf0 8 3 7 00000040040d4d2d
+```
+
+The same 63 bytes of noise follow four different header bytes. The top two bits of the header pick how many bit planes the output interleaves, and the next two pick which bits of each plane's history select a context. Each stream asks for 8 bytes of output, reads 7 bytes of input, and `end` is the offset of the first byte it did not read.
 
 ## Install
+
+| Requirement | Version |
+|:--|:--|
+| Python | 3.12 or newer |
+| git | Any |
+
 ```bash
-pip install git+https://github.com/gufranco/snes-sdd1-python.git
+git clone https://github.com/gufranco/snes-sdd1-python.git
+cd snes-sdd1-python
+python3 sdd1/doctor.py
 ```
 
-Python 3.12 or newer. Nothing else.
+The package imports nothing outside the standard library. The doctor runs as a file, so it still prints a report when the package will not import. It checks the machine, builds the part, feeds the decoder an empty stream, and reads both shipped corpora with their SHA-256 digests. Paste its whole output into any bug report. On a healthy checkout it ends with this line and exits 0; a failed check makes it exit 1.
+
+```
+  6 checks, nothing to report
+```
+
+`pip install .` from the checkout also installs the same report as the `sdd1-doctor` command.
+
+Releases follow [Semantic Versioning](https://semver.org/) and are cut from the commit history by semantic-release. Every release is tagged and listed on the [releases page](https://github.com/gufranco/snes-sdd1-python/releases).
 
 ## The interface
-Everything a caller touches. Nothing else is public.
 
-| Name | What it is |
+`sdd1.Chip(model)` builds one part. `model` is required: leaving it out raises `UnknownModelError` and lists the names there are. A name is matched with case, hyphens and underscores ignored.
+
+| Model | Aliases | Bit planes | Contexts |
+|:--|:--|:--|:--|
+| `sdd1` | `s-dd1`, `sdd-1`, `sdd`, `nintendosdd1` | Up to 8 | 32 |
+
+```python
+import sdd1
+
+for name in ("sdd1", "s-dd1", "sdd-1", "sdd", "nintendosdd1", "S_DD1"):
+    print(name, sdd1.Chip(name).model)
+
+for asked in (None, "s-dd2"):
+    try:
+        sdd1.Chip(asked)
+    except sdd1.UnknownModelError as refused:
+        print(refused)
+```
+
+```
+sdd1 sdd1
+s-dd1 sdd1
+sdd-1 sdd1
+sdd sdd1
+nintendosdd1 sdd1
+S_DD1 sdd1
+no model was named, and this package will not choose one for you. Name one of: sdd1
+s-dd2 is not a model this package covers; it has sdd1
+```
+
+### Calls
+
+| Call | Effect |
 |:--|:--|
-| `Chip(model)` | A part of that model |
-| `decompress(data, offset, length)` | The same, without naming a part first |
-| `Stream` | What came out: the bytes, where the input ended, and how many planes it interleaves |
-| `MODELS` | Every model this package covers, by the name it goes by |
-| `bitplane_count(mode)` | How many planes a header's mode names |
-| `EVOLUTION`, `RUN_TABLE`, `CONTEXT_MASKS`, `CONTEXT_COUNT` | The tables the decoder works from |
-| `BITPLANE_COUNTS`, `PLANE_COUNT`, `HEADER_BYTES`, `MAX_LENGTH` | The shapes a stream can have |
-| `UnknownModelError`, `TruncatedStream` | Everything a caller can catch |
+| `Chip.decompress(rom, offset, length)` | Decodes the stream whose header byte sits at `rom[offset]` and returns a `Stream` of `length` bytes. A `length` of 0 means 65,536 |
+| `Chip.reset()` | Does nothing and returns the part. No state survives from one stream to the next, so there is nothing to clear |
+| `sdd1.decompress(rom, offset, length)` | The same decode without building a part first |
+| `sdd1.bitplane_count(kind)` | The number of bit planes the header's top two bits name: 2, 4, 4 or 8 for kinds 0 to 3 |
 
-`Chip` takes the model first, which is the argument every member of the family
-takes first, and the name is the kind rather than the chip.
+`Chip.model` holds the canonical model name. `rom` is any `bytes` or `bytearray`. A stream is read from its two header bytes onward, and nothing before `rom[offset]` is touched.
 
-```python
-from sdd1 import MODELS, Chip
+### What comes back
 
-chip = Chip("s-dd1")
+`Stream` is a named tuple with four fields.
 
-MODELS[chip.model].planes
+| Field | Meaning |
+|:--|:--|
+| `data` | The decoded bytes, as `bytes`, exactly `length` of them |
+| `end` | The offset of the first input byte the decoder did not read |
+| `bitplanes` | 2, 4 or 8, from the header's top two bits |
+| `context` | 0 to 3, the header's next two bits, which pick the row of `CONTEXT_MASKS` |
 
-# 8
-```
+### Errors
 
-There is no default. Naming none raises and lists every model there is, which on
-a package covering one part is the point rather than the exception: a caller who
-learns to leave it out here writes the same call against a member covering
-sixteen.
+| Error | Raised when |
+|:--|:--|
+| `UnknownModelError` | `Chip` is given no model, or a name no model answers to. The message lists the models there are |
+| `TruncatedStream` | `offset` is negative, fewer than 2 bytes remain from `offset` on, or the input runs out before `length` bytes are decoded. The exception carries `offset` |
 
-A name no part answers to is refused rather than quietly building the only one
-there is:
+A short stream raises rather than returning fewer bytes, so a caller never mistakes a partial block for a whole one.
 
 ```python
-from sdd1 import Chip, UnknownModelError
+import random
 
-try:
-    Chip("s-dd2")
-except UnknownModelError as refused:
-    print(str(refused).split(";")[0])
+import sdd1
 
-# s-dd2 is not a part this package covers
+noise = random.Random(1996).randbytes(64)
+
+print(sdd1.decompress(noise, 10, 8))
+print(len(sdd1.decompress(bytes(4096), 0, 0).data))
+
+for offset, length in ((-1, 4), (63, 4), (0, 4096)):
+    try:
+        sdd1.decompress(noise, offset, length)
+    except sdd1.TruncatedStream as refused:
+        print("TruncatedStream at", refused)
 ```
 
-A stream that ends before it produced what its header promised is refused rather
-than handed back short:
+```
+Stream(data=b'u\xb3\x94\xe8\xff\x9e\x04\xe1', end=19, bitplanes=8, context=3)
+65536
+TruncatedStream at -1
+TruncatedStream at 63
+TruncatedStream at 0
+```
+
+### Module contents
+
+| Name | Content |
+|:--|:--|
+| `sdd1.MODELS` | The `Model` records, keyed by canonical name |
+| `sdd1.Model` | One record: `name`, `summary`, `planes`, `contexts`, `aliases` |
+| `sdd1.BITPLANE_COUNTS` | `(2, 4, 4, 8)`, the plane count for each of the four plane kinds |
+| `sdd1.HEADER_BYTES` | 2, the bytes a stream starts with |
+| `sdd1.PLANE_COUNT` | 8, the most planes a stream interleaves |
+| `sdd1.CONTEXT_COUNT` | 32, the contexts the coder keeps |
+| `sdd1.MAX_LENGTH` | 65,536, the most a stream decodes, and what a `length` of 0 asks for |
+| `sdd1.EVOLUTION` | The 33-state machine: for each state, the code size and the next state after each outcome |
+| `sdd1.RUN_TABLE` | 128 run lengths, a permutation of 1 to 128, indexed by a 7-bit code word |
+| `sdd1.CONTEXT_MASKS` | Four pairs of masks over a plane's 10-bit history, one per context kind |
+| `sdd1.UnknownModelError`, `sdd1.TruncatedStream` | Everything a caller can catch |
+| `sdd1.__version__` | The installed version |
 
 ```python
-from sdd1 import TruncatedStream, decompress
+import sdd1
 
-try:
-    decompress(bytes(2), 0, 64)
-except TruncatedStream as refused:
-    print(type(refused).__name__)
-
-# TruncatedStream
+print(sdd1.BITPLANE_COUNTS, [sdd1.bitplane_count(kind) for kind in range(4)])
+print(sdd1.HEADER_BYTES, sdd1.PLANE_COUNT, sdd1.CONTEXT_COUNT, sdd1.MAX_LENGTH)
+print(len(sdd1.EVOLUTION), sdd1.EVOLUTION[0], sdd1.EVOLUTION[25])
+print(len(sdd1.RUN_TABLE), sorted(sdd1.RUN_TABLE) == list(range(1, 129)))
+print([(hex(high), hex(low)) for high, low in sdd1.CONTEXT_MASKS])
 ```
 
-## The problem
-The S-DD1 sits between the ROM and the console and expands graphics on the way past, so the game reads what looks like ordinary data and never knows it was compressed. It shipped in two cartridges, and there is no published per-instruction suite for it.
-
-The obvious substitute is to decode real streams out of a cartridge and check them. That works on your own machine and cannot be shipped: those streams are the game's artwork, so a repository carrying them is distributing the game. Which leaves the usual outcome, a decompressor with no runnable evidence attached to it.
-
-## The solution
-Decode noise instead.
-
-The S-DD1 does not know or care whether what it is handed was ever compressed. It walks its state machine over whatever arrives and produces a deterministic result. So a stream of pseudo-random bytes exercises the arithmetic coder, the context modelling and the plane interleaving exactly as real data does, while containing nothing from any cartridge.
-
-The expected outputs come from the S-DD1 decoder in **snes9x 1.63**, not from this implementation, so agreement is a genuine cross-check rather than a restatement of what this code already does. The set ships, runs in CI, and is free to distribute.
-
-It also covers more ground than a cartridge would. A game uses the plane and context types its artist needed; the shipped vectors reach **all sixteen combinations**.
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### Cross-checked, not self-checked
-
-Expected outputs come from snes9x's C decoder. Nothing here grades its own homework.
-
-</td>
-<td width="50%" valign="top">
-
-### Ships nothing from a cartridge
-
-The input is pseudo-random bytes with a recorded digest. No game data, so the evidence travels with the code.
-
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
-
-### Wider than any game
-
-All 16 plane and context combinations, and 13 output lengths from one byte upward.
-
-</td>
-<td width="50%" valign="top">
-
-### Tables checked apart from the walk
-
-The run table is verified to be a permutation of 1 to 128; every state's chain is verified to settle.
-
-</td>
-</tr>
-</table>
-
-## How the decoder works
-An arithmetic coder, with one thing that makes it unlike the textbook kind.
-
-**Each context carries a run length, not a probability.** When the decoder consults the stream it gets told how many times the likely symbol repeats, emits it that many times, and only then reads again. The state machine in [`sdd1/probability.py`](sdd1/probability.py) says which code size to use and where to move on each outcome.
-
-**Every bit belongs to a bit plane, and each plane keeps its own history.** That history selects the context, so the same byte of stream decodes differently depending on what came before it *in that plane* and no other.
-
-**The header byte decides the shape.** Its top two bits give the plane type, and the next two select which bits of the history form the context.
-
-| Plane type | Planes interleaved |
-|:----------:|:------------------:|
-| `0` | 2 |
-| `1` | 4 |
-| `2` | 4 |
-| `3` | 8 |
-
-Types 1 and 2 both use four planes and differ in how they rotate between them as the stream advances, which is why they are separate types rather than one.
-
-## Models
-```python
-from sdd1 import Chip
-
-compressed = bytes([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
-
-Chip("sdd1").decompress(compressed, 0, 4).data
-
-# bytearray(b'\x00\x00\x00\x00')
+```
+(2, 4, 4, 8) [2, 4, 4, 8]
+2 8 32 65536
+33 (0, 25, 25) (0, 26, 1)
+128 True
+[('0x1c0', '0x1'), ('0x180', '0x1'), ('0xc0', '0x1'), ('0x180', '0x3')]
 ```
 
-| Model | Planes | Contexts | Notes |
-|:------|:------:|:--------:|:------|
-| `sdd1` | 8 | 32 | Aliases: `s-dd1`, `sdd-1`, `sdd`, `nintendosdd1` |
+### Command-line tools
 
-> [!NOTE]
-> The S-DD1 shipped in two cartridges and is one part with one behaviour. What differs between them is how the mapper windows banks into the address space, which belongs to the cartridge rather than to the decompressor and is not modelled here.
+Every tool runs as a module from the repository root, except the doctor, which runs as a file.
 
-## Is it right
-| What | Oracle | Strength |
-|:-----|:-------|:---------|
-| Whole decoder | 4,000 vectors from snes9x 1.63 over pseudo-random input | Cross-checked against an independent implementation |
-| Coverage of shapes | All 16 plane and context combinations | Exhaustive over the header space |
-| Run table | Verified to be a permutation of 1 to 128 | Structural, exhaustive |
-| State machine | Every state's chain verified to settle under both outcomes | Structural, exhaustive |
-| Context masks | Verified disjoint and inside the 32 contexts that exist | Structural, exhaustive |
-| Prefix property | A short read is a prefix of a longer read at the same offset | Behavioural |
-| Real cartridge shapes | 2,652 cases over every header byte and length four cartridges use | Cross-checked, shaped by hardware |
-
-> [!NOTE]
-> The vectors say what this decoder does on inputs no cartridge produces. That is the point, not a limitation: a game exercises the paths its artwork happened to need, and noise exercises the rest. If you want the cartridge check as well, run it locally against a ROM you own; it just cannot ship.
-
-### The cartridge-shaped corpus, and why it can ship
-
-The random vectors above were built for breadth, and they buy it: all sixteen header shapes. What they do not buy is depth. They stay under two kilobytes, and real cartridges run streams out to a full **65,536** byte block, which drives the decoder far deeper into its state machine.
-
-So there is a second corpus, shaped by real cartridges. Building it means separating a stream into the part that can travel and the part that cannot.
-
-| Part of a stream | What it is | Ships? |
-|:-----------------|:-----------|:-------|
-| The compressed body | The game's graphics, encoded | Never |
-| The header byte | How many planes, which context bits. One of sixteen values the chip defines | Yes |
-| The decompressed length | A number | Yes |
-| How many streams share a shape | A measurement | Yes |
-
-The header is the chip's interface asserting itself, not an artist's choice: there are exactly sixteen possibilities and the encoder takes whichever fits, the same way a JPEG carries a sampling factor. Functional elements and facts sit outside what copyright reaches, per [17 U.S.C. 102(b)](https://www.law.cornell.edu/uscode/text/17/102) and `Feist`. [`conformance/extract.py`](conformance/extract.py) records exactly those and never writes a compressed byte.
-
-[`conformance/corpus.json`](conformance/corpus.json) is then built in three steps:
-
-1. **Shapes measured from real hardware.** A census of **11,306** streams across four cartridges: **68** distinct header bytes and the lengths the games ask for, covering **14 of the 16** kinds a real game uses.
-2. **Bodies generated from a seed.** The compressed bytes filling those shapes are arithmetic, not artwork.
-3. **Answers computed by the reference decoder.** Expected outputs come from snes9x's `sdd1emu.cpp`, so agreement is a cross-check rather than a restatement.
+| Command | What it does | Exit codes |
+|:--|:--|:--|
+| `python3 sdd1/doctor.py` | Reports on the machine, the part and both corpora | 0 clean, 1 a check failed |
+| `python3 -m conformance.vectors [file]` | Decodes every noise vector and compares digests. `file` defaults to [`conformance/vectors.json`](conformance/vectors.json) | 0 all agree, 1 a disagreement, 2 no file |
+| `python3 -m conformance.corpus [file]` | The same for the cartridge-shaped corpus, [`conformance/corpus.json`](conformance/corpus.json) by default | 0 all agree, 1 a disagreement, 2 no file |
+| `python3 -m conformance.extract <rom> <shapes out> [table]` | Writes a census of header bytes and lengths from a cartridge you own. `table` is a JSON list of offset and length pairs, or a build carrying `SDD1` tags | 0 written, 1 no stream found, 2 bad arguments or no ROM |
+| `python3 -m conformance.against_cartridges <cartridge> <expanded> <out.json> [lo] [hi]` | Sweeps a cartridge between `lo` and `hi` and counts the streams whose first 64 decoded bytes appear in an expanded image and nowhere in the cartridge | 0 written, 1 nothing confirmed, 2 bad arguments or a missing file |
+| `python3 -m conformance.speed` | Decodes 2,000 bytes 5 times and compares the median rate with the floor of 70,000 bytes a second | 0 above the floor, 1 below |
+| `python3 -m conformance.package <wheel>` | Checks that a built wheel carries every module and no test file | 0 clean, 1 a fault or no wheel, 2 no argument |
+| `python3 -m conformance.links` | Requests every address in this file and prints a JSON report | 0 every address still exists, 1 at least one has status 404 or 410 |
 
 ```bash
-python3 -m conformance.corpus
-
-#   2652 cases from conformance/corpus.json, against snes9x 1.63 sdd1emu.cpp
-
-#   shapes measured from 11306 real streams, 14 of 16 kinds
-
-#   2652 agreed, 0 did not
+python3 -m conformance.vectors conformance/vectors.json
 ```
 
-> [!IMPORTANT]
-> This is how the repository is built, not legal advice. The rule it follows is simple enough to restate: publish behaviour, never content.
+```
+  4000 cases from conformance/vectors.json, against snes9x 1.63
+  4000 agreed, 0 did not
+```
+
+## Noise rather than artwork
+
+A stream out of a cartridge is the game's graphics, compressed. A repository that ships such streams as test data distributes the game, so the evidence for this decoder is built from streams that hold nothing from any cartridge.
+
+The decoder does not know whether its input was ever compressed. It walks its state machine over whatever bytes arrive and produces one deterministic result. [`conformance/vectors.json`](conformance/vectors.json) is 16,384 pseudo-random bytes from seed 1996, recorded with their SHA-256, and 4,000 cases at offsets and lengths inside them. Each case carries the SHA-256 of what snes9x 1.63 decoded there. Those cases reach all 16 header shapes and 13 output lengths, from 1 byte to 2,048.
+
+Artwork walks the probability model along the path one picture takes, so a set of real streams can agree everywhere while part of the state table never runs. A game uses the shapes its artist needed; the noise set covers all 16.
+
+## How the decoder works
+
+Each of the 32 contexts carries a run length rather than a probability. When the decoder reads a code word, it learns how many times the likely symbol repeats, emits it that many times, and only then reads again. `EVOLUTION` says which code size each state reads and where the context moves after each outcome.
+
+Every bit belongs to a bit plane, and each plane keeps its own 10 bits of history. That history, masked by the row of `CONTEXT_MASKS` the header picks, selects the context. The same input byte decodes differently depending on what came before it in that plane.
+
+| Plane kind, header bits 7 and 6 | Planes interleaved | How the planes rotate |
+|:--|:--|:--|
+| `0` | 2 | They do not |
+| `1` | 4 | Every 16 output bytes the pair moves on by 2, wrapping at 8 |
+| `2` | 4 | Every 16 output bytes the pair toggles between planes 0 and 1 and planes 2 and 3 |
+| `3` | 8 | Each output byte takes one bit from each of the 8 planes |
+
+Kinds 1 and 2 agree until their second rotation, after 32 bytes:
+
+```python
+import random
+
+import sdd1
+
+noise = random.Random(1996).randbytes(64)
+one = sdd1.decompress(bytes([0x40]) + noise[1:], 0, 48).data
+two = sdd1.decompress(bytes([0x80]) + noise[1:], 0, 48).data
+
+print(one[:32] == two[:32], next(at for at in range(48) if one[at] != two[at]))
+```
+
+```
+True 32
+```
+
+## Models
+
+```python
+import sdd1
+
+model = sdd1.MODELS["sdd1"]
+print(model)
+print(model.name, model.planes, model.contexts, model.aliases)
+
+part = sdd1.Chip("sdd1")
+print(part.model, part.reset() is part)
+```
+
+```
+<Model sdd1, up to 8 bit planes>
+sdd1 8 32 ('s-dd1', 'sdd-1', 'sdd', 'nintendosdd1')
+sdd1 True
+```
+
+There is one model. Both games that carry the part use the same decompressor. Their cartridges differ in how they map banks into the address space, which belongs to the cartridge rather than to the decompressor, and that mapping is not modelled here.
+
+## Is it right
+
+Nobody published a data sheet for this part, so the top rung of the authority ladder is empty. [`conformance/hardware.json`](conformance/hardware.json) records that, marks every constant `"verified": false`, and names the evidence that stands in and what would settle each one.
+
+| Witness | Record | Result |
+|:--|:--|:--|
+| snes9x 1.63 on noise | [`conformance/vectors.json`](conformance/vectors.json) | 4,000 cases, 0 failures |
+| snes9x 1.63 on cartridge shapes | [`conformance/corpus.json`](conformance/corpus.json) | 2,652 cases, 0 failures |
+| A retail cartridge against an expansion somebody else made of it, with no emulator | [`conformance/cartridges.json`](conformance/cartridges.json) | 55,023 streams confirmed in Star Ocean (Japan) across all 16 shapes, against 1,306 in a control run on a different game |
+| A third party's encoder | [`conformance/independent.json`](conformance/independent.json) | 20 pairs: 18 identical, 2 match on every byte the author's export holds and stop 64 bytes short, 0 differ |
+| A Capcom prototype from before the compression | [`conformance/prototype.json`](conformance/prototype.json) | 242 of 2,852 decoded streams appear verbatim in it, 311,264 bytes |
+| The tables in source | [`conformance/carried.json`](conformance/carried.json) | `EVOLUTION`, `RUN_TABLE` and `CONTEXT_MASKS` pinned by the SHA-256 of their values |
+
+The suite also checks that `RUN_TABLE` is a permutation, that every chain through `EVOLUTION` settles under both outcomes, that no mask pair selects a bit twice, and that a shorter read is a prefix of a longer one at the same offset.
+
+```python
+import json
+from pathlib import Path
+
+from conformance import vectors
+
+
+def record(name):
+    return json.loads(Path(f"conformance/{name}.json").read_text())
+
+
+passed, failed, _ = vectors.run(vectors.load())
+print("noise", passed, failed)
+
+found = record("cartridges")
+print("cartridge", found["confirmed"], len(found["kinds"]), found["control"]["confirmed"])
+
+held = record("independent")
+print("encoder", len(held["pairs"]), held["reproduced"], held["shortByAuthor"], held["differs"])
+
+proto = record("prototype")
+print("prototype", proto["decoded"], proto["matchedInFull"], proto["bytesConfirmed"])
+```
+
+```
+noise 4000 0
+cartridge 55023 16 1306
+encoder 20 18 2 0
+prototype 2852 242 311264
+```
+
+### The cartridge-shaped corpus
+
+The noise vectors stay at or under 2,048 bytes. [`conformance/corpus.json`](conformance/corpus.json) reaches a whole 65,536-byte block. Its 2,652 cases use 68 distinct header bytes at 39 lengths, placed in a 131,072-byte body generated from seed 20260818, with expected outputs from snes9x 1.63 `sdd1emu.cpp`. The header byte and the length are the part's interface and a measurement. No compressed byte from a cartridge is in the file.
+
+The shapes come from a census of 11,306 streams in 14 of the 16 kinds. The file records no source for that census, and it cannot be reproduced from the four retail cartridges. [`conformance/divergences.json`](conformance/divergences.json) carries that finding and the measurement behind it. The census decides which shapes the corpus exercises, not what the decoder does with any of them, and the noise set reaches all 16 shapes.
+
+```bash
+python3 -m conformance.corpus conformance/corpus.json
+```
+
+```
+  2652 cases from conformance/corpus.json, against snes9x 1.63 sdd1emu.cpp
+  shapes measured from 11306 real streams, 14 of 16 kinds
+  2652 agreed, 0 did not
+```
 
 ### Measuring a cartridge of your own
 
 ```bash
-python3 -m conformance.extract "Street Fighter Alpha 2 (USA).sfc" shapes.json streams.json
-
-#   2817 streams from Street Fighter Alpha 2 (USA).sfc
-
-#   47 header shapes, 8 of 16 kinds
-
-#   written to shapes.json
+python3 -m conformance.extract cartridge.sfc shapes.json table.json
+python3 -m conformance.against_cartridges cartridge.sfc expanded.sfc found.json
 ```
 
-Some builds carry an eight byte `SDD1` tag ahead of every stream, and those are found by search alone with no table. Otherwise pass a table of offsets and lengths. Either way the profile that comes out holds no compressed byte, and any corpus you build locally with real bodies stays on your machine.
+`extract` writes header bytes, lengths and counts and never a compressed byte. `against_cartridges` writes counts, header bytes and four digests of each image. Either output can be shared; the images stay on your machine.
 
-### Regenerating the vectors
+### What is still open
 
-The set was produced by feeding pseudo-random bytes to the S-DD1 decoder inside snes9x 1.63 and recording the digest of each output. [`conformance/vectors.json`](conformance/vectors.json) records the seed, the input, and its SHA-256, so the input is reproducible and the outputs are attributable.
-
-Regenerating needs a build of the reference decoder, which is not a dependency of this package and is not required to run the checks. The shipped set is what CI runs.
-
-**Open questions** are listed with the measurement that would close each one:
-[`OPEN-QUESTIONS.md`](OPEN-QUESTIONS.md). Where two sources part, both are kept
-in [`conformance/divergences.json`](conformance/divergences.json) with what would
-settle it.
+[OPEN-QUESTIONS.md](OPEN-QUESTIONS.md) lists each open question with the measurement that would close it. Every output value rests on implementations rather than on a recording off a real part. The behaviour on a malformed stream is a guess. The meaning of the second header byte beyond the shape is unknown. [`conformance/divergences.json`](conformance/divergences.json) holds each place a source is weaker than it looks.
 
 ## Working on it
+
+| Need | Where |
+|:--|:--|
+| Every gate and the order to run them | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| The same material for a coding agent | [AGENTS.md](AGENTS.md) |
+| The standard this repository shares with the rest of the family | [FAMILY.md](FAMILY.md) |
+| Bug reports | [GitHub Issues](https://github.com/gufranco/snes-sdd1-python/issues) |
+| Security reports | [SECURITY.md](SECURITY.md) |
+
 ```bash
-python -m coverage erase
+uvx ruff@0.16.3 format --check .
+uvx ruff@0.16.3 check .
+uvx --python 3.12 mypy==1.14.1
+python3 -m coverage erase
 for file in $(find sdd1 conformance -name '*.test.py' | sort); do
-  python -m coverage run -a "$file"
+  python3 -m coverage run -a "$file"
 done
-python -m coverage report
+python3 -m coverage report
+python3 -m conformance.speed
 ```
 
-`python3 sdd1/doctor.py` says what is actually on this machine. It is run as a file rather than with `-m` so that it still runs when the package itself will not import, which is the case it exists for.
+Each module has a test file beside it, named after it, and each runs on its own. Coverage is a hard gate at 100% statement and branch. The throughput floor runs outside the coverage step.
 
-[`AGENTS.md`](AGENTS.md) is the document for an agent working here. [`FAMILY.md`](FAMILY.md) is the standard this repository shares with the rest of the family, kept identical in every member.
-
-### Project structure
-
-```
-sdd1/
-  __init__.py       the package, and the model chosen at construction
-  decoder.py        the arithmetic decoder and the plane interleaving
-  probability.py    the state machine, the run table, the context masks
-  models.py         what each part is
-  version.py        rewritten by the release job and by nothing else
-conformance/
-  vectors.py        runs the golden vectors and reports what disagreed
-  vectors.json      4,000 cases over pseudo random input, from snes9x 1.63
-```
-
-Each module has its tests beside it as `<module>.test.py`, so a module and the cases that pin its behaviour are read together.
-
-### Tests
-
-```bash
-for f in sdd1/*.test.py conformance/*.test.py; do python3 "$f"; done
-```
-
-| Suite | File | Covers |
-|:------|:-----|:-------|
-| Decoder | [`sdd1/decoder.test.py`](sdd1/decoder.test.py) | Header parsing, every plane and context type, lengths, truncation, the prefix property |
-| Tables | [`sdd1/probability.test.py`](sdd1/probability.test.py) | The run table as a permutation, the state machine settling, mask disjointness |
-| Models | [`sdd1/models.test.py`](sdd1/models.test.py) | The catalogue, alias matching, construction |
-| Vectors | [`conformance/vectors.test.py`](conformance/vectors.test.py) | The whole synthetic set, digest integrity, header coverage, reporting |
-| Cartridge corpus | [`conformance/corpus.test.py`](conformance/corpus.test.py) | The whole cartridge-shaped set, image reconstruction, reporting |
-| Extraction | [`conformance/extract.test.py`](conformance/extract.test.py) | Tag scanning, stream tables, the census, and that no stream byte is recorded |
-
-Coverage is enforced at 100% of statements and branches by [`pyproject.toml`](pyproject.toml), so a new branch without a test fails the build rather than quietly lowering the number.
-
-### Development
-
-| Command | Description |
-|:--------|:------------|
-| `ruff format .` | Format |
-| `ruff check .` | Lint |
-| `python3 -m coverage run -a <file>` | Run one test file under coverage |
-| `python3 -m coverage report` | Coverage, which fails below 100% |
-| `python3 -m conformance.vectors [file]` | Run the synthetic vectors |
-| `python3 -m conformance.corpus [file]` | Run the cartridge-shaped corpus |
-| `python3 -m conformance.extract <rom> <out> [table]` | Measure a cartridge you own |
-
-### Project conventions
-
-| Convention | Source |
-|:-----------|:-------|
-| Commit format | [Conventional Commits](https://www.conventionalcommits.org/) |
-| Releases | [semantic-release](https://semantic-release.gitbook.io/), driven by [`.releaserc.json`](.releaserc.json) |
-| Lint and format | [Ruff](https://docs.astral.sh/ruff/), configured in [`pyproject.toml`](pyproject.toml) |
-| Test layout | `<module>.test.py` beside the module it covers |
-
-### Versioning
-
-This project follows [Semantic Versioning](https://semver.org/), and every release is tagged from `main` by semantic-release. See [releases](https://github.com/gufranco/snes-sdd1-python/releases).
-
-> [!IMPORTANT]
-> While the version is below `1.0.0`, the public interface may change on a minor release. Pin an exact version if that matters to you.
-
-### FAQ
-
-<details>
-<summary><strong>Does decoding random bytes actually prove anything?</strong></summary>
-<br>
-
-It proves this decoder and snes9x's agree on 4,000 inputs covering every shape the header can describe. The decoder has no way to tell noise from a real stream, so the paths taken are the same paths; what differs is only which of them get taken and how often. Noise spreads the coverage wider than one game's artwork does.
-
-</details>
-
-<details>
-<summary><strong>Why not include a compressor and test by round trip?</strong></summary>
-<br>
-
-Because a round trip only proves the pair is self-consistent. If the compressor and decompressor share a misunderstanding, every round trip passes and every real cartridge fails. Checking against an independent implementation catches exactly that, which is why the vectors come from snes9x rather than from anything here.
-
-</details>
-
-<details>
-<summary><strong>Can I check it against a real cartridge?</strong></summary>
-<br>
-
-Yes, on your own machine, against a ROM you own. That check cannot live in this repository because the streams it would carry are the game's graphics.
-
-</details>
-
-<details>
-<summary><strong>Does this handle the memory mapping the two games use?</strong></summary>
-<br>
-
-No, and deliberately. The S-DD1 cartridges window banks into the address space, which is the mapper's job rather than the decompressor's. Mixing them would make each harder to test on its own.
-
-</details>
-
-### When something is wrong
-
-```bash
-python3 -m sdd1.doctor
-```
-
-It looks at this machine and prints what is actually there, and every line is
-something it looked at just now rather than something that ought to be true. A
-check that fails says what it saw. A check that itself throws is reported as what
-it threw rather than taking the report down with it. Paste all of it into an
-issue.
-
-### Contributing
-
-Measurements first. [CONTRIBUTING.md](CONTRIBUTING.md) has the gates a change is
-expected to pass, [SECURITY.md](SECURITY.md) says what belongs in a private
-report, and the [Code of Conduct](CODE_OF_CONDUCT.md) applies wherever this
-project is discussed.
-
-Never attach a copyrighted file, and never link to somewhere one can be
-downloaded. A digest identifies a file without carrying it.
+Never attach a cartridge image to an issue or link to one. A digest identifies a file without carrying it.
 
 ## References
-This repository carries no documents and no cartridge data. Nintendo published
-nothing about this part: the top rung of the authority ladder is empty here and
-[`conformance/hardware.json`](conformance/hardware.json) says so rather than
-promoting the rung below it.
 
-| Source | Used for |
-|:-------|:---------|
-| [snes9x](https://github.com/snes9xgit/snes9x) `sdd1emu.cpp` | The reference decoder both corpora were generated from, pinned by commit |
-| [`conformance/corpus.json`](conformance/corpus.json) | 2,652 cartridge-shaped cases |
-| [`conformance/vectors.json`](conformance/vectors.json) | 4,000 noise cases, which is what visits the state table |
+- snes9x 1.63, `sdd1emu.cpp`, https://github.com/snes9xgit/snes9x, the decoder that produced every expected output in [`conformance/vectors.json`](conformance/vectors.json) and [`conformance/corpus.json`](conformance/corpus.json). Facts only; no code is taken.
+- No Ricoh or Nintendo document for the S-DD1 is known. [`conformance/hardware.json`](conformance/hardware.json) records the search and lists `documents` as empty.
+- Every cartridge, expansion and prototype image the records mention is identified there by size and four digests. None is carried here.
 
 ## Citing this
-[CITATION.cff](CITATION.cff) is kept in step with the released version by the
-same script that stamps the package, so the version it names is the version that
-shipped.
+
+[CITATION.cff](CITATION.cff) is updated with each release by the script that stamps the package version.
 
 ## License
-[MIT](LICENSE)
+
+MIT. See [LICENSE](LICENSE).
