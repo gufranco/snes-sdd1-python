@@ -1,4 +1,7 @@
 import json
+import os
+import re
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -8,6 +11,10 @@ from typing import Any, NoReturn, override
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from sdd1 import doctor, models
+
+SOURCE = Path(doctor.__file__).resolve()
+
+VERDICT = re.compile(r"^  (\d+ checks, nothing to report|\d+ of \d+ checks did not pass)$")
 
 
 class Complaint(Exception):
@@ -251,6 +258,62 @@ class EntryTest(unittest.TestCase):
         doctor.main([], say=said.append)
 
         self.assertIn("sdd1", " ".join(said))
+
+
+class TheDoctorRunsWhereThePackageMightNotImportTest(unittest.TestCase):
+    def test_a_root_that_is_not_on_the_path_is_put_there(self) -> None:
+        # Arrange
+        path: list[str] = []
+
+        # Act
+        added = doctor._reachable(Path("/somewhere"), path)
+
+        # Assert
+        self.assertEqual((added, path), (True, ["/somewhere"]))
+
+    def test_a_root_already_on_the_path_is_left_alone(self) -> None:
+        # Arrange
+        path = ["/somewhere"]
+
+        # Act
+        added = doctor._reachable(Path("/somewhere"), path)
+
+        # Assert
+        self.assertEqual((added, path), (False, ["/somewhere"]))
+
+
+class TheDoctorRunsAsTheReadmeSaysTest(unittest.TestCase):
+    def test_running_it_as_a_file_from_elsewhere_prints_a_report_rather_than_a_traceback(
+        self,
+    ) -> None:
+        # Arrange
+        elsewhere = tempfile.mkdtemp()
+        bare = {name: value for name, value in os.environ.items() if name != "PYTHONPATH"}
+
+        # Act
+        finished = subprocess.run(
+            [sys.executable, str(SOURCE)],
+            capture_output=True,
+            text=True,
+            cwd=elsewhere,
+            env=bare,
+            check=False,
+        )
+
+        # Assert
+        self.assertIn(finished.returncode, (0, 1))
+        self.assertNotIn("Traceback", finished.stderr)
+        self.assertRegex(finished.stdout.splitlines()[-1], VERDICT)
+
+    def test_the_readme_names_the_invocation_that_works(self) -> None:
+        # Arrange
+        readme = Path(__file__).resolve().parent.parent / "README.md"
+
+        # Act
+        said = readme.read_text()
+
+        # Assert
+        self.assertIn("python3 sdd1/doctor.py", said)
 
 
 if __name__ == "__main__":
