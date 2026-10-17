@@ -100,7 +100,8 @@ enable_error_code = [
 files = ["sdd1", "conformance"]
 
 [tool.coverage.run]
-source = ["sdd1", "conformance"]
+source = ["."]
+omit = ["node_modules/*", "build/*"]
 branch = true
 
 [tool.coverage.report]

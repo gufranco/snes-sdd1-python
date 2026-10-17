@@ -4,89 +4,186 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from sdd1 import probability
+import sdd1
+
+HISTORY_BITS = 10
+
+HISTORY = (1 << HISTORY_BITS) - 1
+
+LIKELY = 1
+
+UNLIKELY = 2
+
+
+def settles(start: int, which: int) -> bool:
+    seen: list[int] = []
+    state = start
+    while state not in seen:
+        seen = [*seen, state]
+        state = sdd1.EVOLUTION[state][which]
+    return bool(sdd1.EVOLUTION[state][which] == state)
 
 
 class EvolutionTest(unittest.TestCase):
     def test_every_state_names_a_code_size_and_two_successors(self) -> None:
-        for row in probability.EVOLUTION:
-            self.assertEqual(len(row), 3)
+        # Arrange
+        table = sdd1.EVOLUTION
+
+        # Act
+        widths = {len(row) for row in table}
+
+        # Assert
+        self.assertEqual(widths, {3})
 
     def test_every_successor_is_a_state_that_exists(self) -> None:
-        for _, mps_next, lps_next in probability.EVOLUTION:
-            self.assertIn(mps_next, range(len(probability.EVOLUTION)))
-            self.assertIn(lps_next, range(len(probability.EVOLUTION)))
+        # Arrange
+        states = range(len(sdd1.EVOLUTION))
 
-    def test_every_code_size_fits_the_run_table(self) -> None:
-        for code_size, _, _ in probability.EVOLUTION:
-            self.assertIn(code_size, range(8))
-
-    def walk(self, start: int, which: int) -> int:
-        seen: list[int] = []
-        state = start
-        while state not in seen:
-            seen.append(state)
-            state = probability.EVOLUTION[state][which]
-        return state
-
-    def test_following_the_likely_symbol_always_settles(self) -> None:
-        unsettled = [
-            start
-            for start in range(len(probability.EVOLUTION))
-            if probability.EVOLUTION[self.walk(start, 1)][1] != self.walk(start, 1)
+        # Act
+        stray = [
+            row
+            for row in sdd1.EVOLUTION
+            if row[LIKELY] not in states or row[UNLIKELY] not in states
         ]
 
+        # Assert
+        self.assertEqual(stray, [])
+
+    def test_every_code_size_fits_the_run_table(self) -> None:
+        # Arrange
+        sizes = range(8)
+
+        # Act
+        stray = [code_size for code_size, _, _ in sdd1.EVOLUTION if code_size not in sizes]
+
+        # Assert
+        self.assertEqual(stray, [])
+
+    def test_following_the_likely_symbol_always_settles(self) -> None:
+        # Arrange
+        starts = range(len(sdd1.EVOLUTION))
+
+        # Act
+        unsettled = [start for start in starts if not settles(start, LIKELY)]
+
+        # Assert
         self.assertEqual(unsettled, [])
 
     def test_following_the_unlikely_symbol_always_settles(self) -> None:
-        unsettled = [
-            start
-            for start in range(len(probability.EVOLUTION))
-            if probability.EVOLUTION[self.walk(start, 2)][2] != self.walk(start, 2)
-        ]
+        # Arrange
+        starts = range(len(sdd1.EVOLUTION))
 
+        # Act
+        unsettled = [start for start in starts if not settles(start, UNLIKELY)]
+
+        # Assert
         self.assertEqual(unsettled, [])
 
 
 class RunTableTest(unittest.TestCase):
     def test_the_table_is_indexed_by_seven_bits(self) -> None:
-        self.assertEqual(len(probability.RUN_TABLE), 128)
+        # Arrange
+        table = sdd1.RUN_TABLE
+
+        # Act
+        size = len(table)
+
+        # Assert
+        self.assertEqual(size, 128)
 
     def test_the_table_is_a_permutation_of_every_run_length_it_can_give(self) -> None:
-        self.assertEqual(sorted(probability.RUN_TABLE), list(range(1, 129)))
+        # Arrange
+        table = sdd1.RUN_TABLE
+
+        # Act
+        found = sorted(table)
+
+        # Assert
+        self.assertEqual(found, list(range(1, 129)))
 
     def test_the_longest_run_comes_first(self) -> None:
-        self.assertEqual(probability.RUN_TABLE[0], max(probability.RUN_TABLE))
+        # Arrange
+        table = sdd1.RUN_TABLE
+
+        # Act
+        first = table[0]
+
+        # Assert
+        self.assertEqual(first, 128)
 
 
 class ContextMaskTest(unittest.TestCase):
     def test_there_is_a_mask_pair_for_every_context_type(self) -> None:
-        self.assertEqual(len(probability.CONTEXT_MASKS), 4)
+        # Arrange
+        masks = sdd1.CONTEXT_MASKS
+
+        # Act
+        count = len(masks)
+
+        # Assert
+        self.assertEqual(count, 4)
 
     def test_every_mask_fits_the_history_that_is_kept(self) -> None:
-        for high, low in probability.CONTEXT_MASKS:
-            self.assertEqual(high & ~probability.PREV_BITS_MASK, 0)
-            self.assertEqual(low & ~probability.PREV_BITS_MASK, 0)
+        # Arrange
+        masks = sdd1.CONTEXT_MASKS
+
+        # Act
+        stray = [pair for pair in masks if (pair[0] | pair[1]) & ~HISTORY]
+
+        # Assert
+        self.assertEqual(stray, [])
 
     def test_no_mask_pair_selects_the_same_bit_twice(self) -> None:
-        for high, low in probability.CONTEXT_MASKS:
-            self.assertEqual(high & low, 0)
+        # Arrange
+        masks = sdd1.CONTEXT_MASKS
+
+        # Act
+        overlapping = [(high, low) for high, low in masks if high & low]
+
+        # Assert
+        self.assertEqual(overlapping, [])
 
     def test_every_mask_pair_stays_inside_the_context_count(self) -> None:
-        for high, low in probability.CONTEXT_MASKS:
-            widest = ((high & probability.PREV_BITS_MASK) >> 5) | low
-            self.assertLess(widest, probability.CONTEXT_COUNT)
+        # Arrange
+        masks = sdd1.CONTEXT_MASKS
+
+        # Act
+        widest = [((high & HISTORY) >> 5) | low for high, low in masks]
+
+        # Assert
+        self.assertEqual([one for one in widest if one >= sdd1.CONTEXT_COUNT], [])
 
 
 class SizeTest(unittest.TestCase):
     def test_the_chip_keeps_one_context_set_of_thirty_two(self) -> None:
-        self.assertEqual(probability.CONTEXT_COUNT, 32)
+        # Arrange
+        model = sdd1.MODELS["sdd1"]
+
+        # Act
+        found = (sdd1.CONTEXT_COUNT, model.contexts)
+
+        # Assert
+        self.assertEqual(found, (32, 32))
 
     def test_the_chip_interleaves_at_most_eight_planes(self) -> None:
-        self.assertEqual(probability.PLANE_COUNT, 8)
+        # Arrange
+        widest = bytes([0xC0]) + bytes(64)
+
+        # Act
+        found = sdd1.decompress(widest, 0, 8).bitplanes
+
+        # Assert
+        self.assertEqual((sdd1.PLANE_COUNT, found), (8, 8))
 
     def test_a_block_is_sixty_four_kilobytes(self) -> None:
-        self.assertEqual(probability.MAX_LENGTH, 0x10000)
+        # Arrange
+        quiet = bytes(4096)
+
+        # Act
+        found = len(sdd1.decompress(quiet, 0, 0).data)
+
+        # Assert
+        self.assertEqual((sdd1.MAX_LENGTH, found), (0x10000, 0x10000))
 
 
 if __name__ == "__main__":

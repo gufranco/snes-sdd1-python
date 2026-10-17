@@ -1,3 +1,4 @@
+import hashlib
 import json
 import sys
 import tempfile
@@ -8,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from conformance import against_cartridges as against
-from sdd1.errors import TruncatedStream
+from sdd1 import TruncatedStream
 
 
 class ConfirmTest(unittest.TestCase):
@@ -67,11 +68,15 @@ class SweepTest(unittest.TestCase):
 
 class DecodeTest(unittest.TestCase):
     def test_the_default_decoder_is_this_package_s_own(self) -> None:
-        stream = bytes((0x00, 0x00)) + bytes(64)
+        # Arrange
+        held = json.loads((Path(__file__).resolve().parent / "vectors.json").read_text())
+        case = held["cases"][0]
 
-        found = against._decode(stream, 0, 8)
+        # Act
+        found = against.expand(bytes.fromhex(held["input"]), case["offset"], case["length"])
 
-        self.assertEqual(len(found), 8)
+        # Assert
+        self.assertEqual(hashlib.sha256(found).hexdigest(), case["output_sha256"])
 
 
 class CensusTest(unittest.TestCase):

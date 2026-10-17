@@ -9,7 +9,7 @@ from typing import Any, override
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def _reachable(root: Path = ROOT, path: list[str] | None = None) -> bool:
+def reachable(root: Path = ROOT, path: list[str] | None = None) -> bool:
     where = sys.path if path is None else path
     if str(root) in where:
         return False
@@ -17,7 +17,7 @@ def _reachable(root: Path = ROOT, path: list[str] | None = None) -> bool:
     return True
 
 
-_reachable()
+reachable()
 
 from sdd1 import decoder, environment, errors, models  # noqa: E402
 from sdd1.version import VERSION  # noqa: E402
@@ -91,7 +91,7 @@ def _part(name: str, build: Callable[[str], Any]) -> "Finding":
     )
 
 
-def _decoder(decompress: Callable[..., Any]) -> "Finding":
+def check_decoder(decompress: Callable[..., Any]) -> "Finding":
     try:
         found = decompress(b"", 0, 8)
     except errors.TruncatedStream:
@@ -145,7 +145,7 @@ def examine(
 ) -> list["Finding"]:
     found = [_python(), _package()]
     found.extend(_part(name, build) for name in sorted(models.MODELS))
-    found.append(_decoder(decompress))
+    found.append(check_decoder(decompress))
     found.extend(_corpus(label, where) for label, where in corpora)
     return found
 

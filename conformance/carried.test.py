@@ -8,9 +8,11 @@ from typing import Any
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from sdd1 import probability as tables  # noqa: E402
+import sdd1  # noqa: E402
 
 HELD: dict[str, Any] = json.loads((ROOT / "conformance" / "carried.json").read_text())
+
+FACTS: dict[str, Any] = json.loads((ROOT / "conformance" / "hardware.json").read_text())["facts"]
 
 
 def digest_of(values: Any) -> str:
@@ -24,50 +26,70 @@ class CarriedTableTest(unittest.TestCase):
         return held
 
     def test_every_pinned_table_is_the_table_that_was_pinned(self) -> None:
+        # Arrange
+        entries = self.entries
+
+        # Act
         wrong = [
             entry["name"]
-            for entry in self.entries
-            if digest_of(getattr(tables, entry["name"])) != entry["sha256"]
+            for entry in entries
+            if digest_of(getattr(sdd1, entry["name"])) != entry["sha256"]
         ]
 
+        # Assert
         self.assertEqual(wrong, [])
 
     def test_every_pinned_table_is_the_length_that_was_pinned(self) -> None:
+        # Arrange
+        entries = self.entries
+
+        # Act
         wrong = [
             entry["name"]
-            for entry in self.entries
-            if len(getattr(tables, entry["name"])) != entry["entries"]
+            for entry in entries
+            if len(getattr(sdd1, entry["name"])) != entry["entries"]
         ]
 
+        # Assert
         self.assertEqual(wrong, [])
 
     def test_a_changed_entry_is_caught(self) -> None:
-        first = self.entries[0]["name"]
-        held = getattr(tables, first)
-        bent = list(held)
-        bent[0] = "changed"
+        # Arrange
+        held = getattr(sdd1, self.entries[0]["name"])
 
+        # Act
+        bent = ["changed", *list(held)[1:]]
+
+        # Assert
         self.assertNotEqual(digest_of(bent), digest_of(held))
 
     def test_a_reordering_that_keeps_the_same_values_is_caught(self) -> None:
-        first = self.entries[0]["name"]
-        held = getattr(tables, first)
-        swapped = list(held)
-        swapped[0], swapped[-1] = swapped[-1], swapped[0]
+        # Arrange
+        held = list(getattr(sdd1, self.entries[0]["name"]))
 
+        # Act
+        swapped = [held[-1], *held[1:-1], held[0]]
+
+        # Assert
         self.assertNotEqual(digest_of(swapped), digest_of(held))
 
-    def test_every_table_the_module_carries_is_pinned(self) -> None:
-        carried = {
-            name
-            for name in dir(tables)
-            if name.isupper()
-            and not name.startswith("_")
-            and isinstance(getattr(tables, name), tuple)
-        }
+    def test_every_table_the_package_exports_is_pinned_or_recorded_as_a_fact(self) -> None:
+        # Arrange
         pinned = {entry["name"] for entry in self.entries}
+        recorded = [fact["value"] for fact in FACTS.values()]
 
-        self.assertEqual(carried - pinned, set())
+        # Act
+        unaccounted = {
+            name
+            for name in sdd1.__all__
+            if name.isupper()
+            and isinstance(getattr(sdd1, name), tuple)
+            and name not in pinned
+            and list(getattr(sdd1, name)) not in recorded
+        }
+
+        # Assert
+        self.assertEqual(unaccounted, set())
 
     def test_the_record_says_what_a_digest_here_does_not_claim(self) -> None:
         self.assertIn("a claim that the table is correct", HELD["whatThisIsNot"].lower())

@@ -24,7 +24,7 @@ Decode = Callable[[bytes, int, int], bytes]
 Confirmed = list[tuple[int, int, int]]
 
 
-def _decode(rom: bytes, at: int, count: int) -> bytes:
+def expand(rom: bytes, at: int, count: int) -> bytes:
     return bytes(decompress(rom, at, count).data)
 
 
@@ -48,7 +48,7 @@ def sweep(
     cartridge: bytes,
     expanded: bytes,
     span: tuple[int, int],
-    decode: Decode = _decode,
+    decode: Decode = expand,
 ) -> "Confirmed":
     found: Confirmed = []
     for at in range(*span):
@@ -87,7 +87,7 @@ def recorded(where: Path | str | None = None) -> dict[str, Any]:
 def main(
     argv: Sequence[str],
     say: Callable[[str], object] = print,
-    decode: Decode = _decode,
+    decode: Decode = expand,
 ) -> int:
     if len(argv) < 3:
         say("usage: against_cartridges.py <cartridge> <expanded> <out.json> [lo] [hi]")

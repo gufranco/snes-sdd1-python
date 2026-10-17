@@ -6,9 +6,13 @@ from typing import Any, override
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from sdd1 import decoder, probability
+import sdd1
 
 HERE = Path(__file__).resolve().parent
+
+NOISE = bytes.fromhex(json.loads((HERE / "vectors.json").read_text())["input"])[:4096]
+
+QUIET = bytes(4096)
 
 
 def declared(name: str) -> dict[str, Any]:
@@ -58,38 +62,73 @@ class ConstantTest(unittest.TestCase):
         self.facts: dict[str, Any] = declared("hardware.json")["facts"]
 
     def test_the_bitplane_counts_are_the_ones_declared(self) -> None:
-        counts = self.facts["bitplaneCounts"]["value"]
+        # Arrange
+        streams = [bytes([kind << 6]) + NOISE for kind in range(4)]
 
-        self.assertEqual(tuple(counts), decoder.BITPLANE_COUNTS)
+        # Act
+        counts = [sdd1.decompress(stream, 0, 8).bitplanes for stream in streams]
+
+        # Assert
+        self.assertEqual(counts, self.facts["bitplaneCounts"]["value"])
 
     def test_a_stream_begins_with_the_declared_number_of_header_bytes(self) -> None:
-        bytes_ = self.facts["headerBytes"]["value"]
+        # Arrange
+        declared_bytes = self.facts["headerBytes"]["value"]
 
-        self.assertEqual(bytes_, decoder.HEADER_BYTES)
+        # Act
+        published = sdd1.HEADER_BYTES
+
+        # Assert
+        self.assertEqual(published, declared_bytes)
 
     def test_the_coder_keeps_the_declared_number_of_contexts(self) -> None:
-        contexts = self.facts["contextCount"]["value"]
+        # Arrange
+        model = sdd1.MODELS["sdd1"]
 
-        self.assertEqual(contexts, probability.CONTEXT_COUNT)
+        # Act
+        kept = {sdd1.CONTEXT_COUNT, model.contexts}
+
+        # Assert
+        self.assertEqual(kept, {self.facts["contextCount"]["value"]})
 
     def test_a_stream_decodes_at_most_the_declared_length(self) -> None:
+        # Arrange
         longest = self.facts["maximumLength"]["value"]
 
-        self.assertEqual(longest, probability.MAX_LENGTH)
+        # Act
+        found = len(sdd1.decompress(QUIET, 0, 0).data)
+
+        # Assert
+        self.assertEqual((found, sdd1.MAX_LENGTH), (longest, longest))
 
     def test_and_that_length_is_one_bank(self) -> None:
+        # Arrange
         longest = self.facts["maximumLength"]["value"]
 
-        self.assertEqual(longest, 1 << 16)
+        # Act
+        bank = 1 << 16
+
+        # Assert
+        self.assertEqual(longest, bank)
 
     def test_the_header_selects_the_declared_number_of_shapes(self) -> None:
-        shapes = self.facts["headerShapes"]["value"]
+        # Arrange
+        streams = [bytes([shape << 4]) + NOISE for shape in range(16)]
 
-        self.assertEqual(shapes, len(decoder.BITPLANE_COUNTS) * len(probability.CONTEXT_MASKS))
+        # Act
+        decoded = {sdd1.decompress(stream, 0, 64).data for stream in streams}
+
+        # Assert
+        self.assertEqual(len(decoded), self.facts["headerShapes"]["value"])
 
     def test_every_shape_the_header_can_name_has_a_bitplane_count(self) -> None:
-        missing = [value for value in range(4) if decoder.bitplane_count(value) is None]
+        # Arrange
+        kinds = range(4)
 
+        # Act
+        missing = [kind for kind in kinds if sdd1.bitplane_count(kind) is None]
+
+        # Assert
         self.assertEqual(missing, [])
 
 

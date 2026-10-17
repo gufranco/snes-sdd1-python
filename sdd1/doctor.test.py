@@ -6,11 +6,12 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-from typing import Any, NoReturn, override
+from typing import Any, NoReturn
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from sdd1 import doctor, models
+import sdd1
+from sdd1 import doctor
 
 SOURCE = Path(doctor.__file__).resolve()
 
@@ -76,12 +77,14 @@ class ExamineTest(unittest.TestCase):
         self.assertEqual(len(names), len(set(names)))
 
     def test_and_one_finding_per_part_it_covers(self) -> None:
-        from sdd1 import models
+        # Arrange
+        models = sorted(sdd1.MODELS)
 
+        # Act
         names = [one.name for one in doctor.examine()]
 
-        for model in models.MODELS:
-            self.assertIn(model, names, model)
+        # Assert
+        self.assertEqual([model for model in models if model not in names], [])
 
     def test_every_finding_carries_a_detail(self) -> None:
         for one in doctor.examine():
@@ -113,18 +116,21 @@ class ExamineTest(unittest.TestCase):
         self.assertIn("resets and carries nothing across it", found[0].detail)
 
     def test_a_part_that_builds_and_will_not_reset_is_reported_as_broken(self) -> None:
-        class WillNotReset(models.Chip):
-            @override
+        # Arrange
+        class WillNotReset:
+            def __init__(self, name: str) -> None:
+                self.model = sdd1.Chip(name).model
+
             def reset(self) -> NoReturn:
                 raise Complaint("the line did nothing")
 
-        found = [
-            one
-            for one in doctor.examine(build=lambda name: WillNotReset(models.lookup(name)))
-            if one.name == "sdd1"
-        ]
+        # Act
+        found = [one for one in doctor.examine(build=WillNotReset) if one.name == "sdd1"]
 
-        self.assertFalse(found[0].ok)
+        # Assert
+        self.assertEqual(
+            [(one.ok, one.detail) for one in found], [(False, "Complaint: the line did nothing")]
+        )
 
 
 class DecoderTest(unittest.TestCase):
@@ -138,20 +144,36 @@ class DecoderTest(unittest.TestCase):
                 self.assertIn("refuses", one.detail)
 
     def test_one_that_invents_bytes_instead_is_a_failure(self) -> None:
-        found = doctor._decoder(lambda _rom, _offset, length: b"\x00" * length)
+        # Arrange
+        def inventing(_rom: Any, _offset: int, length: int) -> bytes:
+            return b"\x00" * length
 
-        self.assertFalse(found.ok)
-        self.assertIn("8 bytes", found.detail)
+        # Act
+        found = doctor.check_decoder(inventing)
+
+        # Assert
+        self.assertEqual((found.ok, found.detail), (False, "returned 8 bytes for an empty stream"))
 
     def test_and_one_that_throws_something_else_is_reported_as_what_it_threw(self) -> None:
+        # Arrange
         def boom(_rom: Any, _offset: int, _length: int) -> Any:
             raise Complaint("nothing decodes")
 
-        found = doctor._decoder(boom)
+        # Act
+        found = doctor.check_decoder(boom)
 
-        self.assertFalse(found.ok)
-        self.assertIn("nothing decodes", found.detail)
-        self.assertIn("Complaint", found.detail)
+        # Assert
+        self.assertEqual((found.ok, found.detail), (False, "Complaint: nothing decodes"))
+
+    def test_the_package_decoder_refuses_an_empty_stream(self) -> None:
+        # Arrange
+        decompress = sdd1.decompress
+
+        # Act
+        found = doctor.check_decoder(decompress)
+
+        # Assert
+        self.assertEqual((found.ok, found.detail), (True, "refuses a stream that is not there"))
 
 
 class CorpusTest(unittest.TestCase):
@@ -266,7 +288,7 @@ class TheDoctorRunsWhereThePackageMightNotImportTest(unittest.TestCase):
         path: list[str] = []
 
         # Act
-        added = doctor._reachable(Path("/somewhere"), path)
+        added = doctor.reachable(Path("/somewhere"), path)
 
         # Assert
         self.assertEqual((added, path), (True, ["/somewhere"]))
@@ -276,7 +298,7 @@ class TheDoctorRunsWhereThePackageMightNotImportTest(unittest.TestCase):
         path = ["/somewhere"]
 
         # Act
-        added = doctor._reachable(Path("/somewhere"), path)
+        added = doctor.reachable(Path("/somewhere"), path)
 
         # Assert
         self.assertEqual((added, path), (False, ["/somewhere"]))
