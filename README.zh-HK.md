@@ -2,7 +2,7 @@
 
 以 Python 實現的 S-DD1，即兩款 Super Nintendo 遊戲所用的算術解壓器。它在 6,652 條數據流上與 snes9x 1.63 的解碼器逐一比對，並在不經任何模擬器的情況下以兩盒零售版卡帶驗證。
 
-[English](README.md) &nbsp;|&nbsp; [日本語](README.ja.md) &nbsp;|&nbsp; [简体中文](README.zh-Hans.md) &nbsp;|&nbsp; 繁體中文（香港）
+[English](README.md) | [日本語](README.ja.md) | [简体中文](README.zh-Hans.md) | 繁體中文（香港）
 
 [![CI](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
