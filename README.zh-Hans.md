@@ -8,7 +8,7 @@ S-DD1 是两款 Super Nintendo 游戏中的算术解压芯片，本仓库用 Pyt
 [![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**4,000** 个噪声流和 **2,652** 个卡带形态的流与 snes9x 1.63 对比，**0** 失败，覆盖**全部 16** 种头部形态，长度最多 **65,536** 字节，形态取自 **11,306** 个流的普查，**633** 个测试，**100%** 语句和分支覆盖率，无依赖
+**4,000** 个噪声流和 **2,652** 个卡带形态的流与 snes9x 1.63 对比，**0** 失败，覆盖**全部 16** 种头部形态，长度最多 **65,536** 字节，形态取自 **11,306** 个流的普查，**641** 个测试，**100%** 语句和分支覆盖率，无依赖
 
 ```python
 import random
@@ -350,7 +350,7 @@ python3 -m conformance.against_cartridges cartridge.sfc expanded.sfc found.json
 ```bash
 uvx ruff@0.16.3 format --check .
 uvx ruff@0.16.3 check .
-uvx --python 3.12 mypy==1.14.1
+uvx --python 3.12 --with types-setuptools==84.0.0.20260812 mypy==1.14.1
 python3 -m coverage erase
 for file in $(find sdd1 conformance -name '*.test.py' | sort); do
   python3 -m coverage run -a "$file"

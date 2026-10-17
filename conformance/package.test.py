@@ -12,7 +12,7 @@ import unittest  # noqa: E402
 import zipfile  # noqa: E402
 from typing import Any  # noqa: E402
 
-from setuptools.dist import Distribution  # type: ignore[import-untyped]  # noqa: E402
+from setuptools.dist import Distribution  # noqa: E402
 
 from conformance import package  # noqa: E402
 

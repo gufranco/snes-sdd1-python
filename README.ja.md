@@ -8,7 +8,7 @@ S-DD1は、スーパーファミコンの2本のゲームに搭載された算�
 [![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-ノイズのストリーム**4,000**本とカートリッジ形状のストリーム**2,652**本をsnes9x 1.63と比較して失敗**0**件、ヘッダ形状は**全16**種、長さは最大**65,536**バイト、形状は**11,306**本のストリームの全数調査から取得、テスト**633**件、ステートメントとブランチのカバレッジ**100%**、依存パッケージなし
+ノイズのストリーム**4,000**本とカートリッジ形状のストリーム**2,652**本をsnes9x 1.63と比較して失敗**0**件、ヘッダ形状は**全16**種、長さは最大**65,536**バイト、形状は**11,306**本のストリームの全数調査から取得、テスト**641**件、ステートメントとブランチのカバレッジ**100%**、依存パッケージなし
 
 ```python
 import random
@@ -350,7 +350,7 @@ python3 -m conformance.against_cartridges cartridge.sfc expanded.sfc found.json
 ```bash
 uvx ruff@0.16.3 format --check .
 uvx ruff@0.16.3 check .
-uvx --python 3.12 mypy==1.14.1
+uvx --python 3.12 --with types-setuptools==84.0.0.20260812 mypy==1.14.1
 python3 -m coverage erase
 for file in $(find sdd1 conformance -name '*.test.py' | sort); do
   python3 -m coverage run -a "$file"

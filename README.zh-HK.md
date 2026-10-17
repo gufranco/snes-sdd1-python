@@ -8,7 +8,7 @@
 [![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**4,000** 條雜訊數據流與 **2,652** 條卡帶形態的數據流與 snes9x 1.63 比對，**0** 個失敗，涵蓋**全部 16** 種標頭形態，長度最高 **65,536** 位元組，形態取自 **11,306** 條數據流的普查，**633** 個測試，**100%** 語句及分支覆蓋率，無任何依賴
+**4,000** 條雜訊數據流與 **2,652** 條卡帶形態的數據流與 snes9x 1.63 比對，**0** 個失敗，涵蓋**全部 16** 種標頭形態，長度最高 **65,536** 位元組，形態取自 **11,306** 條數據流的普查，**641** 個測試，**100%** 語句及分支覆蓋率，無任何依賴
 
 ```python
 import random
@@ -350,7 +350,7 @@ python3 -m conformance.against_cartridges cartridge.sfc expanded.sfc found.json
 ```bash
 uvx ruff@0.16.3 format --check .
 uvx ruff@0.16.3 check .
-uvx --python 3.12 mypy==1.14.1
+uvx --python 3.12 --with types-setuptools==84.0.0.20260812 mypy==1.14.1
 python3 -m coverage erase
 for file in $(find sdd1 conformance -name '*.test.py' | sort); do
   python3 -m coverage run -a "$file"
