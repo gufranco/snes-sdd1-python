@@ -1,3 +1,4 @@
+---
 name: CI
 
 on:
@@ -49,9 +50,6 @@ jobs:
       - name: Check that every JSON file is formatted
         run: pnpm run format:check
 
-      # The workflows are the one thing here nothing else checks, and a mistake
-      # in them is only visible once a run has already gone wrong. The archive
-      # is verified by digest before anything in it runs.
       - name: Check the workflows themselves
         run: |
           curl -fsSL -o actionlint.tar.gz \
@@ -64,6 +62,11 @@ jobs:
         env:
           ACTIONLINT_VERSION: "1.7.12"
           ACTIONLINT_SHA256: "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+
+      - name: Lint every YAML file
+        run: |
+          pipx install yamllint==1.38.0
+          yamllint --strict .
 
   types:
     name: Types
@@ -78,9 +81,6 @@ jobs:
       - name: Install mypy
         run: pipx install mypy==1.14.1
 
-      # Strict, with every optional error class the checker offers. The
-      # configuration lives in pyproject.toml so this run and a local one are
-      # the same run.
       - name: Check types
         run: mypy
 
@@ -116,13 +116,9 @@ jobs:
       - name: Coverage must be total
         run: python -m coverage report
 
-      # The census is checked into the tree, so this confirms it still says what
-      # the record cites it for. Re-deriving it needs a retail cartridge and the
-      # expanded image somebody made from it, neither of which is carried here;
-      # conformance/against_cartridges.py does that from copies you own.
       - name: The emulator-free census still separates from its control
         run: |
-          python -c "
+          python - <<'PY'
           import sys
           sys.path.insert(0, '.')
           sys.path.insert(0, 'conformance')
@@ -132,8 +128,9 @@ jobs:
           real, control = found['confirmed'], found['control']['confirmed']
           assert len(found['kinds']) == 16, sorted(found['kinds'])
           assert real > control * 20, (real, control)
-          print(f'  {real} confirmed against {control} in the control, {real/control:.1f} to 1')
-          "
+          ratio = real / control
+          print(f'  {real} confirmed against {control} in the control, {ratio:.1f} to 1')
+          PY
         shell: bash
 
   speed:
