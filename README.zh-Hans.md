@@ -8,7 +8,7 @@ S-DD1 是两款 Super Nintendo 游戏中的算术解压芯片，本仓库用 Pyt
 [![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**4,000** 个噪声流和 **2,652** 个卡带形态的流与 snes9x 1.63 对比，**0** 失败，覆盖**全部 16** 种头部形态，长度最多 **65,536** 字节，形态取自 **11,306** 个流的普查，**642** 个测试，**100%** 语句和分支覆盖率，无依赖
+**4,000** 个噪声流和 **2,652** 个卡带形态的流与 snes9x 1.63 对比，**0** 失败，覆盖**全部 16** 种头部形态，长度最多 **65,536** 字节，形态取自 **11,306** 个流的普查，**644** 个测试，**100%** 语句和分支覆盖率，无依赖
 
 ```python
 import random
