@@ -134,6 +134,15 @@ their reasons live here, beside those of the coverage exclusions:
   coverage sees it while earlier versions do not.
 - A lone ellipsis and a signature ending in one are excluded: a protocol method
   has no body to run, and the same version split applies.
+- `@unittest\.skipUnless\(CLOCKED,` in the coverage exclusions: this member is
+  not a clocked part, so the family tests that drive a clock are skipped here
+  and their bodies never run.
+- `@unittest\.skipUnless\(QUOTED,` in the coverage exclusions: this record
+  quotes no document, so the family tests that hold a quote checker to the
+  pipeline are skipped here.
+- `@unittest\.skipUnless\(SOLD_AS_A_COMPONENT,`, `^def machine_mentions\(` and
+  `^def listing\(` in the coverage exclusions: this part only existed inside one
+  machine, so the family sweep for machine names is skipped here.
 
 ## Layout
 
@@ -147,7 +156,9 @@ sdd1/
   doctor.py       what is actually on this machine, printed for a bug report
   version.py      rewritten by the release job and by nothing else
 conformance/
-  family.test.py  the family standard, held to this repository
+  family_*.test.py the family standard, held to this repository, one topic a file
+  family_member.py what this member answers to them
+  family_shared.py what more than one of them reads
   vectors.json    4,000 noise streams and what the reference makes of them
   corpus.json     2,652 cartridge-shaped streams, same
   extract.py      generating a corpus from the reference
