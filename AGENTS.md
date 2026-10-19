@@ -61,6 +61,17 @@ branch of the decoder has never executed.
 A change to the corpus that makes it more realistic and less random is a change
 that weakens it.
 
+## Test cartridges
+
+[`conformance/testroms.json`](conformance/testroms.json) keeps an empty list,
+and its `none` says why: no test cartridge exercises the S-DD1. The 18 images in
+`snes-roms/5 Tools & Service Test Carts/` declare no coprocessor or an SA-1, or
+carry no header, and the 1,414 files of the [higan snes-test-roms
+mirror](https://gitlab.com/higan/snes-test-roms) at `26e8aa91` hold nothing for
+the S-DD1. It is reached only through the two retail games that carry it. There
+is no test cartridge runner here. A test cartridge for the S-DD1 that appears
+goes in the record, by SHA-256, and gets one.
+
 ## Every gate, in the order to run them
 
 ```bash
