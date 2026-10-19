@@ -1152,12 +1152,14 @@ the state table unvisited. Noise visits it.
 Nintendo published no document for this part. The top rung is empty, the record
 says so, and what settles it is a second implementation of the same decoder.
 
-It is a part rather than a clocked part. A caller hands it a stream and is handed
-back what the stream held; there is no instruction to step through and no cycle
-count to report, so the section about a clock does not apply.
+It is a part rather than a clocked part. A console reads and writes it one access
+at a time, and a caller can also hand it a stream and be handed back what the
+stream held; there is no instruction to step through and no cycle count to
+report, so the section about a clock does not apply.
 
 ## What is not modelled here
 
-The chip is a decompressor sitting in a memory map, and the map is
-[snes-mapper-python](https://github.com/gufranco/snes-mapper-python). Where a
-compressed block lives is that member's answer. What it holds is this one's.
+The chip is a decompressor and a bank mapper sitting on the cartridge bus. The
+addresses it decodes, its registers and its four windows, are modelled here. The
+rest of the board's map is
+[snes-mapper-python](https://github.com/gufranco/snes-mapper-python).

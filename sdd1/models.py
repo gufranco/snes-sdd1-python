@@ -3,6 +3,8 @@ from typing import Any, override
 
 from sdd1.errors import UnknownModelError
 
+from .chip import Chip
+
 
 class Model:
     __slots__ = ("aliases", "contexts", "core", "name", "planes", "summary")
@@ -31,23 +33,8 @@ class Model:
         return f"<Model {self.name}, up to {self.planes} bit planes>"
 
 
-class Chip:
-    __slots__ = ("model",)
-
-    def __init__(self, model: "Model") -> None:
-        self.model = model.name
-
-    def decompress(self, rom: bytes | bytearray, offset: int, length: int) -> Any:
-        from .decoder import decompress
-
-        return decompress(rom, offset, length)
-
-    def reset(self) -> "Chip":
-        return self
-
-
 def _build_sdd1(model: "Model", **options: Any) -> Any:
-    return Chip(model, **options)
+    return Chip(model.name, **options)
 
 
 _CATALOGUE = (

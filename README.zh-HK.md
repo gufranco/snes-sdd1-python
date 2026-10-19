@@ -8,7 +8,7 @@
 [![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**4,000** 條雜訊數據流與 **2,652** 條卡帶形態的數據流與 snes9x 1.63 比對，**0** 個失敗，涵蓋**全部 16** 種標頭形態，長度最高 **65,536** 位元組，形態取自 **11,306** 條數據流的普查，**656** 個測試，**100%** 語句及分支覆蓋率，無任何依賴
+**4,000** 條雜訊數據流與 **2,652** 條卡帶形態的數據流與 snes9x 1.63 比對，**0** 個失敗，涵蓋**全部 16** 種標頭形態，長度最高 **65,536** 位元組，形態取自 **11,306** 條數據流的普查，**688** 個測試，**100%** 語句及分支覆蓋率，無任何依賴
 
 ```python
 import random
@@ -92,7 +92,7 @@ s-dd2 is not a model this package covers; it has sdd1
 | 呼叫                                   | 作用                                                                                                          |
 | :------------------------------------- | :------------------------------------------------------------------------------------------------------------ |
 | `Chip.decompress(rom, offset, length)` | 解碼標頭位元組位於 `rom[offset]` 的數據流，並傳回長度為 `length` 位元組的 `Stream`。`length` 為 0 代表 65,536 |
-| `Chip.reset()`                         | 不做任何事，並傳回晶片本身。數據流之間不保留任何狀態，因此沒有需要清除的內容                                  |
+| `Chip.reset()`                         | 設定重設所定義的值，並傳回晶片本身。它設定的暫存器列於卡帶匯流排上的晶片一節                                  |
 | `sdd1.decompress(rom, offset, length)` | 不必先建立晶片的同一解碼                                                                                      |
 | `sdd1.bitplane_count(kind)`            | 標頭最高兩位所指定的位元平面數目：種類 0 至 3 分別為 2、4、4 或 8                                             |
 
@@ -115,6 +115,8 @@ s-dd2 is not a model this package covers; it has sdd1
 | :------------------ | :-------------------------------------------------------------------------------------------------------------- |
 | `UnknownModelError` | `Chip` 沒有獲得型號，或獲得的名稱不對應任何型號。訊息會列出可用的型號                                           |
 | `TruncatedStream`   | `offset` 為負數、從 `offset` 起剩餘不足 2 個位元組，或在解碼出 `length` 位元組之前輸入已耗盡。例外帶有 `offset` |
+| `OutOfRange`        | `read` 或 `write` 給出的位址不是晶片會解碼的位址。訊息會列出該位址                                              |
+| `EmptyRom`          | `Chip` 獲得的 ROM 沒有任何位元組                                                                                |
 
 過短的數據流會引發例外，而不是傳回較少的位元組，因此呼叫者永遠不會把部分區塊誤當作完整區塊。
 
@@ -141,6 +143,61 @@ Stream(data=b'u\xb3\x94\xe8\xff\x9e\x04\xe1', end=19, bitplanes=8, context=3)
 TruncatedStream at -1
 TruncatedStream at 63
 TruncatedStream at 0
+```
+
+### 卡帶匯流排上的晶片
+
+`sdd1.Chip(model, rom=None, seed=...)` 亦會建立主機實際與之通訊的晶片。`rom` 是卡帶的 ROM，類型為 `bytes` 或 `bytearray`；省略時晶片會以 `seed` 產生一個 4 MiB 的 ROM。建立完成時，每個暫存器都與開機時一樣，保存着從 `seed` 取得的值，只有 `reset()` 會為它們定下確定的值。
+
+| 呼叫或屬性              | 效果                                                                                                                                                                                                                                  |
+| :---------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `read(address)`         | 從一個 24 位元主機位址讀取一個位元組：`$00-3f,$80-bf:4800-480f` 的暫存器、`$00-3f,$80-bf:8000-ffff` 以 32 KiB 為一頁的程式，以及 `$c0-ff:0000-ffff` 的四個 1 MiB 視窗。讀取某條通道正在等候的視窗位址，會傳回該通道的下一個解壓位元組 |
+| `write(address, value)` | 寫入 `$4800`、`$4801` 及 `$4804` 至 `$4807`，並監察 `$43x2` 至 `$43x6`，主機在這裡為每條 DMA 通道設定來源位址及位元組數目。寫入 ROM 不會改變任何東西                                                                                  |
+| `reset()`               | 清除 `$4800` 及 `$4801`，令四個視窗指向首四個 megabyte，並忘記所有受監察的通道。傳回晶片本身                                                                                                                                          |
+| `rom`                   | 晶片讀取的 ROM，類型為 `bytes`。讀取超出末端時會由頭重複                                                                                                                                                                              |
+
+| 暫存器             | 內容                                                                                                                                                                                      |
+| :----------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `$4800`            | 每條 DMA 通道一個位元：容許解壓                                                                                                                                                           |
+| `$4801`            | 每條 DMA 通道一個位元：等候解壓。通道的位元組數目用完時，其位元會被清除，數目為 0 代表 65,536                                                                                             |
+| `$4804` 至 `$4807` | 第 0 至 3 位元選擇在 `$c0-cf`、`$d0-df`、`$e0-ef` 及 `$f0-ff` 顯示的 ROM megabyte。`$4805` 的第 7 位元在程式區把 `$20-3f` 摺疊到 `$00-1f`，`$4807` 的第 7 位元把 `$a0-bf` 摺疊到 `$80-9f` |
+
+在匯流排上，解碼器經由視窗讀取數據流，所以數據流永遠不會耗盡，而是繼續讀取 ROM 接下來的內容。`TruncatedStream` 只屬於對緩衝區呼叫的 `decompress`。每項暫存器事實都來自 ares 及 snes9x 兩個實作，兩者不一致的五處記錄在 [`conformance/divergences.json`](conformance/divergences.json)。
+
+```python
+import random
+
+import sdd1
+
+noise = random.Random(1996).randbytes(64)
+rom = bytearray(0x200000)
+rom[0x100000 : 0x100000 + 64] = bytes([0x50]) + noise[1:]
+part = sdd1.Chip("sdd1", rom)
+print(part)
+print(part.reset())
+
+for register, value in ((0x4302, 0x00), (0x4303, 0x00), (0x4304, 0xD0), (0x4305, 8), (0x4306, 0)):
+    part.write(register, value)
+part.write(0x4800, 0x01)
+part.write(0x4801, 0x01)
+
+print(bytes(part.read(0xD00000) for _ in range(8)).hex(), part.read(0x4801))
+print(sdd1.decompress(rom, 0x100000, 8).data.hex(), hex(part.read(0xD00000)))
+
+for address in (0x7E0000, 0x002000):
+    try:
+        part.read(address)
+    except sdd1.OutOfRange as refused:
+        print(refused)
+```
+
+```
+<Chip sdd1 enable 5f/0b banks 09 89 04 81>
+<Chip sdd1 enable 00/00 banks 00 01 02 03>
+00000100e104bd72 0
+00000100e104bd72 0x50
+0x7e0000 is not an address this chip answers
+0x002000 is not an address this chip answers
 ```
 
 ### 模組內容
@@ -261,7 +318,7 @@ sdd1 8 32 ('s-dd1', 'sdd-1', 'sdd', 'nintendosdd1')
 sdd1 True
 ```
 
-只有一個型號。搭載此晶片的兩款遊戲使用同一個解壓器。兩者的卡帶在把記憶庫映射到位址空間的方式上有所不同，但這屬於卡帶而非解壓器，本專案並未模擬該映射。
+只有一個型號。載有這枚晶片的兩款遊戲使用同一個解壓器及同一組暫存器。它們的卡帶容量不同，而記憶庫暫存器能涵蓋全部容量。
 
 ## 它是否正確
 
@@ -337,7 +394,7 @@ python3 -m conformance.against_cartridges cartridge.sfc expanded.sfc found.json
 
 ### 尚未解決的問題
 
-[OPEN-QUESTIONS.md](OPEN-QUESTIONS.md) 列出每個尚未解決的問題，以及能解決它的量度。每個輸出值都建基於其他實現，而不是真實晶片的錄得數據。對格式錯誤的數據流的行為是推測。第二個標頭位元組在形態以外的含義未知。[`conformance/divergences.json`](conformance/divergences.json) 記錄每個來源比表面看來更薄弱之處。
+[OPEN-QUESTIONS.md](OPEN-QUESTIONS.md) 列出每個尚未解決的問題，以及能解決它的量度。每個輸出值都建基於其他實現，而不是真實晶片的錄得數據。晶片遇到任何編碼器都不會產生的位元組時會做甚麼仍然未知，而暫存器介面所依據的兩個實現有五處不一致。第二個標頭位元組在形態以外的含義未知。[`conformance/divergences.json`](conformance/divergences.json) 記錄每個來源比表面看來更薄弱之處。
 
 ## 參與開發
 
@@ -368,6 +425,7 @@ python3 -m conformance.speed
 ## 參考資料
 
 - snes9x 1.63，`sdd1emu.cpp`，https://github.com/snes9xgit/snes9x ，即產生 [`conformance/vectors.json`](conformance/vectors.json) 及 [`conformance/corpus.json`](conformance/corpus.json) 中每個預期輸出的解碼器。只取用事實，沒有採用任何程式碼。
+- ares 提交 `9408cb43d4948fc3ea6e152a307a34348df3fe04` 的 `ares/sfc/coprocessor/sdd1/sdd1.cpp`，https://github.com/ares-emulator/ares ，以及 snes9x 提交 `1bcc369e89f08243e0a462882fb1f3e42e51de3a` 的 `sdd1.cpp`、`ppu.cpp` 及 `dma.cpp`。[`conformance/hardware.json`](conformance/hardware.json) 中每項暫存器事實都讀自這兩個實現。只取用事實，沒有採用任何程式碼。
 - 目前未知有任何關於 S-DD1 的 Ricoh 或 Nintendo 文件。[`conformance/hardware.json`](conformance/hardware.json) 記錄了搜尋過程，並把 `documents` 列為空。
 - 記錄中提及的每個卡帶、展開版本及原型映像檔，都在該處以大小及四個摘要識別。本專案不攜帶其中任何一個。
 

@@ -8,7 +8,7 @@ English | [日本語](README.ja.md) | [简体中文](README.zh-Hans.md) | [繁�
 [![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**4,000** noise streams and **2,652** cartridge-shaped streams compared with snes9x 1.63, **0** failures, **all 16** header shapes, lengths to **65,536** bytes, shapes from a census of **11,306** streams, **656** tests, **100%** statement and branch coverage, no dependencies
+**4,000** noise streams and **2,652** cartridge-shaped streams compared with snes9x 1.63, **0** failures, **all 16** header shapes, lengths to **65,536** bytes, shapes from a census of **11,306** streams, **688** tests, **100%** statement and branch coverage, no dependencies
 
 ```python
 import random
@@ -92,7 +92,7 @@ s-dd2 is not a model this package covers; it has sdd1
 | Call                                   | Effect                                                                                                                            |
 | :------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
 | `Chip.decompress(rom, offset, length)` | Decodes the stream whose header byte sits at `rom[offset]` and returns a `Stream` of `length` bytes. A `length` of 0 means 65,536 |
-| `Chip.reset()`                         | Does nothing and returns the part. No state survives from one stream to the next, so there is nothing to clear                    |
+| `Chip.reset()`                         | Sets what a reset defines and returns the part. The registers it sets are listed under the chip on the cartridge bus              |
 | `sdd1.decompress(rom, offset, length)` | The same decode without building a part first                                                                                     |
 | `sdd1.bitplane_count(kind)`            | The number of bit planes the header's top two bits name: 2, 4, 4 or 8 for kinds 0 to 3                                            |
 
@@ -115,6 +115,8 @@ s-dd2 is not a model this package covers; it has sdd1
 | :------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `UnknownModelError` | `Chip` is given no model, or a name no model answers to. The message lists the models there are                                                           |
 | `TruncatedStream`   | `offset` is negative, fewer than 2 bytes remain from `offset` on, or the input runs out before `length` bytes are decoded. The exception carries `offset` |
+| `OutOfRange`        | `read` or `write` names an address the part does not decode. The message names the address                                                                |
+| `EmptyRom`          | `Chip` is given a ROM of no bytes                                                                                                                         |
 
 A short stream raises rather than returning fewer bytes, so a caller never mistakes a partial block for a whole one.
 
@@ -143,22 +145,77 @@ TruncatedStream at 63
 TruncatedStream at 0
 ```
 
+### The chip on the cartridge bus
+
+`sdd1.Chip(model, rom=None, seed=...)` also builds the part a console talks to. `rom` is the cartridge's ROM as `bytes` or `bytearray`; without one the part builds a 4 MiB ROM from `seed`. Construction leaves every register holding a value drawn from `seed`, as power does, and only `reset()` defines them.
+
+| Call or attribute       | Effect                                                                                                                                                                                                                                                                                            |
+| :---------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `read(address)`         | One byte from a 24-bit console address: the registers at `$00-3f,$80-bf:4800-480f`, the program at `$00-3f,$80-bf:8000-ffff` in 32 KiB pages, and the four 1 MiB windows at `$c0-ff:0000-ffff`. A read of the window address a channel is armed for returns that channel's next decompressed byte |
+| `write(address, value)` | Stores `$4800`, `$4801` and `$4804` to `$4807`, and watches `$43x2` to `$43x6`, where the console gives each DMA channel its source address and byte count. A write to ROM changes nothing                                                                                                        |
+| `reset()`               | Clears `$4800` and `$4801`, points the four windows at the first four megabytes and forgets every watched channel. Returns the part                                                                                                                                                               |
+| `rom`                   | The ROM the part reads, as `bytes`. A read past its end repeats it                                                                                                                                                                                                                                |
+
+| Register           | Holds                                                                                                                                                                                                        |
+| :----------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `$4800`            | One bit a DMA channel: decompression allowed                                                                                                                                                                 |
+| `$4801`            | One bit a DMA channel: decompression armed. A channel's bit clears when its byte count runs out, and a count of 0 means 65,536                                                                               |
+| `$4804` to `$4807` | In bits 0 to 3, the megabyte of ROM shown at `$c0-cf`, `$d0-df`, `$e0-ef` and `$f0-ff`. Bit 7 of `$4805` folds `$20-3f` onto `$00-1f` in the program area, and bit 7 of `$4807` folds `$a0-bf` onto `$80-9f` |
+
+On the bus the decoder reads its stream through the windows, so a stream never runs out: it runs on into whatever the ROM holds next. `TruncatedStream` belongs to `decompress` over a buffer alone. Every register fact comes from two implementations, ares and snes9x, and the five places they part are in [`conformance/divergences.json`](conformance/divergences.json).
+
+```python
+import random
+
+import sdd1
+
+noise = random.Random(1996).randbytes(64)
+rom = bytearray(0x200000)
+rom[0x100000 : 0x100000 + 64] = bytes([0x50]) + noise[1:]
+part = sdd1.Chip("sdd1", rom)
+print(part)
+print(part.reset())
+
+for register, value in ((0x4302, 0x00), (0x4303, 0x00), (0x4304, 0xD0), (0x4305, 8), (0x4306, 0)):
+    part.write(register, value)
+part.write(0x4800, 0x01)
+part.write(0x4801, 0x01)
+
+print(bytes(part.read(0xD00000) for _ in range(8)).hex(), part.read(0x4801))
+print(sdd1.decompress(rom, 0x100000, 8).data.hex(), hex(part.read(0xD00000)))
+
+for address in (0x7E0000, 0x002000):
+    try:
+        part.read(address)
+    except sdd1.OutOfRange as refused:
+        print(refused)
+```
+
+```
+<Chip sdd1 enable 5f/0b banks 09 89 04 81>
+<Chip sdd1 enable 00/00 banks 00 01 02 03>
+00000100e104bd72 0
+00000100e104bd72 0x50
+0x7e0000 is not an address this chip answers
+0x002000 is not an address this chip answers
+```
+
 ### Module contents
 
-| Name                                             | Content                                                                                   |
-| :----------------------------------------------- | :---------------------------------------------------------------------------------------- |
-| `sdd1.MODELS`                                    | The `Model` records, keyed by canonical name                                              |
-| `sdd1.Model`                                     | One record: `name`, `summary`, `planes`, `contexts`, `aliases`                            |
-| `sdd1.BITPLANE_COUNTS`                           | `(2, 4, 4, 8)`, the plane count for each of the four plane kinds                          |
-| `sdd1.HEADER_BYTES`                              | 2, the bytes a stream starts with                                                         |
-| `sdd1.PLANE_COUNT`                               | 8, the most planes a stream interleaves                                                   |
-| `sdd1.CONTEXT_COUNT`                             | 32, the contexts the coder keeps                                                          |
-| `sdd1.MAX_LENGTH`                                | 65,536, the most a stream decodes, and what a `length` of 0 asks for                      |
-| `sdd1.EVOLUTION`                                 | The 33-state machine: for each state, the code size and the next state after each outcome |
-| `sdd1.RUN_TABLE`                                 | 128 run lengths, a permutation of 1 to 128, indexed by a 7-bit code word                  |
-| `sdd1.CONTEXT_MASKS`                             | Four pairs of masks over a plane's 10-bit history, one per context kind                   |
-| `sdd1.UnknownModelError`, `sdd1.TruncatedStream` | Everything a caller can catch                                                             |
-| `sdd1.__version__`                               | The installed version                                                                     |
+| Name                                                                                 | Content                                                                                   |
+| :----------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------- |
+| `sdd1.MODELS`                                                                        | The `Model` records, keyed by canonical name                                              |
+| `sdd1.Model`                                                                         | One record: `name`, `summary`, `planes`, `contexts`, `aliases`                            |
+| `sdd1.BITPLANE_COUNTS`                                                               | `(2, 4, 4, 8)`, the plane count for each of the four plane kinds                          |
+| `sdd1.HEADER_BYTES`                                                                  | 2, the bytes a stream starts with                                                         |
+| `sdd1.PLANE_COUNT`                                                                   | 8, the most planes a stream interleaves                                                   |
+| `sdd1.CONTEXT_COUNT`                                                                 | 32, the contexts the coder keeps                                                          |
+| `sdd1.MAX_LENGTH`                                                                    | 65,536, the most a stream decodes, and what a `length` of 0 asks for                      |
+| `sdd1.EVOLUTION`                                                                     | The 33-state machine: for each state, the code size and the next state after each outcome |
+| `sdd1.RUN_TABLE`                                                                     | 128 run lengths, a permutation of 1 to 128, indexed by a 7-bit code word                  |
+| `sdd1.CONTEXT_MASKS`                                                                 | Four pairs of masks over a plane's 10-bit history, one per context kind                   |
+| `sdd1.UnknownModelError`, `sdd1.TruncatedStream`, `sdd1.OutOfRange`, `sdd1.EmptyRom` | Everything a caller can catch                                                             |
+| `sdd1.__version__`                                                                   | The installed version                                                                     |
 
 ```python
 import sdd1
@@ -261,7 +318,7 @@ sdd1 8 32 ('s-dd1', 'sdd-1', 'sdd', 'nintendosdd1')
 sdd1 True
 ```
 
-There is one model. Both games that carry the part use the same decompressor. Their cartridges differ in how they map banks into the address space, which belongs to the cartridge rather than to the decompressor, and that mapping is not modelled here.
+There is one model. Both games that carry the part use the same decompressor and the same registers. Their cartridges differ in size, and the bank registers reach all of it.
 
 ## Is it right
 
@@ -337,7 +394,7 @@ python3 -m conformance.against_cartridges cartridge.sfc expanded.sfc found.json
 
 ### What is still open
 
-[OPEN-QUESTIONS.md](OPEN-QUESTIONS.md) lists each open question with the measurement that would close it. Every output value rests on implementations rather than on a recording off a real part. The behaviour on a malformed stream is a guess. The meaning of the second header byte beyond the shape is unknown. [`conformance/divergences.json`](conformance/divergences.json) holds each place a source is weaker than it looks.
+[OPEN-QUESTIONS.md](OPEN-QUESTIONS.md) lists each open question with the measurement that would close it. Every output value rests on implementations rather than on a recording off a real part. What the part does with bytes no encoder produced is unknown, and the register interface rests on two implementations that part in five places. The meaning of the second header byte beyond the shape is unknown. [`conformance/divergences.json`](conformance/divergences.json) holds each place a source is weaker than it looks.
 
 ## Working on it
 
@@ -368,6 +425,7 @@ Never attach a cartridge image to an issue or link to one. A digest identifies a
 ## References
 
 - snes9x 1.63, `sdd1emu.cpp`, https://github.com/snes9xgit/snes9x, the decoder that produced every expected output in [`conformance/vectors.json`](conformance/vectors.json) and [`conformance/corpus.json`](conformance/corpus.json). Facts only; no code is taken.
+- ares at commit `9408cb43d4948fc3ea6e152a307a34348df3fe04`, `ares/sfc/coprocessor/sdd1/sdd1.cpp`, https://github.com/ares-emulator/ares, and snes9x at commit `1bcc369e89f08243e0a462882fb1f3e42e51de3a`, `sdd1.cpp`, `ppu.cpp` and `dma.cpp`, the two implementations every register fact in [`conformance/hardware.json`](conformance/hardware.json) is read from. Facts only; no code is taken.
 - No Ricoh or Nintendo document for the S-DD1 is known. [`conformance/hardware.json`](conformance/hardware.json) records the search and lists `documents` as empty.
 - Every cartridge, expansion and prototype image the records mention is identified there by size and four digests. None is carried here.
 

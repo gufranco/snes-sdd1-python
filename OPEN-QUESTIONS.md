@@ -127,16 +127,23 @@ descends from the same research.
 
 **The document says.** Nothing.
 
-**What this project does.** Refuses with `TruncatedStream` rather than returning
-what it decoded so far.
+**What this project does.** On the cartridge bus, nothing special. `Chip.read`
+feeds the decoder through the four bank windows, and a window never runs out, so
+a stream that would be truncated in a buffer runs on into whatever the ROM holds
+next. Both implementations read their input that way: ares through
+`SDD1::mmcRead` at commit `9408cb43d4948fc3ea6e152a307a34348df3fe04`, snes9x
+through its memory map at commit `1bcc369e89f08243e0a462882fb1f3e42e51de3a`.
+`decompress` over a buffer still refuses with `TruncatedStream` rather than
+returning a short answer, which is a decision about a buffer rather than a claim
+about the part.
 
-**Why.** Every implementation guesses here and none of the guesses can be
-checked. Refusing is the guess that cannot silently corrupt a caller: a short
-answer that looks like a whole one is the failure this decompressor is easiest to
-get wrong in.
+**What is still open.** Whether the silicon does anything a deterministic decoder
+does not: stop, flag an error or hold the bus on input an encoder never produces.
+Neither implementation has such a path, and both descend from one reverse
+engineering.
 
-**What would settle or reopen it.** A capture of the real part fed a truncated
-block.
+**What would settle or reopen it.** A capture of the real part fed bytes no
+encoder produced.
 
 ### What the second header byte means beyond selecting a shape.
 
@@ -194,15 +201,51 @@ algorithm, and nothing here measures it.
 
 **The document says.** Nothing.
 
-**What this project does.** Nothing, because there is no state to clear: every
-stream is decoded from its own header and the probability model is built per
-stream and discarded with it.
+**What this project does.** Clears `$4800` and `$4801`, sets `$4804` to `$4807`
+to 0, 1, 2 and 3, and forgets every watched DMA channel. Construction leaves all
+of them holding values drawn from a seed and never calls `reset()`.
 
-**Why.** The reset exists so a caller driving a board does not have to
-special-case which parts hold state. It is deliberately not a claim about the
-real part's reset pin, and the record says so.
+**Why.** Two implementations agree on the registers: ares in `SDD1::power` and
+snes9x in `S9xResetSDD1`. Only ares clears its copy of the channel registers; in
+snes9x that copy is the console's own DMA registers, which this chip's reset does
+not touch. Neither is a measurement of the part.
 
-**What would settle or reopen it.** A capture across a console reset mid-stream.
+**What would settle or reopen it.** A capture of the cartridge bus across a
+console reset, reading `$4800` to `$4807` back before any write.
+
+## Where the two witnesses for the registers part
+
+### How the register interface behaves where ares and snes9x disagree.
+
+**The document says.** Nothing.
+
+**What this project follows.** ares, at commit
+`9408cb43d4948fc3ea6e152a307a34348df3fe04`. bsnes at commit
+`78474e5d39f58872dc21aca18cf9eb583b147fe7` carries the same file with the same
+logic, so ares and bsnes are one witness, and snes9x at commit
+`1bcc369e89f08243e0a462882fb1f3e42e51de3a` is the second. They part in five
+places, each an entry in
+[`conformance/divergences.json`](conformance/divergences.json):
+
+- **The bank registers.** ares keeps bits 7 and 0 to 3 and selects a megabyte by
+  bits 0 to 3; snes9x keeps bits 0 to 2. No retail cartridge is larger than 8
+  megabytes, so none can tell them apart.
+- **Which enable gates decompression.** ares requires a channel's bit in both
+  `$4800` and `$4801`; snes9x reads `$4801` alone.
+- **What `$4802`, `$4803` and `$4808` to `$480f` read.** ares answers with the
+  ROM byte at that linear address; snes9x latches `$4802` and `$4803` and leaves
+  the rest to open bus.
+- **The program window fold.** ares folds banks `$20-3f` onto `$00-1f` when bit 7
+  of `$4805` is set, and `$a0-bf` onto `$80-9f` for bit 7 of `$4807`; snes9x has
+  no fold.
+- **Decompression outside a transfer.** ares decompresses on any read of an armed
+  address; snes9x only inside a DMA transfer with a fixed A-bus address.
+
+What a read past the end of the ROM returns is defined by neither; this package
+repeats the ROM.
+
+**What would settle or reopen it.** A capture of the cartridge bus while a
+console programs each register and runs a transfer.
 
 ## What is not in question
 
@@ -219,8 +262,9 @@ So the boundary is visible rather than implied:
 
 Absent rather than unknown, and absent on purpose:
 
-- **Where a compressed block lives.** That is the memory map, and the map is
+- **The rest of the cartridge's map.** The chip answers the addresses it
+  decodes, and anything else on the board, save RAM included, is
   [snes-mapper-python](https://github.com/gufranco/snes-mapper-python).
 - **Any cartridge data.** Nothing here is extracted from a retail image.
-- **Anything with a clock.** A caller hands it a stream and is handed back what
-  the stream held.
+- **Anything with a clock.** The part answers one access at a time, a byte a
+  read, and how long it takes to produce each byte is the timing question above.

@@ -50,17 +50,79 @@
       "howToSettleIt": "A datasheet."
     },
     "resetLine": {
-      "value": "nothing, because this part carries no state between streams",
+      "value": "$4800 and $4801 cleared, $4804 to $4807 set to 0, 1, 2 and 3, and every snooped channel cleared",
       "verified": false,
-      "evidence": "Not a claim about a pin. Every stream is decoded from its own header and the probability model is built per stream and discarded with it, so there is no state a reset could clear. What the real part's reset pin does to its internal registers is not known and is not modelled.",
-      "howToSettleIt": "A capture of the cartridge bus across a console reset mid-stream, which would show whether a partly decoded block survives."
+      "evidence": "Two implementations agree on the registers: ares at commit 9408cb43d4948fc3ea6e152a307a34348df3fe04, ares/sfc/coprocessor/sdd1/sdd1.cpp and ares/System/Super Famicom/boards.bml, SDD1::power; and snes9x at commit 1bcc369e89f08243e0a462882fb1f3e42e51de3a, sdd1.cpp, ppu.cpp, dma.cpp and memmap.cpp, S9xResetSDD1. Only ares clears its copy of the channel registers; in snes9x that copy is the console's own DMA registers, which a reset of this chip does not touch. Construction leaves every register holding a value drawn from the seed and never calls reset. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "howToSettleIt": "A capture of the cartridge bus across a console reset, reading $4800 to $4807 back before any write."
+    },
+    "registerWindow": {
+      "value": "$00-3f,$80-bf:4800-480f",
+      "verified": false,
+      "why": "Where the console reaches the chip's registers.",
+      "evidence": "One implementation: ares at commit 9408cb43d4948fc3ea6e152a307a34348df3fe04, ares/sfc/coprocessor/sdd1/sdd1.cpp and ares/System/Super Famicom/boards.bml. snes9x answers $4800 to $4807 and leaves $4808 to $480f to open bus. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "howToSettleIt": "A capture of the cartridge bus while a console programs the registers and runs a transfer."
+    },
+    "enableRegisters": {
+      "value": {
+        "$4800": "decompression enable, one bit a DMA channel",
+        "$4801": "decompression enable, one bit a DMA channel, cleared when that channel's transfer ends"
+      },
+      "verified": false,
+      "why": "Two eight bit registers each name the channels allowed to decompress.",
+      "evidence": "Two implementations agree: ares at commit 9408cb43d4948fc3ea6e152a307a34348df3fe04, ares/sfc/coprocessor/sdd1/sdd1.cpp and ares/System/Super Famicom/boards.bml; and snes9x at commit 1bcc369e89f08243e0a462882fb1f3e42e51de3a, sdd1.cpp, ppu.cpp, dma.cpp and memmap.cpp. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "howToSettleIt": "A capture of the cartridge bus while a console programs the registers and runs a transfer."
+    },
+    "bankRegisters": {
+      "value": {
+        "$4804": "$c0-cf",
+        "$4805": "$d0-df",
+        "$4806": "$e0-ef",
+        "$4807": "$f0-ff"
+      },
+      "verified": false,
+      "why": "Each register names the megabyte of ROM a sixteen bank window shows.",
+      "evidence": "Two implementations agree: ares at commit 9408cb43d4948fc3ea6e152a307a34348df3fe04, ares/sfc/coprocessor/sdd1/sdd1.cpp and ares/System/Super Famicom/boards.bml; and snes9x at commit 1bcc369e89f08243e0a462882fb1f3e42e51de3a, sdd1.cpp, ppu.cpp, dma.cpp and memmap.cpp. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "howToSettleIt": "A capture of the cartridge bus while a console programs the registers and runs a transfer."
+    },
+    "dmaSnoop": {
+      "value": {
+        "$43x2-$43x4": "the A-bus address",
+        "$43x5-$43x6": "the byte count"
+      },
+      "verified": false,
+      "why": "The chip watches the console write each channel's DMA registers, because it decompresses only for a read of the address a channel was given.",
+      "evidence": "Two implementations agree: ares at commit 9408cb43d4948fc3ea6e152a307a34348df3fe04, ares/sfc/coprocessor/sdd1/sdd1.cpp and ares/System/Super Famicom/boards.bml; and snes9x at commit 1bcc369e89f08243e0a462882fb1f3e42e51de3a, sdd1.cpp, ppu.cpp, dma.cpp and memmap.cpp. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "howToSettleIt": "A capture of the cartridge bus while a console programs the registers and runs a transfer."
+    },
+    "decompressionTrigger": {
+      "value": "a read of $c0-ff whose address equals the snooped address of a channel enabled in both $4800 and $4801",
+      "verified": false,
+      "why": "What makes the chip answer with decompressed bytes rather than ROM.",
+      "evidence": "One implementation: ares at commit 9408cb43d4948fc3ea6e152a307a34348df3fe04, ares/sfc/coprocessor/sdd1/sdd1.cpp and ares/System/Super Famicom/boards.bml. snes9x tests only $4801, and only when a DMA with a fixed A-bus address starts. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "howToSettleIt": "A capture of the cartridge bus while a console programs the registers and runs a transfer."
+    },
+    "transferEnd": {
+      "value": "after the snooped count of bytes, a count of 0 meaning 65,536, the channel's $4801 bit clears and the next read starts a new stream",
+      "verified": false,
+      "why": "When a stream stops.",
+      "evidence": "Two implementations agree: ares at commit 9408cb43d4948fc3ea6e152a307a34348df3fe04, ares/sfc/coprocessor/sdd1/sdd1.cpp and ares/System/Super Famicom/boards.bml; and snes9x at commit 1bcc369e89f08243e0a462882fb1f3e42e51de3a, sdd1.cpp, ppu.cpp, dma.cpp and memmap.cpp. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "howToSettleIt": "A capture of the cartridge bus while a console programs the registers and runs a transfer."
+    },
+    "programWindow": {
+      "value": "$00-3f,$80-bf:8000-ffff in thirty two kilobyte pages",
+      "verified": false,
+      "why": "How the console reaches the program in ROM.",
+      "evidence": "One implementation: ares at commit 9408cb43d4948fc3ea6e152a307a34348df3fe04, ares/sfc/coprocessor/sdd1/sdd1.cpp and ares/System/Super Famicom/boards.bml. snes9x maps it the same way and has no fold; ares folds banks $20-3f onto $00-1f when bit 7 of $4805 is set, and $a0-bf onto $80-9f when bit 7 of $4807 is set. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "howToSettleIt": "A capture of the cartridge bus while a console programs the registers and runs a transfer."
     }
   },
   "notStated": [
     "Everything. No manufacturer document for this part is known to exist, so nothing here is verified in the sense the sibling repositories use the word.",
     "How the chip behaves on a malformed stream. Every implementation guesses, and none of the guesses can be checked.",
     "Anything about timing. How long the chip takes to decode a block, and whether the console can outrun it, is unmodelled and unmeasured.",
-    "What the second header byte means beyond selecting a shape."
+    "What the second header byte means beyond selecting a shape.",
+    "What a read past the end of the ROM returns. Neither implementation defines it; this package repeats the ROM.",
+    "Whether a read of an armed address that is not part of a DMA transfer decompresses. ares says it does; snes9x decompresses only inside a transfer."
   ],
   "documents": {}
 }

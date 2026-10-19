@@ -8,26 +8,29 @@ is the document written for a person.
 ## What this project is, in one paragraph
 
 The S-DD1: the arithmetic decompressor that sits between the ROM and the console
-in two cartridges. A caller hands it a stream and is handed back what the stream
-held. The S-DD1 was a Ricoh part made for Nintendo and neither published a data
+in two cartridges, with the registers, the DMA watch and the bank map a console
+talks to. The S-DD1 was a Ricoh part made for Nintendo and neither published a data
 sheet, so the top rung of the authority ladder is empty here and what stands in
 is a reference decoder, held to 6,652 streams: 4,000 of noise and 2,652 shaped
 like a cartridge's.
 
 ## The interface a caller drives
 
-The part answers a request. There is no clock, no instruction to step through and
+The part answers accesses. There is no clock, no instruction to step through and
 no cycle count to hand back, so none of the family's clocked interface appears
 here.
 
-`Chip(model)` builds one. `decompress(data, offset, length)` does the same thing
-without naming a part first, for a caller who only wants the bytes.
+`Chip(model, rom=None, seed=...)` builds one, every register drawn from the seed.
+`sdd1.decompress(data, offset, length)` expands a stream held in a buffer without
+naming a part first, for a caller who only wants the bytes.
 
-| Call                               | What it does                                                         |
-| :--------------------------------- | :------------------------------------------------------------------- |
-| `decompress(data, offset, length)` | Expand a stream, returning a `Stream`                                |
-| `reset()`                          | Nothing, because nothing survives a stream. Handed back for chaining |
-| `bitplane_count(mode)`             | How many planes a header's mode names                                |
+| Call                               | What it does                                                                          |
+| :--------------------------------- | :------------------------------------------------------------------------------------ |
+| `read(address)`                    | One byte at a 24-bit console address: a register, the program, or a window            |
+| `write(address, value)`            | A register, or a DMA channel register the chip watches                                |
+| `reset()`                          | Clears the enables, maps the windows to megabytes 0 to 3 and forgets watched channels |
+| `decompress(data, offset, length)` | Expand a stream held in a buffer, returning a `Stream`                                |
+| `bitplane_count(mode)`             | How many planes a header's mode names                                                 |
 
 ## The authority ladder
 
@@ -40,7 +43,7 @@ The record names the empty rung rather than promoting the one below it.
 
 ## What is settled and what is not
 
-**Not settled: 5 things**, each in
+**Not settled: 6 things**, each in
 [OPEN-QUESTIONS.md](OPEN-QUESTIONS.md) with the measurement that would close it.
 The honest summary is that every output value rests on agreement between two
 implementations, which is not a measurement of silicon.
@@ -161,6 +164,7 @@ comments either, so their reasons live here:
 ```text
 sdd1/
   __init__.py     the package, and the part chosen at construction
+  chip.py         the registers, the DMA watch and the bank map a console talks to
   decoder.py      reading a header and expanding the stream behind it
   probability.py  the state table and how a context moves through it
   models.py       the catalogue, and the part as a thing you hold
@@ -187,9 +191,11 @@ conformance/
 - **The corpus is the only source for output values.** A change that alters
   output and still passes the unit tests has not been checked at all until both
   corpora run.
-- **`reset()` does nothing on purpose.** It exists so a caller driving a board
-  does not special-case this part, and the record says outright that it is not a
-  claim about the real reset pin.
+- **The register interface rests on two implementations.** ares and snes9x part
+  in five places, and the package follows ares in each. Every one is an entry in
+  `conformance/divergences.json`; none is settled by argument.
+- **A stream on the bus never runs out.** The chip reads through the bank
+  windows, so `TruncatedStream` only ever comes from `decompress` over a buffer.
 
 ## Before calling anything finished
 

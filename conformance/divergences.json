@@ -50,6 +50,61 @@
       "packageFollows": "reference",
       "reasoning": "How long the chip takes, and whether a console reading the decompressed data can outrun it, is not modelled. On real hardware that question decides whether a game has to wait, and nothing on this machine can answer it.",
       "wouldSettleIt": "A measurement on a real cartridge, or a datasheet."
+    },
+    {
+      "id": "the-bank-registers-are-four-bits-or-three",
+      "parts": ["s-dd1"],
+      "severity": "medium",
+      "status": "open",
+      "documentSays": "Nothing. No document for this part is known to exist.",
+      "referenceDoes": "ares keeps bits 7 and 0 to 3 of each of $4804 to $4807 and selects a megabyte by bits 0 to 3. snes9x keeps bits 0 to 2.",
+      "packageFollows": "reference",
+      "reasoning": "The package follows ares. No retail cartridge carries more than 8 megabytes, so no cartridge can tell the two apart. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "wouldSettleIt": "A capture of the cartridge bus while a console programs the registers and runs a transfer."
+    },
+    {
+      "id": "which-enable-gates-decompression",
+      "parts": ["s-dd1"],
+      "severity": "medium",
+      "status": "open",
+      "documentSays": "Nothing. No document for this part is known to exist.",
+      "referenceDoes": "ares decompresses for a channel set in both $4800 and $4801. snes9x reads only $4801.",
+      "packageFollows": "reference",
+      "reasoning": "The package follows ares. Both games write both registers, so both implementations run them. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "wouldSettleIt": "A capture of the cartridge bus while a console programs the registers and runs a transfer."
+    },
+    {
+      "id": "what-the-unassigned-registers-read",
+      "parts": ["s-dd1"],
+      "severity": "medium",
+      "status": "open",
+      "documentSays": "Nothing. No document for this part is known to exist.",
+      "referenceDoes": "ares answers $4802, $4803 and $4808 to $480f with the ROM byte at that same linear address. snes9x answers $4802 and $4803 with the last byte written there and leaves $4808 to $480f to open bus.",
+      "packageFollows": "reference",
+      "reasoning": "The package follows ares. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "wouldSettleIt": "A capture of the cartridge bus while a console programs the registers and runs a transfer."
+    },
+    {
+      "id": "the-program-window-fold",
+      "parts": ["s-dd1"],
+      "severity": "medium",
+      "status": "open",
+      "documentSays": "Nothing. No document for this part is known to exist.",
+      "referenceDoes": "ares folds banks $20-3f onto $00-1f when bit 7 of $4805 is set, and $a0-bf onto $80-9f when bit 7 of $4807 is set. snes9x has no fold.",
+      "packageFollows": "reference",
+      "reasoning": "The package follows ares. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "wouldSettleIt": "A capture of the cartridge bus while a console programs the registers and runs a transfer."
+    },
+    {
+      "id": "decompression-outside-a-transfer",
+      "parts": ["s-dd1"],
+      "severity": "medium",
+      "status": "open",
+      "documentSays": "Nothing. No document for this part is known to exist.",
+      "referenceDoes": "ares decompresses on any read of an armed address. snes9x decompresses only while a DMA transfer with a fixed A-bus address runs.",
+      "packageFollows": "reference",
+      "reasoning": "The package follows ares, because a model of the chip sees reads and cannot tell who made them. bsnes at commit 78474e5d39f58872dc21aca18cf9eb583b147fe7 carries the same file as ares with the same logic, so ares and bsnes are one witness. snes9x is a second, written separately.",
+      "wouldSettleIt": "A capture of the cartridge bus while a console programs the registers and runs a transfer."
     }
   ]
 }
