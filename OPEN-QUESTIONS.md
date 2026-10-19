@@ -100,12 +100,23 @@ header looks like. Star Ocean's confirmed streams have the concentrated shape,
 not the even one. The USA and Europe cartridges give identical counts from the
 same table.
 
-**What it still does not cover.** Street Fighter Zero 2 (Japan), which has
-neither an expansion nor an indexing re-release: the same table read against it
-gives 167 distinct headers across all 16 kinds, so that build holds its streams
-at other offsets. The corpus in [`conformance/corpus.json`](conformance/corpus.json)
-and the vectors still rest on the reference, and they reach shapes and lengths
-these cartridges do not use.
+**The fourth cartridge, by a trace.** Street Fighter Zero 2 (Japan) has neither
+an expansion nor an indexing re-release, and the USA table read against it gives
+167 distinct headers across all 16 kinds, so that build holds its streams at
+other offsets. Its table comes from a trace instead:
+[snes-street-fighter-alpha-2-nochip](https://github.com/gufranco/snes-street-fighter-alpha-2-nochip)
+ran the retail cartridge under snes9x and logged every DMA whose A-bus address
+is fixed, which is the condition the chip decompresses under.
+[`conformance/traced.json`](conformance/traced.json) is the census of the 2,855
+streams that table names, and it holds the table to the USA census rather than
+trusting it: 2,732 of the 2,855 expand to bytes identical to a stream in the USA
+table, and with every start moved one byte on, 0 do. The other 123 match no USA
+stream, and nothing here says what they hold. A trace is a floor rather than a
+census of the image: a stream the run never asked for is not in it.
+
+**What it still does not cover.** The corpus in
+[`conformance/corpus.json`](conformance/corpus.json) and the vectors still rest on
+the reference, and they reach shapes and lengths these cartridges do not use.
 
 **What would settle or reopen it.** A capture of a real S-DD1 expanding a known
 block. An expansion of a second cartridge would widen the measurement's reach. A

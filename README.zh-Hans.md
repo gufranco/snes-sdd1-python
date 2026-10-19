@@ -8,7 +8,7 @@ S-DD1 是两款 Super Nintendo 游戏中的算术解压芯片，本仓库用 Pyt
 [![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**4,000** 个噪声流和 **2,652** 个卡带形态的流与 snes9x 1.63 对比，**0** 失败，覆盖**全部 16** 种头部形态，长度最多 **65,536** 字节，形态取自 **11,306** 个流的普查，**644** 个测试，**100%** 语句和分支覆盖率，无依赖
+**4,000** 个噪声流和 **2,652** 个卡带形态的流与 snes9x 1.63 对比，**0** 失败，覆盖**全部 16** 种头部形态，长度最多 **65,536** 字节，形态取自 **11,306** 个流的普查，**656** 个测试，**100%** 语句和分支覆盖率，无依赖
 
 ```python
 import random
@@ -182,16 +182,17 @@ print([(hex(high), hex(low)) for high, low in sdd1.CONTEXT_MASKS])
 
 除诊断脚本以文件方式运行外，每个工具都在仓库根目录下以模块方式运行。
 
-| 命令                                                                                    | 作用                                                                                                               | 退出码                                             |
-| :-------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------- | :------------------------------------------------- |
-| `python3 sdd1/doctor.py`                                                                | 报告本机环境、芯片和两个语料库的状态                                                                               | 0 正常，1 有检查失败                               |
-| `python3 -m conformance.vectors [file]`                                                 | 解码每个噪声向量并比较摘要。`file` 默认为 [`conformance/vectors.json`](conformance/vectors.json)                   | 0 全部一致，1 有不一致，2 没有文件                 |
-| `python3 -m conformance.corpus [file]`                                                  | 对卡带形态语料库做同样的事，默认为 [`conformance/corpus.json`](conformance/corpus.json)                            | 0 全部一致，1 有不一致，2 没有文件                 |
-| `python3 -m conformance.extract <rom> <shapes out> [table]`                             | 从你拥有的卡带中写出头部字节和长度的普查。`table` 是由偏移量和长度对组成的 JSON 列表，或者是带有 `SDD1` 标记的构建 | 0 已写出，1 未找到流，2 参数错误或没有 ROM         |
-| `python3 -m conformance.against_cartridges <cartridge> <expanded> <out.json> [lo] [hi]` | 在 `lo` 和 `hi` 之间扫描卡带，统计前 64 个解码字节出现在扩展镜像中、且不出现在卡带任何位置的流                     | 0 已写出，1 没有得到确认的流，2 参数错误或缺少文件 |
-| `python3 -m conformance.speed`                                                          | 将 2,000 字节解码 5 次，并把速率中位数与每秒 70,000 字节的下限比较                                                 | 0 高于下限，1 低于下限                             |
-| `python3 -m conformance.package <wheel>`                                                | 检查构建出的 wheel 包含每个模块且不含测试文件                                                                      | 0 正常，1 有问题或没有 wheel，2 没有参数           |
-| `python3 -m conformance.links`                                                          | 请求本文件中的每个地址并输出 JSON 报告                                                                             | 0 每个地址仍然存在，1 至少一个返回状态 404 或 410  |
+| 命令                                                                                    | 作用                                                                                                                                                                                                              | 退出码                                             |
+| :-------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------- |
+| `python3 sdd1/doctor.py`                                                                | 报告本机环境、芯片和两个语料库的状态                                                                                                                                                                              | 0 正常，1 有检查失败                               |
+| `python3 -m conformance.vectors [file]`                                                 | 解码每个噪声向量并比较摘要。`file` 默认为 [`conformance/vectors.json`](conformance/vectors.json)                                                                                                                  | 0 全部一致，1 有不一致，2 没有文件                 |
+| `python3 -m conformance.corpus [file]`                                                  | 对卡带形态语料库做同样的事，默认为 [`conformance/corpus.json`](conformance/corpus.json)                                                                                                                           | 0 全部一致，1 有不一致，2 没有文件                 |
+| `python3 -m conformance.extract <rom> <shapes out> [table]`                             | 从你拥有的卡带中写出头部字节和长度的普查。`table` 是由偏移量和长度对组成的 JSON 列表，或者是带有 `SDD1` 标记的构建                                                                                                | 0 已写出，1 未找到流，2 参数错误或没有 ROM         |
+| `python3 -m conformance.against_cartridges <cartridge> <expanded> <out.json> [lo] [hi]` | 在 `lo` 和 `hi` 之间扫描卡带，统计前 64 个解码字节出现在扩展镜像中、且不出现在卡带任何位置的流                                                                                                                    | 0 已写出，1 没有得到确认的流，2 参数错误或缺少文件 |
+| `python3 -m conformance.traced <traced> <table> <indexed> <indexing build> <out.json>`  | 根据追踪得到的流表写出一份卡带普查。流表可以是 JSON 数对，也可以是含有 `STREAMS` 元组的 Python 文件。它还统计有多少流展开后与一个以 `SDD1` 标签索引的版本中的某个流字节相同，并与把每个起点后移一字节的对照组比较 | 0 已写出，1 流表中没有流，2 参数错误或缺少文件     |
+| `python3 -m conformance.speed`                                                          | 将 2,000 字节解码 5 次，并把速率中位数与每秒 70,000 字节的下限比较                                                                                                                                                | 0 高于下限，1 低于下限                             |
+| `python3 -m conformance.package <wheel>`                                                | 检查构建出的 wheel 包含每个模块且不含测试文件                                                                                                                                                                     | 0 正常，1 有问题或没有 wheel，2 没有参数           |
+| `python3 -m conformance.links`                                                          | 请求本文件中的每个地址并输出 JSON 报告                                                                                                                                                                            | 0 每个地址仍然存在，1 至少一个返回状态 404 或 410  |
 
 ```bash
 python3 -m conformance.vectors conformance/vectors.json
@@ -266,14 +267,15 @@ sdd1 True
 
 没有人公开过这颗芯片的数据手册，所以权威阶梯的最高一级是空的。[`conformance/hardware.json`](conformance/hardware.json) 记录了这一点，把每个常量标记为 `"verified": false`，并写明替代它的证据以及能确定每一项的依据。
 
-| 见证                                         | 记录                                                           | 结果                                                                                                 |
-| :------------------------------------------- | :------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
-| snes9x 1.63 处理噪声                         | [`conformance/vectors.json`](conformance/vectors.json)         | 4,000 个用例，0 失败                                                                                 |
-| snes9x 1.63 处理卡带形态                     | [`conformance/corpus.json`](conformance/corpus.json)           | 2,652 个用例，0 失败                                                                                 |
-| 零售版卡带对照他人制作的扩展版，不使用模拟器 | [`conformance/cartridges.json`](conformance/cartridges.json)   | 在 Star Ocean（日本版）中确认了 55,023 个流，覆盖全部 16 种形态；在另一款游戏上的对照运行为 1,306 个 |
-| 第三方的编码器                               | [`conformance/independent.json`](conformance/independent.json) | 20 对：18 对完全相同，2 对在作者导出所含的每个字节上一致、但少了 64 字节，0 对不同                   |
-| 压缩之前的一个 Capcom 原型                   | [`conformance/prototype.json`](conformance/prototype.json)     | 2,852 个解码流中有 242 个原样出现在其中，共 311,264 字节                                             |
-| 源码中的表                                   | [`conformance/carried.json`](conformance/carried.json)         | `EVOLUTION`、`RUN_TABLE` 和 `CONTEXT_MASKS` 由其值的 SHA-256 固定                                    |
+| 见证                                                  | 记录                                                           | 结果                                                                                                                   |
+| :---------------------------------------------------- | :------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| snes9x 1.63 处理噪声                                  | [`conformance/vectors.json`](conformance/vectors.json)         | 4,000 个用例，0 失败                                                                                                   |
+| snes9x 1.63 处理卡带形态                              | [`conformance/corpus.json`](conformance/corpus.json)           | 2,652 个用例，0 失败                                                                                                   |
+| 零售版卡带对照他人制作的扩展版，不使用模拟器          | [`conformance/cartridges.json`](conformance/cartridges.json)   | 在 Star Ocean（日本版）中确认了 55,023 个流，覆盖全部 16 种形态；在另一款游戏上的对照运行为 1,306 个                   |
+| 第三方的编码器                                        | [`conformance/independent.json`](conformance/independent.json) | 20 对：18 对完全相同，2 对在作者导出所含的每个字节上一致、但少了 64 字节，0 对不同                                     |
+| 压缩之前的一个 Capcom 原型                            | [`conformance/prototype.json`](conformance/prototype.json)     | 2,852 个解码流中有 242 个原样出现在其中，共 311,264 字节                                                               |
+| 对第四盒卡带的 DMA 追踪，与另一版本的索引普查相互核对 | [`conformance/traced.json`](conformance/traced.json)           | Street Fighter Zero 2（日本版）中追踪到的 2,855 个流里，有 2,732 个展开后与美国版流表中的某个流字节相同，对照组为 0 个 |
+| 源码中的表                                            | [`conformance/carried.json`](conformance/carried.json)         | `EVOLUTION`、`RUN_TABLE` 和 `CONTEXT_MASKS` 由其值的 SHA-256 固定                                                      |
 
 测试套件还检查：`RUN_TABLE` 是一个排列，`EVOLUTION` 中的每条链在两种结果下都会收敛，没有哪对掩码重复选择同一位，以及在同一偏移量上较短的读取是较长读取的前缀。
 

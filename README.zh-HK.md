@@ -8,7 +8,7 @@
 [![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**4,000** 條雜訊數據流與 **2,652** 條卡帶形態的數據流與 snes9x 1.63 比對，**0** 個失敗，涵蓋**全部 16** 種標頭形態，長度最高 **65,536** 位元組，形態取自 **11,306** 條數據流的普查，**644** 個測試，**100%** 語句及分支覆蓋率，無任何依賴
+**4,000** 條雜訊數據流與 **2,652** 條卡帶形態的數據流與 snes9x 1.63 比對，**0** 個失敗，涵蓋**全部 16** 種標頭形態，長度最高 **65,536** 位元組，形態取自 **11,306** 條數據流的普查，**656** 個測試，**100%** 語句及分支覆蓋率，無任何依賴
 
 ```python
 import random
@@ -182,16 +182,17 @@ print([(hex(high), hex(low)) for high, low in sdd1.CONTEXT_MASKS])
 
 除診斷腳本以檔案形式執行外，每個工具都以模組形式在儲存庫根目錄執行。
 
-| 指令                                                                                    | 作用                                                                                                             | 退出碼                                          |
-| :-------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------- | :---------------------------------------------- |
-| `python3 sdd1/doctor.py`                                                                | 報告本機、晶片及兩個語料庫的狀況                                                                                 | 0 正常，1 有檢查失敗                            |
-| `python3 -m conformance.vectors [file]`                                                 | 解碼每個雜訊向量並比對摘要。`file` 預設為 [`conformance/vectors.json`](conformance/vectors.json)                 | 0 全部一致，1 有不一致，2 沒有檔案              |
-| `python3 -m conformance.corpus [file]`                                                  | 對卡帶形態語料庫做同樣的事，預設為 [`conformance/corpus.json`](conformance/corpus.json)                          | 0 全部一致，1 有不一致，2 沒有檔案              |
-| `python3 -m conformance.extract <rom> <shapes out> [table]`                             | 從你擁有的卡帶寫出標頭位元組及長度的普查。`table` 是由偏移量與長度配對組成的 JSON 列表，或帶有 `SDD1` 標記的建置 | 0 已寫出，1 找不到數據流，2 參數錯誤或沒有 ROM  |
-| `python3 -m conformance.against_cartridges <cartridge> <expanded> <out.json> [lo] [hi]` | 在 `lo` 與 `hi` 之間掃描卡帶，並統計前 64 個解碼位元組出現在展開映像檔中、卻不出現在卡帶任何位置的數據流         | 0 已寫出，1 沒有任何確認，2 參數錯誤或缺少檔案  |
-| `python3 -m conformance.speed`                                                          | 把 2,000 位元組解碼 5 次，並以中位速率與每秒 70,000 位元組的下限比較                                             | 0 高於下限，1 低於下限                          |
-| `python3 -m conformance.package <wheel>`                                                | 檢查已建置的 wheel 是否包含每個模組且不含任何測試檔案                                                            | 0 正常，1 有問題或沒有 wheel，2 沒有參數        |
-| `python3 -m conformance.links`                                                          | 請求本檔案中的每個網址並輸出 JSON 報告                                                                           | 0 每個網址仍然存在，1 至少一個狀態為 404 或 410 |
+| 指令                                                                                    | 作用                                                                                                                                                                                                                                              | 退出碼                                                 |
+| :-------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------------- |
+| `python3 sdd1/doctor.py`                                                                | 報告本機、晶片及兩個語料庫的狀況                                                                                                                                                                                                                  | 0 正常，1 有檢查失敗                                   |
+| `python3 -m conformance.vectors [file]`                                                 | 解碼每個雜訊向量並比對摘要。`file` 預設為 [`conformance/vectors.json`](conformance/vectors.json)                                                                                                                                                  | 0 全部一致，1 有不一致，2 沒有檔案                     |
+| `python3 -m conformance.corpus [file]`                                                  | 對卡帶形態語料庫做同樣的事，預設為 [`conformance/corpus.json`](conformance/corpus.json)                                                                                                                                                           | 0 全部一致，1 有不一致，2 沒有檔案                     |
+| `python3 -m conformance.extract <rom> <shapes out> [table]`                             | 從你擁有的卡帶寫出標頭位元組及長度的普查。`table` 是由偏移量與長度配對組成的 JSON 列表，或帶有 `SDD1` 標記的建置                                                                                                                                  | 0 已寫出，1 找不到數據流，2 參數錯誤或沒有 ROM         |
+| `python3 -m conformance.against_cartridges <cartridge> <expanded> <out.json> [lo] [hi]` | 在 `lo` 與 `hi` 之間掃描卡帶，並統計前 64 個解碼位元組出現在展開映像檔中、卻不出現在卡帶任何位置的數據流                                                                                                                                          | 0 已寫出，1 沒有任何確認，2 參數錯誤或缺少檔案         |
+| `python3 -m conformance.traced <traced> <table> <indexed> <indexing build> <out.json>`  | 根據追蹤所得的數據流表寫出一份卡帶普查。數據流表可以是 JSON 數對，也可以是載有 `STREAMS` 元組的 Python 檔案。它亦會統計有多少條數據流展開後，與一個以 `SDD1` 標籤索引的版本中某條數據流的位元組完全相同，並與把每個起點後移一個位元組的對照組比較 | 0 已寫出，1 數據流表中沒有數據流，2 參數錯誤或缺少檔案 |
+| `python3 -m conformance.speed`                                                          | 把 2,000 位元組解碼 5 次，並以中位速率與每秒 70,000 位元組的下限比較                                                                                                                                                                              | 0 高於下限，1 低於下限                                 |
+| `python3 -m conformance.package <wheel>`                                                | 檢查已建置的 wheel 是否包含每個模組且不含任何測試檔案                                                                                                                                                                                             | 0 正常，1 有問題或沒有 wheel，2 沒有參數               |
+| `python3 -m conformance.links`                                                          | 請求本檔案中的每個網址並輸出 JSON 報告                                                                                                                                                                                                            | 0 每個網址仍然存在，1 至少一個狀態為 404 或 410        |
 
 ```bash
 python3 -m conformance.vectors conformance/vectors.json
@@ -266,14 +267,15 @@ sdd1 True
 
 沒有人發表過此晶片的數據手冊，因此權威階梯的最高一級是空的。[`conformance/hardware.json`](conformance/hardware.json) 記錄了這一點，把每個常數標記為 `"verified": false`，並列出替代的證據，以及能確定每個常數的依據。
 
-| 見證                                             | 記錄                                                           | 結果                                                                                                   |
-| :----------------------------------------------- | :------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------- |
-| snes9x 1.63，雜訊                                | [`conformance/vectors.json`](conformance/vectors.json)         | 4,000 個案例，0 個失敗                                                                                 |
-| snes9x 1.63，卡帶形態                            | [`conformance/corpus.json`](conformance/corpus.json)           | 2,652 個案例，0 個失敗                                                                                 |
-| 零售版卡帶對照他人製作的展開版本，不經任何模擬器 | [`conformance/cartridges.json`](conformance/cartridges.json)   | 在 Star Ocean（日本版）中確認 55,023 條數據流，涵蓋全部 16 種形態；在另一款遊戲上的對照運行為 1,306 條 |
-| 第三方的編碼器                                   | [`conformance/independent.json`](conformance/independent.json) | 20 對：18 對完全相同，2 對在作者匯出的每個位元組上一致但短少 64 位元組，0 對不同                       |
-| 壓縮之前的一個 Capcom 原型                       | [`conformance/prototype.json`](conformance/prototype.json)     | 2,852 條已解碼數據流中有 242 條原封不動地出現在其中，共 311,264 位元組                                 |
-| 原始碼中的表格                                   | [`conformance/carried.json`](conformance/carried.json)         | `EVOLUTION`、`RUN_TABLE` 及 `CONTEXT_MASKS` 以其數值的 SHA-256 固定                                    |
+| 見證                                                  | 記錄                                                           | 結果                                                                                                                                       |
+| :---------------------------------------------------- | :------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| snes9x 1.63，雜訊                                     | [`conformance/vectors.json`](conformance/vectors.json)         | 4,000 個案例，0 個失敗                                                                                                                     |
+| snes9x 1.63，卡帶形態                                 | [`conformance/corpus.json`](conformance/corpus.json)           | 2,652 個案例，0 個失敗                                                                                                                     |
+| 零售版卡帶對照他人製作的展開版本，不經任何模擬器      | [`conformance/cartridges.json`](conformance/cartridges.json)   | 在 Star Ocean（日本版）中確認 55,023 條數據流，涵蓋全部 16 種形態；在另一款遊戲上的對照運行為 1,306 條                                     |
+| 第三方的編碼器                                        | [`conformance/independent.json`](conformance/independent.json) | 20 對：18 對完全相同，2 對在作者匯出的每個位元組上一致但短少 64 位元組，0 對不同                                                           |
+| 壓縮之前的一個 Capcom 原型                            | [`conformance/prototype.json`](conformance/prototype.json)     | 2,852 條已解碼數據流中有 242 條原封不動地出現在其中，共 311,264 位元組                                                                     |
+| 對第四盒卡帶的 DMA 追蹤，與另一版本的索引普查互相核對 | [`conformance/traced.json`](conformance/traced.json)           | Street Fighter Zero 2（日本版）中追蹤所得的 2,855 條數據流裡，有 2,732 條展開後與美國版數據流表中某條數據流的位元組完全相同，對照組為 0 條 |
+| 原始碼中的表格                                        | [`conformance/carried.json`](conformance/carried.json)         | `EVOLUTION`、`RUN_TABLE` 及 `CONTEXT_MASKS` 以其數值的 SHA-256 固定                                                                        |
 
 測試套件亦檢查 `RUN_TABLE` 是一個排列、經 `EVOLUTION` 的每條鏈在兩種結果下都會收斂、沒有任何遮罩對重複選取同一位元，以及在同一偏移量上較短的讀取是較長讀取的前綴。
 

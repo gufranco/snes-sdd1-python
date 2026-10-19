@@ -240,7 +240,7 @@
     "conclusion": "the tag. Reading the byte after gives all 256 values spread evenly across all 16 kinds, which is what reading data that is not a header looks like."
   },
   "regionsAgree": "The USA and Europe cartridges give identical header counts from the same table, which is two builds rather than one.",
-  "doesNotCover": "Street Fighter Zero 2 (Japan). The same table read against it gives 167 distinct header bytes across all 16 kinds, so that build holds its streams at other offsets and no index for it exists here.",
+  "doesNotCover": "Street Fighter Zero 2 (Japan). The same table read against it gives 167 distinct header bytes across all 16 kinds, so that build holds its streams at other offsets and no index for it exists here. A trace covers it instead, in traced.json.",
   "measuredFrom": [
     {
       "role": "cartridge",
