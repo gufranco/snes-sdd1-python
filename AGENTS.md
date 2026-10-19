@@ -23,11 +23,11 @@ here.
 `Chip(model)` builds one. `decompress(data, offset, length)` does the same thing
 without naming a part first, for a caller who only wants the bytes.
 
-| Call | What it does |
-|:--|:--|
-| `decompress(data, offset, length)` | Expand a stream, returning a `Stream` |
-| `reset()` | Nothing, because nothing survives a stream. Handed back for chaining |
-| `bitplane_count(mode)` | How many planes a header's mode names |
+| Call                               | What it does                                                         |
+| :--------------------------------- | :------------------------------------------------------------------- |
+| `decompress(data, offset, length)` | Expand a stream, returning a `Stream`                                |
+| `reset()`                          | Nothing, because nothing survives a stream. Handed back for chaining |
+| `bitplane_count(mode)`             | How many planes a header's mode names                                |
 
 ## The authority ladder
 
@@ -143,6 +143,18 @@ their reasons live here, beside those of the coverage exclusions:
 - `@unittest\.skipUnless\(SOLD_AS_A_COMPONENT,`, `^def machine_mentions\(` and
   `^def listing\(` in the coverage exclusions: this part only existed inside one
   machine, so the family sweep for machine names is skipped here.
+
+The formatter's ignores in [`.prettierignore`](.prettierignore) carry no
+comments either, so their reasons live here:
+
+- `pnpm-lock.yaml` and `package-lock.json`: the package manager writes them, in
+  its own layout, on every install.
+- `node_modules/`, `.venv/`, `venv/`, `build/`, `dist/` and `*.egg-info/`:
+  installed or built, never written by hand.
+- `.coverage`, `coverage.json`, `htmlcov/` and the tool caches: the output of a
+  run, never committed.
+- `docs/`, `specs/`, `.work/` and `.claude/`: local working material, never
+  committed.
 
 ## Layout
 

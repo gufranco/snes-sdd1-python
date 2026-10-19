@@ -63,16 +63,16 @@ different author's implementation produced. What it cannot establish is that the
 algorithm is what the silicon does. Nothing available can, which is why a capture
 is still what would settle it.
 
-Run on 2026-08-25 across the whole of *Star Ocean*: at every offset in the
+Run on 2026-08-25 across the whole of _Star Ocean_: at every offset in the
 cartridge, decode sixty four bytes and ask whether they appear in the expanded
 image and appear nowhere in the cartridge. Bytes meeting both conditions were not
 copied across by the expansion, so something decompressed them, and this decoder
 produced the same ones.
 
-| | Confirmed | Kinds reached |
-|:--|--:|--:|
-| Star Ocean against its own expansion | 55,023 | 16 of 16 |
-| Star Ocean against a different game's image | 1,306 | 16 of 16 |
+|                                             | Confirmed | Kinds reached |
+| :------------------------------------------ | --------: | ------------: |
+| Star Ocean against its own expansion        |    55,023 |      16 of 16 |
+| Star Ocean against a different game's image |     1,306 |      16 of 16 |
 
 The second row is the point of the first. Graphics repeat, so a sixty four byte
 run can match by luck, and a figure published without its noise floor is a figure

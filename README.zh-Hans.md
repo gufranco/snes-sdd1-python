@@ -34,10 +34,10 @@ for header in (0x00, 0x50, 0xA0, 0xF0):
 
 ## 安装
 
-| 要求 | 版本 |
-|:--|:--|
+| 要求   | 版本        |
+| :----- | :---------- |
 | Python | 3.12 或更新 |
-| git | 任意 |
+| git    | 任意        |
 
 ```bash
 git clone https://github.com/gufranco/snes-sdd1-python.git
@@ -59,9 +59,9 @@ python3 sdd1/doctor.py
 
 `sdd1.Chip(model)` 构建一个芯片。`model` 是必需的：省略它会抛出 `UnknownModelError`，并列出现有的名称。匹配名称时忽略大小写、连字符和下划线。
 
-| 型号 | 别名 | 位平面 | 上下文 |
-|:--|:--|:--|:--|
-| `sdd1` | `s-dd1`, `sdd-1`, `sdd`, `nintendosdd1` | 最多 8 | 32 |
+| 型号   | 别名                                    | 位平面 | 上下文 |
+| :----- | :-------------------------------------- | :----- | :----- |
+| `sdd1` | `s-dd1`, `sdd-1`, `sdd`, `nintendosdd1` | 最多 8 | 32     |
 
 ```python
 import sdd1
@@ -89,12 +89,12 @@ s-dd2 is not a model this package covers; it has sdd1
 
 ### 调用
 
-| 调用 | 作用 |
-|:--|:--|
+| 调用                                   | 作用                                                                                          |
+| :------------------------------------- | :-------------------------------------------------------------------------------------------- |
 | `Chip.decompress(rom, offset, length)` | 解码头部字节位于 `rom[offset]` 的流，返回 `length` 字节的 `Stream`。`length` 为 0 表示 65,536 |
-| `Chip.reset()` | 不做任何事，返回芯片本身。流与流之间不保留任何状态，所以没有需要清除的内容 |
-| `sdd1.decompress(rom, offset, length)` | 同样的解码，无需先构建芯片 |
-| `sdd1.bitplane_count(kind)` | 头部最高两位所指定的位平面数：类型 0 到 3 分别为 2、4、4 或 8 |
+| `Chip.reset()`                         | 不做任何事，返回芯片本身。流与流之间不保留任何状态，所以没有需要清除的内容                    |
+| `sdd1.decompress(rom, offset, length)` | 同样的解码，无需先构建芯片                                                                    |
+| `sdd1.bitplane_count(kind)`            | 头部最高两位所指定的位平面数：类型 0 到 3 分别为 2、4、4 或 8                                 |
 
 `Chip.model` 保存规范的型号名称。`rom` 可以是任意 `bytes` 或 `bytearray`。流从它的两个头部字节开始往后读取，`rom[offset]` 之前的内容不会被触及。
 
@@ -102,19 +102,19 @@ s-dd2 is not a model this package covers; it has sdd1
 
 `Stream` 是一个有四个字段的命名元组。
 
-| 字段 | 含义 |
-|:--|:--|
-| `data` | 解码出的字节，类型为 `bytes`，恰好 `length` 个 |
-| `end` | 解码器没有读取的第一个输入字节的偏移量 |
-| `bitplanes` | 2、4 或 8，取自头部最高两位 |
-| `context` | 0 到 3，头部接下来的两位，用于选择 `CONTEXT_MASKS` 的行 |
+| 字段        | 含义                                                    |
+| :---------- | :------------------------------------------------------ |
+| `data`      | 解码出的字节，类型为 `bytes`，恰好 `length` 个          |
+| `end`       | 解码器没有读取的第一个输入字节的偏移量                  |
+| `bitplanes` | 2、4 或 8，取自头部最高两位                             |
+| `context`   | 0 到 3，头部接下来的两位，用于选择 `CONTEXT_MASKS` 的行 |
 
 ### 错误
 
-| 错误 | 抛出时机 |
-|:--|:--|
-| `UnknownModelError` | 给 `Chip` 的型号为空，或者名称不对应任何型号。消息中列出现有的型号 |
-| `TruncatedStream` | `offset` 为负，从 `offset` 起剩余不足 2 字节，或者在解码出 `length` 字节之前输入就已耗尽。异常携带 `offset` |
+| 错误                | 抛出时机                                                                                                    |
+| :------------------ | :---------------------------------------------------------------------------------------------------------- |
+| `UnknownModelError` | 给 `Chip` 的型号为空，或者名称不对应任何型号。消息中列出现有的型号                                          |
+| `TruncatedStream`   | `offset` 为负，从 `offset` 起剩余不足 2 字节，或者在解码出 `length` 字节之前输入就已耗尽。异常携带 `offset` |
 
 过短的流会抛出异常，而不是返回较少的字节，这样调用方永远不会把不完整的块误当作完整的块。
 
@@ -145,20 +145,20 @@ TruncatedStream at 0
 
 ### 模块内容
 
-| 名称 | 内容 |
-|:--|:--|
-| `sdd1.MODELS` | `Model` 记录，以规范名称为键 |
-| `sdd1.Model` | 一条记录：`name`、`summary`、`planes`、`contexts`、`aliases` |
-| `sdd1.BITPLANE_COUNTS` | `(2, 4, 4, 8)`，四种平面类型各自的平面数 |
-| `sdd1.HEADER_BYTES` | 2，流开头的字节数 |
-| `sdd1.PLANE_COUNT` | 8，一个流最多交织的平面数 |
-| `sdd1.CONTEXT_COUNT` | 32，编码器维护的上下文数 |
-| `sdd1.MAX_LENGTH` | 65,536，一个流最多解码的字节数，也是 `length` 为 0 时请求的长度 |
-| `sdd1.EVOLUTION` | 33 状态的状态机：每个状态的码长，以及每种结果之后的下一状态 |
-| `sdd1.RUN_TABLE` | 128 个游程长度，是 1 到 128 的一个排列，以 7 位码字为索引 |
-| `sdd1.CONTEXT_MASKS` | 作用于平面 10 位历史的四对掩码，每种上下文类型一对 |
-| `sdd1.UnknownModelError`、`sdd1.TruncatedStream` | 调用方可以捕获的全部异常 |
-| `sdd1.__version__` | 已安装的版本 |
+| 名称                                             | 内容                                                            |
+| :----------------------------------------------- | :-------------------------------------------------------------- |
+| `sdd1.MODELS`                                    | `Model` 记录，以规范名称为键                                    |
+| `sdd1.Model`                                     | 一条记录：`name`、`summary`、`planes`、`contexts`、`aliases`    |
+| `sdd1.BITPLANE_COUNTS`                           | `(2, 4, 4, 8)`，四种平面类型各自的平面数                        |
+| `sdd1.HEADER_BYTES`                              | 2，流开头的字节数                                               |
+| `sdd1.PLANE_COUNT`                               | 8，一个流最多交织的平面数                                       |
+| `sdd1.CONTEXT_COUNT`                             | 32，编码器维护的上下文数                                        |
+| `sdd1.MAX_LENGTH`                                | 65,536，一个流最多解码的字节数，也是 `length` 为 0 时请求的长度 |
+| `sdd1.EVOLUTION`                                 | 33 状态的状态机：每个状态的码长，以及每种结果之后的下一状态     |
+| `sdd1.RUN_TABLE`                                 | 128 个游程长度，是 1 到 128 的一个排列，以 7 位码字为索引       |
+| `sdd1.CONTEXT_MASKS`                             | 作用于平面 10 位历史的四对掩码，每种上下文类型一对              |
+| `sdd1.UnknownModelError`、`sdd1.TruncatedStream` | 调用方可以捕获的全部异常                                        |
+| `sdd1.__version__`                               | 已安装的版本                                                    |
 
 ```python
 import sdd1
@@ -182,16 +182,16 @@ print([(hex(high), hex(low)) for high, low in sdd1.CONTEXT_MASKS])
 
 除诊断脚本以文件方式运行外，每个工具都在仓库根目录下以模块方式运行。
 
-| 命令 | 作用 | 退出码 |
-|:--|:--|:--|
-| `python3 sdd1/doctor.py` | 报告本机环境、芯片和两个语料库的状态 | 0 正常，1 有检查失败 |
-| `python3 -m conformance.vectors [file]` | 解码每个噪声向量并比较摘要。`file` 默认为 [`conformance/vectors.json`](conformance/vectors.json) | 0 全部一致，1 有不一致，2 没有文件 |
-| `python3 -m conformance.corpus [file]` | 对卡带形态语料库做同样的事，默认为 [`conformance/corpus.json`](conformance/corpus.json) | 0 全部一致，1 有不一致，2 没有文件 |
-| `python3 -m conformance.extract <rom> <shapes out> [table]` | 从你拥有的卡带中写出头部字节和长度的普查。`table` 是由偏移量和长度对组成的 JSON 列表，或者是带有 `SDD1` 标记的构建 | 0 已写出，1 未找到流，2 参数错误或没有 ROM |
-| `python3 -m conformance.against_cartridges <cartridge> <expanded> <out.json> [lo] [hi]` | 在 `lo` 和 `hi` 之间扫描卡带，统计前 64 个解码字节出现在扩展镜像中、且不出现在卡带任何位置的流 | 0 已写出，1 没有得到确认的流，2 参数错误或缺少文件 |
-| `python3 -m conformance.speed` | 将 2,000 字节解码 5 次，并把速率中位数与每秒 70,000 字节的下限比较 | 0 高于下限，1 低于下限 |
-| `python3 -m conformance.package <wheel>` | 检查构建出的 wheel 包含每个模块且不含测试文件 | 0 正常，1 有问题或没有 wheel，2 没有参数 |
-| `python3 -m conformance.links` | 请求本文件中的每个地址并输出 JSON 报告 | 0 每个地址仍然存在，1 至少一个返回状态 404 或 410 |
+| 命令                                                                                    | 作用                                                                                                               | 退出码                                             |
+| :-------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------- | :------------------------------------------------- |
+| `python3 sdd1/doctor.py`                                                                | 报告本机环境、芯片和两个语料库的状态                                                                               | 0 正常，1 有检查失败                               |
+| `python3 -m conformance.vectors [file]`                                                 | 解码每个噪声向量并比较摘要。`file` 默认为 [`conformance/vectors.json`](conformance/vectors.json)                   | 0 全部一致，1 有不一致，2 没有文件                 |
+| `python3 -m conformance.corpus [file]`                                                  | 对卡带形态语料库做同样的事，默认为 [`conformance/corpus.json`](conformance/corpus.json)                            | 0 全部一致，1 有不一致，2 没有文件                 |
+| `python3 -m conformance.extract <rom> <shapes out> [table]`                             | 从你拥有的卡带中写出头部字节和长度的普查。`table` 是由偏移量和长度对组成的 JSON 列表，或者是带有 `SDD1` 标记的构建 | 0 已写出，1 未找到流，2 参数错误或没有 ROM         |
+| `python3 -m conformance.against_cartridges <cartridge> <expanded> <out.json> [lo] [hi]` | 在 `lo` 和 `hi` 之间扫描卡带，统计前 64 个解码字节出现在扩展镜像中、且不出现在卡带任何位置的流                     | 0 已写出，1 没有得到确认的流，2 参数错误或缺少文件 |
+| `python3 -m conformance.speed`                                                          | 将 2,000 字节解码 5 次，并把速率中位数与每秒 70,000 字节的下限比较                                                 | 0 高于下限，1 低于下限                             |
+| `python3 -m conformance.package <wheel>`                                                | 检查构建出的 wheel 包含每个模块且不含测试文件                                                                      | 0 正常，1 有问题或没有 wheel，2 没有参数           |
+| `python3 -m conformance.links`                                                          | 请求本文件中的每个地址并输出 JSON 报告                                                                             | 0 每个地址仍然存在，1 至少一个返回状态 404 或 410  |
 
 ```bash
 python3 -m conformance.vectors conformance/vectors.json
@@ -216,12 +216,12 @@ python3 -m conformance.vectors conformance/vectors.json
 
 每一位都属于一个位平面，每个平面维护自己的 10 位历史。这段历史经过头部所选的 `CONTEXT_MASKS` 那一行掩码后，选出上下文。同一个输入字节的解码结果，取决于它在该平面中之前出现过什么。
 
-| 平面类型，头部第 7 位和第 6 位 | 交织的平面数 | 平面如何轮换 |
-|:--|:--|:--|
-| `0` | 2 | 不轮换 |
-| `1` | 4 | 每 16 个输出字节，平面对前移 2，到 8 回绕 |
-| `2` | 4 | 每 16 个输出字节，平面对在平面 0 和 1 与平面 2 和 3 之间切换 |
-| `3` | 8 | 每个输出字节从 8 个平面中各取一位 |
+| 平面类型，头部第 7 位和第 6 位 | 交织的平面数 | 平面如何轮换                                                 |
+| :----------------------------- | :----------- | :----------------------------------------------------------- |
+| `0`                            | 2            | 不轮换                                                       |
+| `1`                            | 4            | 每 16 个输出字节，平面对前移 2，到 8 回绕                    |
+| `2`                            | 4            | 每 16 个输出字节，平面对在平面 0 和 1 与平面 2 和 3 之间切换 |
+| `3`                            | 8            | 每个输出字节从 8 个平面中各取一位                            |
 
 类型 1 和类型 2 在第二次轮换之前，即 32 字节之前，结果一致：
 
@@ -266,14 +266,14 @@ sdd1 True
 
 没有人公开过这颗芯片的数据手册，所以权威阶梯的最高一级是空的。[`conformance/hardware.json`](conformance/hardware.json) 记录了这一点，把每个常量标记为 `"verified": false`，并写明替代它的证据以及能确定每一项的依据。
 
-| 见证 | 记录 | 结果 |
-|:--|:--|:--|
-| snes9x 1.63 处理噪声 | [`conformance/vectors.json`](conformance/vectors.json) | 4,000 个用例，0 失败 |
-| snes9x 1.63 处理卡带形态 | [`conformance/corpus.json`](conformance/corpus.json) | 2,652 个用例，0 失败 |
-| 零售版卡带对照他人制作的扩展版，不使用模拟器 | [`conformance/cartridges.json`](conformance/cartridges.json) | 在 Star Ocean（日本版）中确认了 55,023 个流，覆盖全部 16 种形态；在另一款游戏上的对照运行为 1,306 个 |
-| 第三方的编码器 | [`conformance/independent.json`](conformance/independent.json) | 20 对：18 对完全相同，2 对在作者导出所含的每个字节上一致、但少了 64 字节，0 对不同 |
-| 压缩之前的一个 Capcom 原型 | [`conformance/prototype.json`](conformance/prototype.json) | 2,852 个解码流中有 242 个原样出现在其中，共 311,264 字节 |
-| 源码中的表 | [`conformance/carried.json`](conformance/carried.json) | `EVOLUTION`、`RUN_TABLE` 和 `CONTEXT_MASKS` 由其值的 SHA-256 固定 |
+| 见证                                         | 记录                                                           | 结果                                                                                                 |
+| :------------------------------------------- | :------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
+| snes9x 1.63 处理噪声                         | [`conformance/vectors.json`](conformance/vectors.json)         | 4,000 个用例，0 失败                                                                                 |
+| snes9x 1.63 处理卡带形态                     | [`conformance/corpus.json`](conformance/corpus.json)           | 2,652 个用例，0 失败                                                                                 |
+| 零售版卡带对照他人制作的扩展版，不使用模拟器 | [`conformance/cartridges.json`](conformance/cartridges.json)   | 在 Star Ocean（日本版）中确认了 55,023 个流，覆盖全部 16 种形态；在另一款游戏上的对照运行为 1,306 个 |
+| 第三方的编码器                               | [`conformance/independent.json`](conformance/independent.json) | 20 对：18 对完全相同，2 对在作者导出所含的每个字节上一致、但少了 64 字节，0 对不同                   |
+| 压缩之前的一个 Capcom 原型                   | [`conformance/prototype.json`](conformance/prototype.json)     | 2,852 个解码流中有 242 个原样出现在其中，共 311,264 字节                                             |
+| 源码中的表                                   | [`conformance/carried.json`](conformance/carried.json)         | `EVOLUTION`、`RUN_TABLE` 和 `CONTEXT_MASKS` 由其值的 SHA-256 固定                                    |
 
 测试套件还检查：`RUN_TABLE` 是一个排列，`EVOLUTION` 中的每条链在两种结果下都会收敛，没有哪对掩码重复选择同一位，以及在同一偏移量上较短的读取是较长读取的前缀。
 
@@ -339,13 +339,13 @@ python3 -m conformance.against_cartridges cartridge.sfc expanded.sfc found.json
 
 ## 参与开发
 
-| 需要 | 位置 |
-|:--|:--|
-| 每一项门禁检查及其运行顺序 | [CONTRIBUTING.md](CONTRIBUTING.md) |
-| 供编码代理使用的同一份材料 | [AGENTS.md](AGENTS.md) |
-| 本仓库与同系列其他仓库共享的标准 | [FAMILY.md](FAMILY.md) |
-| Bug 报告 | [GitHub Issues](https://github.com/gufranco/snes-sdd1-python/issues) |
-| 安全报告 | [SECURITY.md](SECURITY.md) |
+| 需要                             | 位置                                                                 |
+| :------------------------------- | :------------------------------------------------------------------- |
+| 每一项门禁检查及其运行顺序       | [CONTRIBUTING.md](CONTRIBUTING.md)                                   |
+| 供编码代理使用的同一份材料       | [AGENTS.md](AGENTS.md)                                               |
+| 本仓库与同系列其他仓库共享的标准 | [FAMILY.md](FAMILY.md)                                               |
+| Bug 报告                         | [GitHub Issues](https://github.com/gufranco/snes-sdd1-python/issues) |
+| 安全报告                         | [SECURITY.md](SECURITY.md)                                           |
 
 ```bash
 uvx ruff@0.16.3 format --check .

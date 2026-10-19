@@ -34,10 +34,10 @@ The same 63 bytes of noise follow four different header bytes. The top two bits 
 
 ## Install
 
-| Requirement | Version |
-|:--|:--|
-| Python | 3.12 or newer |
-| git | Any |
+| Requirement | Version       |
+| :---------- | :------------ |
+| Python      | 3.12 or newer |
+| git         | Any           |
 
 ```bash
 git clone https://github.com/gufranco/snes-sdd1-python.git
@@ -59,9 +59,9 @@ Releases follow [Semantic Versioning](https://semver.org/) and are cut from the 
 
 `sdd1.Chip(model)` builds one part. `model` is required: leaving it out raises `UnknownModelError` and lists the names there are. A name is matched with case, hyphens and underscores ignored.
 
-| Model | Aliases | Bit planes | Contexts |
-|:--|:--|:--|:--|
-| `sdd1` | `s-dd1`, `sdd-1`, `sdd`, `nintendosdd1` | Up to 8 | 32 |
+| Model  | Aliases                                 | Bit planes | Contexts |
+| :----- | :-------------------------------------- | :--------- | :------- |
+| `sdd1` | `s-dd1`, `sdd-1`, `sdd`, `nintendosdd1` | Up to 8    | 32       |
 
 ```python
 import sdd1
@@ -89,12 +89,12 @@ s-dd2 is not a model this package covers; it has sdd1
 
 ### Calls
 
-| Call | Effect |
-|:--|:--|
+| Call                                   | Effect                                                                                                                            |
+| :------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
 | `Chip.decompress(rom, offset, length)` | Decodes the stream whose header byte sits at `rom[offset]` and returns a `Stream` of `length` bytes. A `length` of 0 means 65,536 |
-| `Chip.reset()` | Does nothing and returns the part. No state survives from one stream to the next, so there is nothing to clear |
-| `sdd1.decompress(rom, offset, length)` | The same decode without building a part first |
-| `sdd1.bitplane_count(kind)` | The number of bit planes the header's top two bits name: 2, 4, 4 or 8 for kinds 0 to 3 |
+| `Chip.reset()`                         | Does nothing and returns the part. No state survives from one stream to the next, so there is nothing to clear                    |
+| `sdd1.decompress(rom, offset, length)` | The same decode without building a part first                                                                                     |
+| `sdd1.bitplane_count(kind)`            | The number of bit planes the header's top two bits name: 2, 4, 4 or 8 for kinds 0 to 3                                            |
 
 `Chip.model` holds the canonical model name. `rom` is any `bytes` or `bytearray`. A stream is read from its two header bytes onward, and nothing before `rom[offset]` is touched.
 
@@ -102,19 +102,19 @@ s-dd2 is not a model this package covers; it has sdd1
 
 `Stream` is a named tuple with four fields.
 
-| Field | Meaning |
-|:--|:--|
-| `data` | The decoded bytes, as `bytes`, exactly `length` of them |
-| `end` | The offset of the first input byte the decoder did not read |
-| `bitplanes` | 2, 4 or 8, from the header's top two bits |
-| `context` | 0 to 3, the header's next two bits, which pick the row of `CONTEXT_MASKS` |
+| Field       | Meaning                                                                   |
+| :---------- | :------------------------------------------------------------------------ |
+| `data`      | The decoded bytes, as `bytes`, exactly `length` of them                   |
+| `end`       | The offset of the first input byte the decoder did not read               |
+| `bitplanes` | 2, 4 or 8, from the header's top two bits                                 |
+| `context`   | 0 to 3, the header's next two bits, which pick the row of `CONTEXT_MASKS` |
 
 ### Errors
 
-| Error | Raised when |
-|:--|:--|
-| `UnknownModelError` | `Chip` is given no model, or a name no model answers to. The message lists the models there are |
-| `TruncatedStream` | `offset` is negative, fewer than 2 bytes remain from `offset` on, or the input runs out before `length` bytes are decoded. The exception carries `offset` |
+| Error               | Raised when                                                                                                                                               |
+| :------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `UnknownModelError` | `Chip` is given no model, or a name no model answers to. The message lists the models there are                                                           |
+| `TruncatedStream`   | `offset` is negative, fewer than 2 bytes remain from `offset` on, or the input runs out before `length` bytes are decoded. The exception carries `offset` |
 
 A short stream raises rather than returning fewer bytes, so a caller never mistakes a partial block for a whole one.
 
@@ -145,20 +145,20 @@ TruncatedStream at 0
 
 ### Module contents
 
-| Name | Content |
-|:--|:--|
-| `sdd1.MODELS` | The `Model` records, keyed by canonical name |
-| `sdd1.Model` | One record: `name`, `summary`, `planes`, `contexts`, `aliases` |
-| `sdd1.BITPLANE_COUNTS` | `(2, 4, 4, 8)`, the plane count for each of the four plane kinds |
-| `sdd1.HEADER_BYTES` | 2, the bytes a stream starts with |
-| `sdd1.PLANE_COUNT` | 8, the most planes a stream interleaves |
-| `sdd1.CONTEXT_COUNT` | 32, the contexts the coder keeps |
-| `sdd1.MAX_LENGTH` | 65,536, the most a stream decodes, and what a `length` of 0 asks for |
-| `sdd1.EVOLUTION` | The 33-state machine: for each state, the code size and the next state after each outcome |
-| `sdd1.RUN_TABLE` | 128 run lengths, a permutation of 1 to 128, indexed by a 7-bit code word |
-| `sdd1.CONTEXT_MASKS` | Four pairs of masks over a plane's 10-bit history, one per context kind |
-| `sdd1.UnknownModelError`, `sdd1.TruncatedStream` | Everything a caller can catch |
-| `sdd1.__version__` | The installed version |
+| Name                                             | Content                                                                                   |
+| :----------------------------------------------- | :---------------------------------------------------------------------------------------- |
+| `sdd1.MODELS`                                    | The `Model` records, keyed by canonical name                                              |
+| `sdd1.Model`                                     | One record: `name`, `summary`, `planes`, `contexts`, `aliases`                            |
+| `sdd1.BITPLANE_COUNTS`                           | `(2, 4, 4, 8)`, the plane count for each of the four plane kinds                          |
+| `sdd1.HEADER_BYTES`                              | 2, the bytes a stream starts with                                                         |
+| `sdd1.PLANE_COUNT`                               | 8, the most planes a stream interleaves                                                   |
+| `sdd1.CONTEXT_COUNT`                             | 32, the contexts the coder keeps                                                          |
+| `sdd1.MAX_LENGTH`                                | 65,536, the most a stream decodes, and what a `length` of 0 asks for                      |
+| `sdd1.EVOLUTION`                                 | The 33-state machine: for each state, the code size and the next state after each outcome |
+| `sdd1.RUN_TABLE`                                 | 128 run lengths, a permutation of 1 to 128, indexed by a 7-bit code word                  |
+| `sdd1.CONTEXT_MASKS`                             | Four pairs of masks over a plane's 10-bit history, one per context kind                   |
+| `sdd1.UnknownModelError`, `sdd1.TruncatedStream` | Everything a caller can catch                                                             |
+| `sdd1.__version__`                               | The installed version                                                                     |
 
 ```python
 import sdd1
@@ -182,16 +182,16 @@ print([(hex(high), hex(low)) for high, low in sdd1.CONTEXT_MASKS])
 
 Every tool runs as a module from the repository root, except the doctor, which runs as a file.
 
-| Command | What it does | Exit codes |
-|:--|:--|:--|
-| `python3 sdd1/doctor.py` | Reports on the machine, the part and both corpora | 0 clean, 1 a check failed |
-| `python3 -m conformance.vectors [file]` | Decodes every noise vector and compares digests. `file` defaults to [`conformance/vectors.json`](conformance/vectors.json) | 0 all agree, 1 a disagreement, 2 no file |
-| `python3 -m conformance.corpus [file]` | The same for the cartridge-shaped corpus, [`conformance/corpus.json`](conformance/corpus.json) by default | 0 all agree, 1 a disagreement, 2 no file |
-| `python3 -m conformance.extract <rom> <shapes out> [table]` | Writes a census of header bytes and lengths from a cartridge you own. `table` is a JSON list of offset and length pairs, or a build carrying `SDD1` tags | 0 written, 1 no stream found, 2 bad arguments or no ROM |
-| `python3 -m conformance.against_cartridges <cartridge> <expanded> <out.json> [lo] [hi]` | Sweeps a cartridge between `lo` and `hi` and counts the streams whose first 64 decoded bytes appear in an expanded image and nowhere in the cartridge | 0 written, 1 nothing confirmed, 2 bad arguments or a missing file |
-| `python3 -m conformance.speed` | Decodes 2,000 bytes 5 times and compares the median rate with the floor of 70,000 bytes a second | 0 above the floor, 1 below |
-| `python3 -m conformance.package <wheel>` | Checks that a built wheel carries every module and no test file | 0 clean, 1 a fault or no wheel, 2 no argument |
-| `python3 -m conformance.links` | Requests every address in this file and prints a JSON report | 0 every address still exists, 1 at least one has status 404 or 410 |
+| Command                                                                                 | What it does                                                                                                                                             | Exit codes                                                         |
+| :-------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
+| `python3 sdd1/doctor.py`                                                                | Reports on the machine, the part and both corpora                                                                                                        | 0 clean, 1 a check failed                                          |
+| `python3 -m conformance.vectors [file]`                                                 | Decodes every noise vector and compares digests. `file` defaults to [`conformance/vectors.json`](conformance/vectors.json)                               | 0 all agree, 1 a disagreement, 2 no file                           |
+| `python3 -m conformance.corpus [file]`                                                  | The same for the cartridge-shaped corpus, [`conformance/corpus.json`](conformance/corpus.json) by default                                                | 0 all agree, 1 a disagreement, 2 no file                           |
+| `python3 -m conformance.extract <rom> <shapes out> [table]`                             | Writes a census of header bytes and lengths from a cartridge you own. `table` is a JSON list of offset and length pairs, or a build carrying `SDD1` tags | 0 written, 1 no stream found, 2 bad arguments or no ROM            |
+| `python3 -m conformance.against_cartridges <cartridge> <expanded> <out.json> [lo] [hi]` | Sweeps a cartridge between `lo` and `hi` and counts the streams whose first 64 decoded bytes appear in an expanded image and nowhere in the cartridge    | 0 written, 1 nothing confirmed, 2 bad arguments or a missing file  |
+| `python3 -m conformance.speed`                                                          | Decodes 2,000 bytes 5 times and compares the median rate with the floor of 70,000 bytes a second                                                         | 0 above the floor, 1 below                                         |
+| `python3 -m conformance.package <wheel>`                                                | Checks that a built wheel carries every module and no test file                                                                                          | 0 clean, 1 a fault or no wheel, 2 no argument                      |
+| `python3 -m conformance.links`                                                          | Requests every address in this file and prints a JSON report                                                                                             | 0 every address still exists, 1 at least one has status 404 or 410 |
 
 ```bash
 python3 -m conformance.vectors conformance/vectors.json
@@ -216,12 +216,12 @@ Each of the 32 contexts carries a run length rather than a probability. When the
 
 Every bit belongs to a bit plane, and each plane keeps its own 10 bits of history. That history, masked by the row of `CONTEXT_MASKS` the header picks, selects the context. The same input byte decodes differently depending on what came before it in that plane.
 
-| Plane kind, header bits 7 and 6 | Planes interleaved | How the planes rotate |
-|:--|:--|:--|
-| `0` | 2 | They do not |
-| `1` | 4 | Every 16 output bytes the pair moves on by 2, wrapping at 8 |
-| `2` | 4 | Every 16 output bytes the pair toggles between planes 0 and 1 and planes 2 and 3 |
-| `3` | 8 | Each output byte takes one bit from each of the 8 planes |
+| Plane kind, header bits 7 and 6 | Planes interleaved | How the planes rotate                                                            |
+| :------------------------------ | :----------------- | :------------------------------------------------------------------------------- |
+| `0`                             | 2                  | They do not                                                                      |
+| `1`                             | 4                  | Every 16 output bytes the pair moves on by 2, wrapping at 8                      |
+| `2`                             | 4                  | Every 16 output bytes the pair toggles between planes 0 and 1 and planes 2 and 3 |
+| `3`                             | 8                  | Each output byte takes one bit from each of the 8 planes                         |
 
 Kinds 1 and 2 agree until their second rotation, after 32 bytes:
 
@@ -266,14 +266,14 @@ There is one model. Both games that carry the part use the same decompressor. Th
 
 Nobody published a data sheet for this part, so the top rung of the authority ladder is empty. [`conformance/hardware.json`](conformance/hardware.json) records that, marks every constant `"verified": false`, and names the evidence that stands in and what would settle each one.
 
-| Witness | Record | Result |
-|:--|:--|:--|
-| snes9x 1.63 on noise | [`conformance/vectors.json`](conformance/vectors.json) | 4,000 cases, 0 failures |
-| snes9x 1.63 on cartridge shapes | [`conformance/corpus.json`](conformance/corpus.json) | 2,652 cases, 0 failures |
-| A retail cartridge against an expansion somebody else made of it, with no emulator | [`conformance/cartridges.json`](conformance/cartridges.json) | 55,023 streams confirmed in Star Ocean (Japan) across all 16 shapes, against 1,306 in a control run on a different game |
-| A third party's encoder | [`conformance/independent.json`](conformance/independent.json) | 20 pairs: 18 identical, 2 match on every byte the author's export holds and stop 64 bytes short, 0 differ |
-| A Capcom prototype from before the compression | [`conformance/prototype.json`](conformance/prototype.json) | 242 of 2,852 decoded streams appear verbatim in it, 311,264 bytes |
-| The tables in source | [`conformance/carried.json`](conformance/carried.json) | `EVOLUTION`, `RUN_TABLE` and `CONTEXT_MASKS` pinned by the SHA-256 of their values |
+| Witness                                                                            | Record                                                         | Result                                                                                                                  |
+| :--------------------------------------------------------------------------------- | :------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------- |
+| snes9x 1.63 on noise                                                               | [`conformance/vectors.json`](conformance/vectors.json)         | 4,000 cases, 0 failures                                                                                                 |
+| snes9x 1.63 on cartridge shapes                                                    | [`conformance/corpus.json`](conformance/corpus.json)           | 2,652 cases, 0 failures                                                                                                 |
+| A retail cartridge against an expansion somebody else made of it, with no emulator | [`conformance/cartridges.json`](conformance/cartridges.json)   | 55,023 streams confirmed in Star Ocean (Japan) across all 16 shapes, against 1,306 in a control run on a different game |
+| A third party's encoder                                                            | [`conformance/independent.json`](conformance/independent.json) | 20 pairs: 18 identical, 2 match on every byte the author's export holds and stop 64 bytes short, 0 differ               |
+| A Capcom prototype from before the compression                                     | [`conformance/prototype.json`](conformance/prototype.json)     | 242 of 2,852 decoded streams appear verbatim in it, 311,264 bytes                                                       |
+| The tables in source                                                               | [`conformance/carried.json`](conformance/carried.json)         | `EVOLUTION`, `RUN_TABLE` and `CONTEXT_MASKS` pinned by the SHA-256 of their values                                      |
 
 The suite also checks that `RUN_TABLE` is a permutation, that every chain through `EVOLUTION` settles under both outcomes, that no mask pair selects a bit twice, and that a shorter read is a prefix of a longer one at the same offset.
 
@@ -339,13 +339,13 @@ python3 -m conformance.against_cartridges cartridge.sfc expanded.sfc found.json
 
 ## Working on it
 
-| Need | Where |
-|:--|:--|
-| Every gate and the order to run them | [CONTRIBUTING.md](CONTRIBUTING.md) |
-| The same material for a coding agent | [AGENTS.md](AGENTS.md) |
-| The standard this repository shares with the rest of the family | [FAMILY.md](FAMILY.md) |
-| Bug reports | [GitHub Issues](https://github.com/gufranco/snes-sdd1-python/issues) |
-| Security reports | [SECURITY.md](SECURITY.md) |
+| Need                                                            | Where                                                                |
+| :-------------------------------------------------------------- | :------------------------------------------------------------------- |
+| Every gate and the order to run them                            | [CONTRIBUTING.md](CONTRIBUTING.md)                                   |
+| The same material for a coding agent                            | [AGENTS.md](AGENTS.md)                                               |
+| The standard this repository shares with the rest of the family | [FAMILY.md](FAMILY.md)                                               |
+| Bug reports                                                     | [GitHub Issues](https://github.com/gufranco/snes-sdd1-python/issues) |
+| Security reports                                                | [SECURITY.md](SECURITY.md)                                           |
 
 ```bash
 uvx ruff@0.16.3 format --check .
