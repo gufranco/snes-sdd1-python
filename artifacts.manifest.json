@@ -1,0 +1,4 @@
+{
+  "externalNote": "This repository reads no file it may not ship: no test cartridge exercises the S-DD1. python3 -m conformance.external reports this mapping, which is empty.",
+  "external": {}
+}

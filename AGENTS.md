@@ -72,6 +72,12 @@ the S-DD1. It is reached only through the two retail games that carry it. There
 is no test cartridge runner here. A test cartridge for the S-DD1 that appears
 goes in the record, by SHA-256, and gets one.
 
+## Files kept in `external/`
+
+This member reads no file it may not ship.
+[`artifacts.manifest.json`](artifacts.manifest.json) says so with an empty
+`external` mapping, per FAMILY.md's "Where the files a member reads are kept".
+
 ## Every gate, in the order to run them
 
 ```bash
@@ -186,12 +192,15 @@ conformance/
   family_*.test.py the family standard, held to this repository, one topic a file
   family_member.py what this member answers to them
   family_shared.py what more than one of them reads
+  external.py       which files in external/ are here, verified, missing or wrong
   vectors.json    4,000 noise streams and what the reference makes of them
   corpus.json     2,652 cartridge-shaped streams, same
   extract.py      generating a corpus from the reference
   hardware.json   what this package asserts, and where each assertion comes from
   divergences.json where sources part, and what would settle each
   speed.py        the throughput floor
+external/           empty: nothing here is read from outside the repository, never committed
+artifacts.manifest.json  every file in external/, by size and every digest
 ```
 
 ## Things that will bite you
