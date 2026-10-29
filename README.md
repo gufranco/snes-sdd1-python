@@ -4,9 +4,11 @@ The S-DD1, the arithmetic decompressor in two Super Nintendo games, in Python, h
 
 English | [日本語](README.ja.md) | [简体中文](README.zh-Hans.md) | [繁體中文（香港）](README.zh-HK.md)
 
-[![CI](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![ci](https://img.shields.io/github/actions/workflow/status/gufranco/snes-sdd1-python/ci.yml?branch=main&style=flat-square&label=ci)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python?style=flat-square&label=release)](https://github.com/gufranco/snes-sdd1-python/releases/latest)
+[![coverage](https://img.shields.io/badge/coverage-100%25-brightgreen?style=flat-square)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
+[![openssf scorecard](https://img.shields.io/ossf-scorecard/github.com/gufranco/snes-sdd1-python?style=flat-square&label=openssf%20scorecard)](https://scorecard.dev/viewer/?uri=github.com/gufranco/snes-sdd1-python)
+[![license](https://img.shields.io/github/license/gufranco/snes-sdd1-python?style=flat-square&label=license)](LICENSE)
 
 **4,000** noise streams and **2,652** cartridge-shaped streams compared with snes9x 1.63, **0** failures, **all 16** header shapes, lengths to **65,536** bytes, shapes from a census of **11,306** streams, **765** tests, **100%** statement and branch coverage, no dependencies
 

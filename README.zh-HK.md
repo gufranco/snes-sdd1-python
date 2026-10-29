@@ -4,9 +4,11 @@
 
 [English](README.md) | [日本語](README.ja.md) | [简体中文](README.zh-Hans.md) | 繁體中文（香港）
 
-[![CI](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![ci](https://img.shields.io/github/actions/workflow/status/gufranco/snes-sdd1-python/ci.yml?branch=main&style=flat-square&label=ci)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python?style=flat-square&label=release)](https://github.com/gufranco/snes-sdd1-python/releases/latest)
+[![coverage](https://img.shields.io/badge/coverage-100%25-brightgreen?style=flat-square)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
+[![openssf scorecard](https://img.shields.io/ossf-scorecard/github.com/gufranco/snes-sdd1-python?style=flat-square&label=openssf%20scorecard)](https://scorecard.dev/viewer/?uri=github.com/gufranco/snes-sdd1-python)
+[![license](https://img.shields.io/github/license/gufranco/snes-sdd1-python?style=flat-square&label=license)](LICENSE)
 
 **4,000** 條雜訊數據流與 **2,652** 條卡帶形態的數據流與 snes9x 1.63 比對，**0** 個失敗，涵蓋**全部 16** 種標頭形態，長度最高 **65,536** 位元組，形態取自 **11,306** 條數據流的普查，**765** 個測試，**100%** 語句及分支覆蓋率，無任何依賴
 

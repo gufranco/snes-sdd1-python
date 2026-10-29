@@ -4,9 +4,11 @@ S-DD1 是两款 Super Nintendo 游戏中的算术解压芯片，本仓库用 Pyt
 
 [English](README.md) | [日本語](README.ja.md) | 简体中文 | [繁體中文（香港）](README.zh-HK.md)
 
-[![CI](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python)](https://github.com/gufranco/snes-sdd1-python/releases)
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![ci](https://img.shields.io/github/actions/workflow/status/gufranco/snes-sdd1-python/ci.yml?branch=main&style=flat-square&label=ci)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/v/release/gufranco/snes-sdd1-python?style=flat-square&label=release)](https://github.com/gufranco/snes-sdd1-python/releases/latest)
+[![coverage](https://img.shields.io/badge/coverage-100%25-brightgreen?style=flat-square)](https://github.com/gufranco/snes-sdd1-python/actions/workflows/ci.yml)
+[![openssf scorecard](https://img.shields.io/ossf-scorecard/github.com/gufranco/snes-sdd1-python?style=flat-square&label=openssf%20scorecard)](https://scorecard.dev/viewer/?uri=github.com/gufranco/snes-sdd1-python)
+[![license](https://img.shields.io/github/license/gufranco/snes-sdd1-python?style=flat-square&label=license)](LICENSE)
 
 **4,000** 个噪声流和 **2,652** 个卡带形态的流与 snes9x 1.63 对比，**0** 失败，覆盖**全部 16** 种头部形态，长度最多 **65,536** 字节，形态取自 **11,306** 个流的普查，**765** 个测试，**100%** 语句和分支覆盖率，无依赖
 
