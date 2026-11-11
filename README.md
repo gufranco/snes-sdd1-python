@@ -10,7 +10,7 @@ English | [日本語](README.ja.md) | [简体中文](README.zh-Hans.md) | [繁�
 [![openssf scorecard](https://img.shields.io/ossf-scorecard/github.com/gufranco/snes-sdd1-python?style=flat-square&label=openssf%20scorecard)](https://scorecard.dev/viewer/?uri=github.com/gufranco/snes-sdd1-python)
 [![license](https://img.shields.io/github/license/gufranco/snes-sdd1-python?style=flat-square&label=license)](LICENSE)
 
-**4,000** noise streams and **2,652** cartridge-shaped streams compared with snes9x 1.63, **0** failures, **all 16** header shapes, lengths to **65,536** bytes, shapes from a census of **11,306** streams, **765** tests, **100%** statement and branch coverage, no dependencies
+**4,000** noise streams and **2,652** cartridge-shaped streams compared with snes9x 1.63, **0** failures, **all 16** header shapes, lengths to **65,536** bytes, shapes from a census of **11,306** streams, **766** tests, **100%** statement and branch coverage, no dependencies
 
 ```python
 import random

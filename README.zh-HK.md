@@ -10,7 +10,7 @@
 [![openssf scorecard](https://img.shields.io/ossf-scorecard/github.com/gufranco/snes-sdd1-python?style=flat-square&label=openssf%20scorecard)](https://scorecard.dev/viewer/?uri=github.com/gufranco/snes-sdd1-python)
 [![license](https://img.shields.io/github/license/gufranco/snes-sdd1-python?style=flat-square&label=license)](LICENSE)
 
-**4,000** 條雜訊數據流與 **2,652** 條卡帶形態的數據流與 snes9x 1.63 比對，**0** 個失敗，涵蓋**全部 16** 種標頭形態，長度最高 **65,536** 位元組，形態取自 **11,306** 條數據流的普查，**765** 個測試，**100%** 語句及分支覆蓋率，無任何依賴
+**4,000** 條雜訊數據流與 **2,652** 條卡帶形態的數據流與 snes9x 1.63 比對，**0** 個失敗，涵蓋**全部 16** 種標頭形態，長度最高 **65,536** 位元組，形態取自 **11,306** 條數據流的普查，**766** 個測試，**100%** 語句及分支覆蓋率，無任何依賴
 
 ```python
 import random

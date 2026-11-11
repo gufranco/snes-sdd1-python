@@ -10,7 +10,7 @@ S-DD1は、スーパーファミコンの2本のゲームに搭載された算�
 [![openssf scorecard](https://img.shields.io/ossf-scorecard/github.com/gufranco/snes-sdd1-python?style=flat-square&label=openssf%20scorecard)](https://scorecard.dev/viewer/?uri=github.com/gufranco/snes-sdd1-python)
 [![license](https://img.shields.io/github/license/gufranco/snes-sdd1-python?style=flat-square&label=license)](LICENSE)
 
-ノイズのストリーム**4,000**本とカートリッジ形状のストリーム**2,652**本をsnes9x 1.63と比較して失敗**0**件、ヘッダ形状は**全16**種、長さは最大**65,536**バイト、形状は**11,306**本のストリームの全数調査から取得、テスト**765**件、ステートメントとブランチのカバレッジ**100%**、依存パッケージなし
+ノイズのストリーム**4,000**本とカートリッジ形状のストリーム**2,652**本をsnes9x 1.63と比較して失敗**0**件、ヘッダ形状は**全16**種、長さは最大**65,536**バイト、形状は**11,306**本のストリームの全数調査から取得、テスト**766**件、ステートメントとブランチのカバレッジ**100%**、依存パッケージなし
 
 ```python
 import random
